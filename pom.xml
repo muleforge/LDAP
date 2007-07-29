@@ -8,7 +8,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   <packaging>jar</packaging>
   <version>1.0</version>
   <properties>
-    <muleVersion>1.3.3</muleVersion>
+    <muleVersion>1.4.1</muleVersion>
   </properties>
   <distributionManagement>
     <repository>
