@@ -19,7 +19,7 @@ public class LdapMessageToStringTransformerTestCase extends
         try
         {
             String file = org.mule.util.FileUtils.readFileToString(new File(
-                    ".\\src\\test\\resources\\LDAPDeleteRequest.dsml"));
+                    "src/test/resources/LDAPDeleteRequest.dsml"));
             System.out.println(file);
             return file;
         } catch (IOException e)
