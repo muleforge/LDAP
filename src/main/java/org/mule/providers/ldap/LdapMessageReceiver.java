@@ -46,7 +46,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
     {
         // TODO
         // ,pollingFrequency
-        super(connector, component, endpoint);
+        super(connector, component, endpoint,pollingFrequency);
 
     }
 

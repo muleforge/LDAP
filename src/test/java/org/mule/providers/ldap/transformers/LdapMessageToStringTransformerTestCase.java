@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mule.umo.transformer.UMOTransformer;
-import org.mule.util.FileUtils;
+//import org.mule.util.FileUtils;
 
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPException;
@@ -18,7 +18,7 @@ public class LdapMessageToStringTransformerTestCase extends
         // TODO Auto-generated method stub
         try
         {
-            String file = FileUtils.readFileToString(new File(
+            String file = org.mule.util.FileUtils.readFileToString(new File(
                     ".\\src\\test\\resources\\LDAPDeleteRequest.dsml"));
             System.out.println(file);
             return file;

@@ -11,7 +11,7 @@
 package org.mule.providers.ldap;
 
 // import org.mule.impl.ThreadSafeAccess;
-import org.mule.impl.ThreadSafeAccess;
+//import org.mule.impl.ThreadSafeAccess;
 import org.mule.providers.AbstractMessageAdapter;
 import org.mule.umo.MessagingException;
 import org.mule.umo.provider.MessageTypeNotSupportedException;
@@ -130,11 +130,11 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
     }
 
     // TODO what is it?
-    public ThreadSafeAccess newThreadCopy()
+    /*public ThreadSafeAccess newThreadCopy()
     {
 
         return null;
-    }
+    }*/
 
     // @Override
     public void setCorrelationId(String correlationId)
