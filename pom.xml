@@ -12,6 +12,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
   </properties>
   <distributionManagement>
     <repository>
+
       <id>muleforge.webdav.releases</id>
       <url>dav:https://dav.muleforge.org/repository/${artifactId}/</url>
     </repository>
