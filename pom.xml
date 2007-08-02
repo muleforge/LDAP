@@ -24,6 +24,28 @@
 			<url>dav:https://dav.muleforge.org/${artifactId}/</url>
 		</site>
 	</distributionManagement>
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<finalName>${artifactId}-${version}</finalName>
+					<descriptors>
+						<descriptor>assembly.xml</descriptor>
+					</descriptors>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
 	<name>LDAP Transport</name>
 	<description>Provides support for connecting directory services via ldap</description>
 	<dependencies>
