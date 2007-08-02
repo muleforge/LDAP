@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: LdapMessageDispatcherFactory.java,v 1.1 2007/07/30 22:34:33 hsaly Exp $
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
@@ -19,13 +19,17 @@ import org.mule.umo.provider.UMOMessageDispatcher;
  * <code>LdapMessageDispatcherFactory</code> Todo document
  */
 
-public class LdapMessageDispatcherFactory extends AbstractMessageDispatcherFactory
+public class LdapMessageDispatcherFactory extends
+        AbstractMessageDispatcherFactory
 {
 
-    /* For general guidelines on writing transports see
-       http://mule.mulesource.org/display/MULE/Writing+Transports */
+    /*
+     * For general guidelines on writing transports see
+     * http://mule.mulesource.org/display/MULE/Writing+Transports
+     */
 
-    public UMOMessageDispatcher create(UMOImmutableEndpoint endpoint) throws UMOException
+    public UMOMessageDispatcher create(UMOImmutableEndpoint endpoint)
+            throws UMOException
     {
         return new LdapMessageDispatcher(endpoint);
     }

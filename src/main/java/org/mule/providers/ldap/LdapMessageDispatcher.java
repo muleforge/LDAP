@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id: LdapMessageDispatcher.java,v 1.2 2007/08/01 21:33:18 hsaly Exp $
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
@@ -10,125 +10,226 @@
 
 package org.mule.providers.ldap;
 
-import java.util.List;
-
 import org.mule.impl.MuleMessage;
 import org.mule.providers.AbstractMessageDispatcher;
+import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.umo.UMOEvent;
 import org.mule.umo.UMOMessage;
 import org.mule.umo.endpoint.UMOImmutableEndpoint;
 import org.mule.umo.provider.UMOMessageAdapter;
 
-import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPAddRequest;
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPDeleteRequest;
+import com.novell.ldap.LDAPMessage;
+import com.novell.ldap.LDAPModifyRequest;
+import com.novell.ldap.LDAPSearchConstraints;
+import com.novell.ldap.LDAPSearchRequest;
 import com.novell.ldap.LDAPSearchResults;
 
 /**
  * <code>LdapMessageDispatcher</code> TODO document
  */
-public class LdapMessageDispatcher extends AbstractMessageDispatcher {
+public class LdapMessageDispatcher extends AbstractMessageDispatcher
+{
 
-	private LdapConnector connector;
+    private LdapConnector connector;
 
-	public LdapMessageDispatcher(UMOImmutableEndpoint endpoint) {
-		super(endpoint);
+    public LdapMessageDispatcher(UMOImmutableEndpoint endpoint)
+    {
+        super(endpoint);
 
-		connector = (LdapConnector) endpoint.getConnector();
-	}
+        connector = (LdapConnector) endpoint.getConnector();
+    }
 
-	public void doConnect() throws Exception {
+    public void doConnect() throws Exception
+    {
 
-	}
+        this.connector.ensureConnected();
+    }
 
-	public void doDisconnect() throws Exception {
+    public void doDisconnect() throws Exception
+    {
 
-	}
+    }
 
-	public void doDispatch(UMOEvent event) throws Exception {
+    public void doDispatch(UMOEvent event) throws Exception
+    {
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("doDispatch(UMOEvent event)");
-		}
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("doDispatch(UMOEvent event)");
+        }
 
-		
-			throw new UnsupportedOperationException(
-					"asynchronus dispatching not yet supported");
+        if (event.getTransformedMessage() instanceof LDAPMessage)
+        {
+            LDAPMessage tranformed = (LDAPMessage) event
+                    .getTransformedMessage();
 
-		/*
-		 * IMPLEMENTATION NOTE: This is invoked when the endpoint is
-		 * asynchronous. It should invoke the transport but not return any
-		 * result. If a result is returned it should be ignorred, but if the
-		 * underlying transport does have a notion of asynchronous processing,
-		 * that should be invoked. This method is executed in a different thread
-		 * to the request thread.
-		 */
+            if (event.getMessage().getCorrelationId() != null)
+            {
+                tranformed.setTag(event.getMessage().getCorrelationId());
+            }
 
-		// TODO Write the client code here to dispatch the event over this
-		// transport
+            connector.doAsyncRequest(tranformed);
 
-	}
+        } else
+        // not an instance of LDAPMessage
+        {
+            Object unknownMsg = event.getTransformedMessage();
 
-	public UMOMessage doSend(UMOEvent event) throws Exception {
+            if (unknownMsg == null)
+                return;
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("entering doSend(UMOEvent event)");
-		}
+            logger.debug("unknown is of type: " + unknownMsg.getClass());
 
-		/*
-		 * IMPLEMENTATION NOTE: Should send the event payload over the
-		 * transport. If there is a response from the transport it shuold be
-		 * returned from this method. The sendEvent method is called when the
-		 * endpoint is running synchronously and any response returned will
-		 * ultimately be passed back to the callee. This method is executed in
-		 * the same thread as the request thread.
-		 */
+            String query = LDAPUtils.getSearchStringFromEndpoint(endpoint,
+                    unknownMsg);
 
-		// TODO Write the client code here to send the event over this
-		// transport (or to dispatch the event to a store or repository)
-		// TODO Once the event has been sent, return the result (if any)
-		// wrapped in a MuleMessage object
-		String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-				event.getTransformedMessage());
+            LDAPSearchRequest request = LDAPUtils.createSearchRequest(
+                    connector, query);
 
-		LdapConnector connector = (LdapConnector) this.connector;
+            if (event.getMessage().getCorrelationId() != null)
+            {
+                request.setTag(event.getMessage().getCorrelationId());
+            }
 
-		LDAPSearchResults results = connector.doSearch(searchStr);
-		List<LDAPEntry> entries = connector.extractEntriesFromResults(results);
+            connector.doAsyncRequest(request);
 
-		logger.debug("entryCount " + entries.size());
+        }
 
-		logger.debug("entries " + entries);
+    }
 
-		UMOMessageAdapter msgAdapter = this.connector
-				.getMessageAdapter(entries);
-		UMOMessage message = new MuleMessage(msgAdapter);
+    public UMOMessage doSend(UMOEvent event) throws Exception
+    {
 
-		return message;
-	}
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("entering doSend(UMOEvent event)");
+        }
 
-	public UMOMessage doReceive(long timeout) throws Exception {
-		/*
-		 * IMPLEMENTATION NOTE: Can be used to make arbitary requests to a
-		 * transport resource. if the timeout is 0 the method should block until
-		 * an event on the endpoint is received.
-		 */
+        LDAPConnection lc = connector.getLdapConnection();
 
-		// TODO Write the client code here to perform a request over the
-		// transport
-		// UMOImmutableEndpoint endpoint = event.getEndpoint();
-		if (logger.isDebugEnabled()) {
-			logger.debug("entering doReceive(long timeout)");
-		}
+        if (event.getTransformedMessage() instanceof LDAPMessage)
+        {
+            LDAPMessage tranformed = (LDAPMessage) event
+                    .getTransformedMessage();
 
-		
-			throw new UnsupportedOperationException(
-					"asynchronus dispatching not yet supported");
+            if (event.getMessage().getCorrelationId() != null)
+            {
+                tranformed.setTag(event.getMessage().getCorrelationId());
+            }
 
-		
-		
-	}
+            if (tranformed instanceof LDAPAddRequest)
+            {
+                lc.add(((LDAPAddRequest) tranformed).getEntry());
+            } else if (tranformed instanceof LDAPDeleteRequest)
+            {
+                lc.delete(((LDAPDeleteRequest) tranformed).getDN());
+            } else if (tranformed instanceof LDAPModifyRequest)
+            {
+                lc.modify(((LDAPModifyRequest) tranformed).getDN(),
+                        ((LDAPModifyRequest) tranformed).getModifications());
+            } else if (tranformed instanceof LDAPSearchRequest)
+            {
 
-	public void doDispose() {
-		
-	}
+                LDAPSearchRequest sr = ((LDAPSearchRequest) tranformed);
+
+                LDAPSearchResults res = lc.search(sr.getDN(), sr.getScope(), sr
+                        .getStringFilter(), sr.getAttributes(), sr
+                        .isTypesOnly(), (LDAPSearchConstraints) null);
+
+                UMOMessageAdapter adapter = connector.getMessageAdapter(res);
+
+                return new MuleMessage(adapter);
+            } else
+            {
+                throw new IllegalArgumentException("type "
+                        + tranformed.getClass() + " cannot be send");
+            }
+
+            // return event.getMessage();
+
+        } else
+        // not an instance of LDAPMessage
+        {
+            Object unknownMsg = event.getTransformedMessage();
+
+            if (unknownMsg == null)
+                return null;
+
+            logger.debug("unknown is of type: " + unknownMsg.getClass());
+
+            String query = LDAPUtils.getSearchStringFromEndpoint(endpoint,
+                    unknownMsg);
+
+            LDAPSearchRequest sr = LDAPUtils.createSearchRequest(connector,
+                    query);
+
+            if (event.getMessage().getCorrelationId() != null)
+            {
+                sr.setTag(event.getMessage().getCorrelationId());
+            }
+
+            LDAPSearchResults res = lc.search(sr.getDN(), sr.getScope(), sr
+                    .getStringFilter(), sr.getAttributes(), sr.isTypesOnly(),
+                    (LDAPSearchConstraints) null);
+
+            UMOMessageAdapter adapter = connector.getMessageAdapter(res);
+
+            return new MuleMessage(adapter);
+
+        }
+
+        // doDispatch(event);
+        return event.getMessage();
+    }
+
+    public UMOMessage doReceive(long timeout) throws Exception
+    {
+        logger.debug("entering doReceive(long timeout)");
+
+        LDAPQueueReceiver receiver = new LDAPQueueReceiver(connector, endpoint,
+                null);
+
+        long t0 = System.currentTimeMillis();
+        if (timeout < 0)
+        {
+            timeout = Long.MAX_VALUE;
+        }
+
+        do
+        {
+
+            UMOMessage msg = receiver.pollOnce();
+
+            if (msg != null)
+                return msg;
+
+            long sleep = Math.min(2000, timeout
+                    - (System.currentTimeMillis() - t0));
+
+            if (sleep > 0)
+            {
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug("No results, sleeping for " + sleep);
+                }
+                Thread.sleep(sleep);
+            } else
+            {
+
+                logger.debug("Timeout");
+                return null;
+            }
+
+        } while (true);
+
+    }// end method
+
+    public void doDispose()
+    {
+
+    }
 
 }

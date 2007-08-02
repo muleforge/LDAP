@@ -1,97 +1,133 @@
 package org.mule.providers.ldap;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.io.File;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
+import org.mule.providers.ldap.util.TrustAllCertsManager;
 import org.mule.umo.lifecycle.InitialisationException;
+import org.mule.util.StringUtils;
 
+import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
 
+public class LdapSConnector extends LdapConnector
+{
 
-public class LdapSConnector extends LdapConnector{
+    public static final String PROPERTY_TRUST_ALL = "trustAll";
 
-	public static final String PROPERTY_TRUST_ALL = "trustAll";
-	
-	protected  LDAPJSSESecureSocketFactory ssf = null;
-	
-	protected boolean trustAll = false; 
-	
-	public LdapSConnector()
+    protected LDAPJSSESecureSocketFactory ssf = null;
+
+    protected boolean trustAll = false;
+    protected String trustStore = null;
+
+    public String getTrustStore()
     {
-        super(true);
-        
+        return trustStore;
     }
-    
+
+    public void setTrustStore(String trustStore)
+    {
+        this.trustStore = trustStore;
+    }
+
+    public LdapSConnector()
+    {
+        super();
+        this.ldapPort = LDAPConnection.DEFAULT_SSL_PORT;
+
+    }
+
     public String getProtocol()
     {
         return "ldaps";
     }
 
-	@Override
-	protected void doInitialise() throws InitialisationException {
-		
-		try {
-			SSLContext context = SSLContext.getInstance("TLS");
-			context.init(null, trustAll?trustAllCerts:null , null);
-			ssf = new LDAPJSSESecureSocketFactory(context.getSocketFactory());
-		} catch (KeyManagementException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		//pix path
-		//ssf = new LDAPJSSESecureSocketFactory((SSLSocketFactory) SSLSocketFactory.getDefault());
-		
-		super.setSsf(ssf);
-		
-		// TODO Auto-generated method stub
-		super.doInitialise();
-	}
-
-	public boolean isTrustAll() {
-		return trustAll;
-	}
-
-	public void setTrustAll(boolean trustAll) {
-		this.trustAll = trustAll;
-	}
-    
-	protected TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
+    // @Override
+    protected void doInitialise() throws InitialisationException
     {
 
-		public void checkClientTrusted(X509Certificate[] chain, String authType)
-				throws CertificateException {
-			// TODO Auto-generated method stub
-			
-		}
+        try
+        {
 
-		public void checkServerTrusted(X509Certificate[] chain, String authType)
-				throws CertificateException {
-			// TODO Auto-generated method stub
-			
-		}
+            if (trustAll)
+            {
+                SSLContext context = SSLContext.getInstance("TLS");
+                context.init(null,
+                        trustAll ? TrustAllCertsManager.trustAllCertsManager
+                                : null, null);
 
-		public X509Certificate[] getAcceptedIssuers() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-        
-		
-    } };
-	
+                // certificate_unknown
+                ssf = new LDAPJSSESecureSocketFactory(context
+                        .getSocketFactory());
+            } else
+            {
+                if (StringUtils.isEmpty(trustStore))
+                {
+                    throw new InitialisationException(
+                            new IllegalArgumentException(
+                                    "Either trustAll value must be true or the trustStore parameter must be set"),
+                            this);
+                }
 
+                File trustStoreFile = new File(trustStore);
 
+                if (!trustStoreFile.exists() || !trustStoreFile.canRead())
+                {
+                    throw new InitialisationException(
+                            new IllegalArgumentException("truststore file "
+                                    + trustStoreFile.getAbsolutePath()
+                                    + " do not exist or is not readable"), this);
+                }
 
-    
-    
-    
+                System.setProperty("javax.net.ssl.trustStore", trustStore);
+
+                logger.debug("truststore set to "
+                        + trustStoreFile.getAbsolutePath());
+
+                ssf = new LDAPJSSESecureSocketFactory();
+            }
+            // pix path
+            // ssf = new LDAPJSSESecureSocketFactory((SSLSocketFactory)
+            // SSLSocketFactory.getDefault());
+
+            // TODO SSL<->TLS (TLS maybe require startTLS() call on lc
+            // ssf = new LDAPJSSEStartTLSFactory();
+
+        } catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+
+            throw new InitialisationException(e, this);
+        }
+
+        // super.setSsf(ssf);
+
+        // TODO Auto-generated method stub
+        super.doInitialise();
+    }
+
+    public boolean isTrustAll()
+    {
+        return trustAll;
+    }
+
+    public void setTrustAll(boolean trustAll)
+    {
+        this.trustAll = trustAll;
+    }
+
+    // @Override
+    protected boolean isAnonymousBindSupported()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    // @Override
+    protected void setLDAPConnection()
+    {
+        ldapConnection = new LDAPConnection(ssf);
+    }
 
 }
