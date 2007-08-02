@@ -31,18 +31,24 @@ public class DSHelper
     public static void main(String[] args) throws Exception
     {
         startDS();
+        
+        System.in.read();
+        
+        stopDS();
     }
 
-    public static void startDS() throws NamingException
+    public static synchronized void startDS() throws NamingException
     {
         startDS(false);
     }
 
-    public static void startDS(boolean allowAnonymousBind)
+    public static synchronized void startDS(boolean allowAnonymousBind)
             throws NamingException
     {
-
-        System.out.println("start DS Nr. "+(count++)+ "by thread "+Thread.currentThread().getName());
+        stopDS();
+        
+        count++;
+        System.out.println("start DS Nr."+(count)+ " by thread "+Thread.currentThread().getName());
         cleanUp();
         workingDir.mkdirs();
         System.out.println("workingDir: "+workingDir.getAbsolutePath());
@@ -77,7 +83,7 @@ public class DSHelper
 
     }
 
-    public static void setUpPartition(
+    public static synchronized void setUpPartition(
             MutableServerStartupConfiguration configuration)
             throws NamingException
     {
@@ -122,7 +128,7 @@ public class DSHelper
 
     }
 
-    public static void stopDS() throws NamingException
+    public static synchronized void stopDS() throws NamingException
     {
         System.out.println("stopping DS Nr. "+count);
         Hashtable env = createEnv();
@@ -134,13 +140,13 @@ public class DSHelper
         count--;
     }
 
-    public static void cleanUp()
+    public static synchronized void cleanUp()
     {
         System.out.println("cleaning up temp ds workingdir");
         FileUtils.deleteTree(workingDir);
     }
 
-    public static Hashtable createEnv()
+    public static synchronized Hashtable createEnv()
     {
         Hashtable env = new Properties();
 
