@@ -22,9 +22,10 @@ import org.mule.util.FileUtils;
 public class DSHelper
 {
 
-    private static File tmpDir = new File(System.getProperty("java.io.tmpdir")==null?".":System.getProperty("java.io.tmpdir"));
+    //private static File tmpDir = new File(System.getProperty("java.io.tmpdir")==null?".":System.getProperty("java.io.tmpdir"));
     
-    private static File workingDir = tmpDir.exists()?new File(tmpDir,"mule-ldap-ds-tmp/"):new File("mule-ldap-ds-tmp/");
+    //private static File workingDir = tmpDir.exists()?new File(tmpDir,"mule-ldap-ds-tmp/"):new File("mule-ldap-ds-tmp/");
+    private static File workingDir = new File(".mule-ldap-ds-tmp/");
 
     public static void main(String[] args) throws Exception
     {
