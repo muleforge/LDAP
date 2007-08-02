@@ -3,6 +3,8 @@ package org.mule.providers.ldap.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -28,14 +30,14 @@ public class DSHelper
     private static int count=0;
     private static File workingDir = new File(".mule-ldap-ds-tmp/");
 
-    public static void main(String[] args) throws Exception
+    /*public static void main(String[] args) throws Exception
     {
         startDS();
         
         System.in.read();
         
         stopDS();
-    }
+    }*/
 
     public static synchronized void startDS() throws NamingException
     {
@@ -46,7 +48,9 @@ public class DSHelper
             throws NamingException
     {
         //stopDS();
-                
+        
+        checkSocketNotConnected();
+        
         count++;
         System.out.println("start DS Nr."+(count)+ " by thread "+Thread.currentThread().getName());
         cleanUp();
@@ -136,10 +140,31 @@ public class DSHelper
         cleanUp();
         System.out.println("DS stopped");
         count--;
-         
-       
+        
+        checkSocketNotConnected();
+               
+    }
+    
+    
+    private static void checkSocketNotConnected(){
+        
+        try
+        {
+            Socket s = new Socket("localhost", 10389);
+            if(s.isConnected()) System.err.println("socket is connected, but its not expected");
+            s.close();
+        } catch (UnknownHostException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            System.out.println("OK "+e.toString());
+        }
         
     }
+    
+    
 
     public static synchronized void cleanUp()
     {

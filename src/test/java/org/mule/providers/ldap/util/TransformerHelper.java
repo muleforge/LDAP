@@ -13,7 +13,7 @@ public class TransformerHelper
 
         // DSMLWriter writer = new
         // DSMLWriter("G:\\j2ee-test\\mule-svn\\mule\\transports\\ldap\\src\\test\\resources\\LDAPDeleteRequest.dsml");
-        String file = ".\\src\\test\\resources\\LDAPDeleteRequest.dsml";
+        String file = "src/test/resources/LDAPDeleteRequest.dsml";
         File fileFile = new File(file);
         if (fileFile.exists())
             fileFile.delete();
