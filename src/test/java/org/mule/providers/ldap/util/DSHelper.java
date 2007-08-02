@@ -25,6 +25,7 @@ public class DSHelper
     //private static File tmpDir = new File(System.getProperty("java.io.tmpdir")==null?".":System.getProperty("java.io.tmpdir"));
     
     //private static File workingDir = tmpDir.exists()?new File(tmpDir,"mule-ldap-ds-tmp/"):new File("mule-ldap-ds-tmp/");
+    private static int count=0;
     private static File workingDir = new File(".mule-ldap-ds-tmp/");
 
     public static void main(String[] args) throws Exception
@@ -41,6 +42,7 @@ public class DSHelper
             throws NamingException
     {
 
+        System.out.println("start DS Nr. "+(count++)+ "by thread "+Thread.currentThread().getName());
         cleanUp();
         workingDir.mkdirs();
         System.out.println("workingDir: "+workingDir.getAbsolutePath());
@@ -71,6 +73,7 @@ public class DSHelper
         Hashtable env = createEnv();
         env.putAll(cfg.toJndiEnvironment());
         new InitialDirContext(env);
+        System.out.println("DS started");
 
     }
 
@@ -121,16 +124,19 @@ public class DSHelper
 
     public static void stopDS() throws NamingException
     {
-
+        System.out.println("stopping DS Nr. "+count);
         Hashtable env = createEnv();
         ShutdownConfiguration cfg = new ShutdownConfiguration();
         env.putAll(cfg.toJndiEnvironment());
         new InitialDirContext(env);
         cleanUp();
+        System.out.println("DS stopped");
+        count--;
     }
 
     public static void cleanUp()
     {
+        System.out.println("cleaning up temp ds workingdir");
         FileUtils.deleteTree(workingDir);
     }
 
