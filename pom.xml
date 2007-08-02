@@ -1,34 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.mule.transports</groupId>
-  <artifactId>mule-transport-ldap</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0</version>
-  <properties>
-    <muleVersion>1.4.1</muleVersion>
-  </properties>
-  <distributionManagement>
-    <repository>
-
-      <id>muleforge.webdav.releases</id>
-      <url>dav:https://dav.muleforge.org/repository/${artifactId}/</url>
-    </repository>
-    <snapshotRepository>
-      <id>muleforge.webdav.snapshots</id>
-      <url>dav:https://dav.muleforge.org/snapshots.dist/${artifactId}/</url>
-    </snapshotRepository>
-    <site>
-      <id>muleforge.webdav.sites</id>
-      <url>dav:https://dav.muleforge.org/${artifactId}/</url>
-    </site>
-  </distributionManagement>
-  <name>LDAP Transport</name>
-  <description>Provides support for connecting directory services via ldap</description>
-  <dependencies>
-    <dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mule.transports</groupId>
+	<artifactId>mule-transport-ldap</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0</version>
+	<properties>
+		<muleVersion>1.4.1</muleVersion>
+	</properties>
+	<distributionManagement>
+		<repository>
+			<id>muleforge.webdav.releases</id>
+			<url>dav:https://dav.muleforge.org/repository/${artifactId}/</url>
+		</repository>
+		<snapshotRepository>
+			<id>muleforge.webdav.snapshots</id>
+			<url>dav:https://dav.muleforge.org/snapshots.dist/${artifactId}/</url>
+		</snapshotRepository>
+		<site>
+			<id>muleforge.webdav.sites</id>
+			<url>dav:https://dav.muleforge.org/${artifactId}/</url>
+		</site>
+	</distributionManagement>
+	<name>LDAP Transport</name>
+	<description>Provides support for connecting directory services via ldap</description>
+	<dependencies>
+		<!-- <dependency>
       <groupId>org.mule.transports</groupId>
       <artifactId>mule-transport-vm</artifactId>
       <version>${muleVersion}</version>
@@ -62,6 +59,57 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
       <groupId>org.mule.tests</groupId>
       <artifactId>mule-tests-functional</artifactId>
       <version>${muleVersion}</version>
-    </dependency>
-  </dependencies>
+    </dependency> -->
+		<dependency>
+			<groupId>com.novell.ldap</groupId>
+			<artifactId>jldap</artifactId>
+			<version>4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-server-ssl</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<!-- 1.0.2, 1.5 require Java 5.0 or higher -->
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-server-unit</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-core-unit</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-server-jndi</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.directory.server</groupId>
+			<artifactId>apacheds-protocol-ldap</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-client</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-vm</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-file</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.tests</groupId>
+			<artifactId>mule-tests-functional</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+	</dependencies>
 </project>
