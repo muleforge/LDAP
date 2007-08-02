@@ -1,6 +1,8 @@
 package org.mule.providers.ldap.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -18,13 +20,11 @@ import org.apache.directory.server.configuration.MutableServerStartupConfigurati
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.mule.util.FileUtils;
+import org.mule.util.IOUtils;
 
 public class DSHelper
 {
-
-    //private static File tmpDir = new File(System.getProperty("java.io.tmpdir")==null?".":System.getProperty("java.io.tmpdir"));
     
-    //private static File workingDir = tmpDir.exists()?new File(tmpDir,"mule-ldap-ds-tmp/"):new File("mule-ldap-ds-tmp/");
     private static int count=0;
     private static File workingDir = new File(".mule-ldap-ds-tmp/");
 
@@ -45,8 +45,8 @@ public class DSHelper
     public static synchronized void startDS(boolean allowAnonymousBind)
             throws NamingException
     {
-        stopDS();
-        
+        //stopDS();
+                
         count++;
         System.out.println("start DS Nr."+(count)+ " by thread "+Thread.currentThread().getName());
         cleanUp();
@@ -60,14 +60,12 @@ public class DSHelper
         // Setup LDAP networking
         cfg.setEnableNetworking(true);
 
-        cfg.setEnableLdaps(true);
-        cfg.setLdapsPort(10636);
-        cfg.setLdapsCertificateFile(new File(
-                "src/test/resources/ldaps-server-cert.jks"));
+        //cfg.setEnableLdaps(true);
+        //cfg.setLdapsPort(10636);
+        //cfg.setLdapsCertificateFile(new File(
+        //        "src/test/resources/ldaps-server-cert.jks"));
 
-        // System.out.println(new
-        // File("ldaps-server-cert.jks").getAbsolutePath());
-
+       
         cfg.setLdapPort(10389);
 
         cfg.setAllowAnonymousAccess(allowAnonymousBind);
@@ -138,6 +136,9 @@ public class DSHelper
         cleanUp();
         System.out.println("DS stopped");
         count--;
+         
+       
+        
     }
 
     public static synchronized void cleanUp()
