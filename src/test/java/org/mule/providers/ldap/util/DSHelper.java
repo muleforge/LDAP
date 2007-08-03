@@ -3,7 +3,7 @@ package org.mule.providers.ldap.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
+import java.net.*;
 import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -152,16 +152,28 @@ public class DSHelper
         try
         {
             Socket s = new Socket("localhost", 10389);
-            if(s.isConnected()) System.err.println("socket is connected, but its not expected");
+            if(s.isConnected()) System.out.println("socket is connected, but its not expected");
             s.close();
-        } catch (UnknownHostException e)
+        } catch (Exception e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e)
-        {
+            
             System.out.println("OK "+e.toString());
+
+           
+
         }
+        
+        try
+        {
+            ServerSocket s = new ServerSocket(10389);
+            if(s.isBound()) System.err.println("server socket is bound");
+            s.close();
+        } catch (Exception e)
+        {
+             System.out.println("ERR "+e.toString());
+             e.printStackTrace();
+        }
+
         
     }
     
