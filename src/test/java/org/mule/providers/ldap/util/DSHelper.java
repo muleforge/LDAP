@@ -59,8 +59,8 @@ public class DSHelper
         MutableServerStartupConfiguration cfg = new MutableServerStartupConfiguration();
         cfg.setWorkingDirectory(workingDir);
 
-	//opt
-	//-cfg.setShutdownHookEnabled();
+	cfg.setShutdownHookEnabled( false );
+
 
 
         // System.out.println(workingDir);
@@ -147,6 +147,7 @@ public class DSHelper
         count--;
         
         checkSocketNotConnected();
+        //System.exit(0);
                
     }
     
@@ -193,9 +194,9 @@ public class DSHelper
     {
         Hashtable env = new Properties();
 
-        env.put(Context.PROVIDER_URL, "");
+        env.put(Context.PROVIDER_URL, "ou=system");
         env.put(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.directory.server.core.jndi.CoreContextFactory");
+                "org.apache.directory.server.jndi.ServerContextFactory");
 
         env.put(Context.SECURITY_PRINCIPAL, "uid=admin,ou=system");
         env.put(Context.SECURITY_CREDENTIALS, "secret");
