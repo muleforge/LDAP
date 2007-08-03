@@ -14,6 +14,11 @@ public class AbstractLdapDSTestCase extends TestCase
         super();
         this.allowAnonymousBind = allowAnonymousBind;
     }
+    
+    public AbstractLdapDSTestCase()
+    {
+        
+    }
 
     protected void setUp() throws Exception
     {
