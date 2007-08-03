@@ -50,6 +50,8 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <excludes>
+            <exclude>**/LdapSConnectorTestCase.java</exclude>
+            <exclude>**/TestHelper.java</exclude>
             </excludes>
 	  <forkMode>pertest</forkMode>
           </configuration>

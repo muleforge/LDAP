@@ -1,6 +1,6 @@
 package org.mule.providers.ldap;
 
-import org.mule.providers.ldap.util.DSHelper;
+import org.mule.providers.ldap.util.DSManager;
 import org.mule.tck.providers.AbstractConnectorTestCase;
 import org.mule.umo.provider.UMOConnector;
 
@@ -83,13 +83,15 @@ public class LdapSConnectorTestCase extends AbstractConnectorTestCase
     protected void doSetUp() throws Exception
     {
         super.doSetUp();
-        DSHelper.startDS();
+        //DSHelper.startDS();
+        DSManager.getInstance().start();
 
     }
 
     protected void doTearDown() throws Exception
     {
-        DSHelper.stopDS();
+        DSManager.getInstance().stop();
+        //DSHelper.stopDS();
         super.doTearDown();
 
     }

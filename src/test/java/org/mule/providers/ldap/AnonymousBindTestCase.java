@@ -1,8 +1,8 @@
 package org.mule.providers.ldap;
 
-import org.mule.providers.ldap.util.DSHelper;
-
 import junit.framework.TestCase;
+
+import org.mule.providers.ldap.util.DSManager;
 
 public class AnonymousBindTestCase extends TestCase
 {
@@ -40,7 +40,8 @@ public class AnonymousBindTestCase extends TestCase
     public void anonymousBind(boolean allow) throws Exception
     {
 
-        DSHelper.startDS(allow);
+        //DSHelper.startDS(allow);
+        DSManager.getInstance().start(allow);
 
         LdapConnector c = new LdapConnector();
         c.setLdapHost("localhost");
@@ -57,7 +58,8 @@ public class AnonymousBindTestCase extends TestCase
 
         } finally
         {
-            DSHelper.stopDS();
+            //DSHelper.stopDS();
+            DSManager.getInstance().stop();
         }
 
     }

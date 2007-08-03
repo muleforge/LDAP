@@ -2,7 +2,7 @@ package org.mule.providers.ldap;
 
 import junit.framework.TestCase;
 
-import org.mule.providers.ldap.util.DSHelper;
+import org.mule.providers.ldap.util.DSManager;
 
 public class AbstractLdapDSTestCase extends TestCase
 {
@@ -19,12 +19,14 @@ public class AbstractLdapDSTestCase extends TestCase
     {
         // TODO Auto-generated method stub
         super.setUp();
-        DSHelper.startDS(allowAnonymousBind);
+        //DSHelper.startDS(allowAnonymousBind);
+        DSManager.getInstance().start(allowAnonymousBind);
     }
 
     protected void tearDown() throws Exception
     {
-        DSHelper.stopDS();
+        //DSHelper.stopDS();
+        DSManager.getInstance().stop();
         super.tearDown();
     }
 

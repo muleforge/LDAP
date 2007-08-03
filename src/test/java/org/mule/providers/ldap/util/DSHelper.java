@@ -1,96 +1,102 @@
 package org.mule.providers.ldap.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.*;
-import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.InitialDirContext;
-
-import org.apache.directory.server.configuration.MutableServerStartupConfiguration;
-import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
-import org.apache.directory.server.core.configuration.ShutdownConfiguration;
-import org.mule.util.FileUtils;
-import org.mule.util.IOUtils;
 
 public class DSHelper
 {
-    
-    private static int count=0;
+/*
+    private static final Object lock = new Object();
+    private static final WaitableBoolean wait = new WaitableBoolean(false);
+
+    private static int count = 0;
     private static File workingDir = new File(".mule-ldap-ds-tmp/");
 
-    /*public static void main(String[] args) throws Exception
-    {
-        startDS();
-        
-        System.in.read();
-        
-        stopDS();
-    }*/
 
-    public static synchronized void startDS() throws NamingException
+
+    public static void startDS() throws NamingException
     {
         startDS(false);
     }
 
-    public static synchronized void startDS(boolean allowAnonymousBind)
+    public static void startDS(boolean allowAnonymousBind)
             throws NamingException
     {
-        //stopDS();
+        // stopDS();
         
-        checkSocketNotConnected();
-        
-        count++;
-        System.out.println("start DS Nr."+(count)+ " by thread "+Thread.currentThread().getName());
-        cleanUp();
-        workingDir.mkdirs();
-        System.out.println("workingDir: "+workingDir.getAbsolutePath());
-        MutableServerStartupConfiguration cfg = new MutableServerStartupConfiguration();
-        cfg.setWorkingDirectory(workingDir);
+        wait.
 
+<<<<<<< .mine
+        synchronized (lock)
+        {
+            if(count > 0)
+            try
+            {
+                System.out.println("waiting for lock");
+                lock.wait();
+                System.out.println("got lock");
+            } catch (InterruptedException e)
+            {
+            }
+=======
 	cfg.setShutdownHookEnabled( false );
 
 
 
         // System.out.println(workingDir);
+>>>>>>> .r27
 
-        // Setup LDAP networking
-        cfg.setEnableNetworking(true);
+            checkSocketNotConnected();
 
+<<<<<<< .mine
+            count++;
+            System.out.println("start DS Nr." + (count) + " by thread "
+                    + Thread.currentThread().getName());
+            cleanUp();
+            workingDir.mkdirs();
+            System.out.println("workingDir: " + workingDir.getAbsolutePath());
+            MutableServerStartupConfiguration cfg = new MutableServerStartupConfiguration();
+            cfg.setWorkingDirectory(workingDir);
+=======
         cfg.setEnableLdaps(true);
         cfg.setLdapsPort(10636);
         cfg.setLdapsCertificateFile(new File(
               "src/test/resources/ldaps-server-cert.jks"));
+>>>>>>> .r27
 
-       
-        cfg.setLdapPort(10389);
+            // System.out.println(workingDir);
 
-        cfg.setAllowAnonymousAccess(allowAnonymousBind);
-        cfg.setAccessControlEnabled(false);
+            // Setup LDAP networking
+            cfg.setEnableNetworking(true);
 
-        setUpPartition(cfg);
+            // cfg.setEnableLdaps(true);
+            // cfg.setLdapsPort(10636);
+            // cfg.setLdapsCertificateFile(new File(
+            // "src/test/resources/ldaps-server-cert.jks"));
 
+<<<<<<< .mine
+            cfg.setLdapPort(10389);
+=======
         // Start the Server
         Hashtable env = createEnv();
         env.putAll(cfg.toJndiEnvironment());
         System.out.println(""+env);
         new InitialDirContext(env);
         System.out.println("DS started");
+>>>>>>> .r27
 
+            cfg.setAllowAnonymousAccess(allowAnonymousBind);
+            cfg.setAccessControlEnabled(false);
+
+            setUpPartition(cfg);
+
+            // Start the Server
+            Hashtable env = createEnv();
+            env.putAll(cfg.toJndiEnvironment());
+            new InitialDirContext(env);
+            System.out.println("DS started");
+        }
     }
 
-    public static synchronized void setUpPartition(
+    public static void setUpPartition(
             MutableServerStartupConfiguration configuration)
             throws NamingException
     {
@@ -135,8 +141,29 @@ public class DSHelper
 
     }
 
-    public static synchronized void stopDS() throws NamingException
+    public static void stopDS() throws NamingException
     {
+<<<<<<< .mine
+
+        synchronized (lock)
+        {
+
+            System.out.println("stopping DS Nr. " + count);
+            Hashtable env = createEnv();
+            ShutdownConfiguration cfg = new ShutdownConfiguration();
+            env.putAll(cfg.toJndiEnvironment());
+            new InitialDirContext(env);
+            cleanUp();
+            System.out.println("DS stopped");
+            count--;
+            checkSocketNotConnected();
+
+            lock.notifyAll();
+            System.out.println("notified");
+
+        }
+
+=======
         System.out.println("stopping DS Nr. "+count);
         Hashtable env = createEnv();
         ShutdownConfiguration cfg = new ShutdownConfiguration();
@@ -147,50 +174,50 @@ public class DSHelper
         count--;
         
         checkSocketNotConnected();
-        //System.exit(0);
+        // System.exit(0);
                
+>>>>>>> .r27
     }
-    
-    
-    private static void checkSocketNotConnected(){
-        
+
+    private static void checkSocketNotConnected()
+    {
+
         try
         {
             Socket s = new Socket("localhost", 10389);
-            if(s.isConnected()) System.out.println("socket is connected, but its not expected");
+
+            if (s.isConnected())
+                System.err.println("socket is connected, but its not expected");
+
             s.close();
         } catch (Exception e)
         {
-            
-            System.out.println("OK "+e.toString());
 
-           
+            System.out.println("OK " + e.toString());
 
         }
-        
+
         try
         {
             ServerSocket s = new ServerSocket(10389);
-            if(s.isBound()) System.err.println("server socket is bound");
+            if (s.isBound())
+                System.err.println("server socket is bound");
             s.close();
         } catch (Exception e)
         {
-             System.out.println("ERR "+e.toString());
-             e.printStackTrace();
+            System.out.println("ERR " + e.toString());
+            e.printStackTrace();
         }
 
-        
     }
-    
-    
 
-    public static synchronized void cleanUp()
+    public static void cleanUp()
     {
         System.out.println("cleaning up temp ds workingdir");
         FileUtils.deleteTree(workingDir);
     }
 
-    public static synchronized Hashtable createEnv()
+    public static Hashtable createEnv()
     {
         Hashtable env = new Properties();
 
@@ -204,5 +231,5 @@ public class DSHelper
 
         return env;
     }
-
+*/
 }

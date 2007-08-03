@@ -3,7 +3,7 @@ package org.mule.providers.ldap;
 import org.mule.extras.client.MuleClient;
 import org.mule.impl.MuleMessage;
 import org.mule.providers.ldap.transformers.LDAPSearchResultToString;
-import org.mule.providers.ldap.util.DSHelper;
+import org.mule.providers.ldap.util.DSManager;
 import org.mule.providers.ldap.util.TestHelper;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.umo.UMOMessage;
@@ -87,13 +87,15 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
     protected void doFunctionalTearDown() throws Exception
     {
         // TODO Auto-generated method stub
-        DSHelper.stopDS();
+        DSManager.getInstance().stop();
+        //DSHelper.stopDS();
         super.doFunctionalTearDown();
     }
 
     protected void doPreFunctionalSetUp() throws Exception
     {
-        DSHelper.startDS();
+        //DSHelper.startDS();
+        DSManager.getInstance().start();
         super.doPreFunctionalSetUp();
     }
 

@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.mule.config.builders.QuickConfigurationBuilder;
 import org.mule.extras.client.MuleClient;
-import org.mule.providers.ldap.util.DSHelper;
+import org.mule.providers.ldap.util.DSManager;
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.providers.ldap.util.TestHelper;
 import org.mule.tck.functional.EventCallback;
@@ -45,8 +45,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         System.out.println(StringMessageUtils.getBoilerPlate("Testing: "
                 + toString(), '=', 80));
 
-        DSHelper.startDS();
-
+        //DSHelper.startDS();
+        DSManager.getInstance().start();
         System.out.println("ds started");
 
         builder = new QuickConfigurationBuilder();
@@ -433,7 +433,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
     protected void tearDown() throws Exception
     {
         builder.disposeCurrent();
-        DSHelper.stopDS();
+        DSManager.getInstance().stop();
+        //DSHelper.stopDS();
     }
 
     public UMOConnector getConnector() throws Exception
