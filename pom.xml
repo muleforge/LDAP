@@ -43,6 +43,18 @@
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
+
+
+	<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <excludes>
+            </excludes>
+	  <forkMode>never</forkMode>
+          </configuration>
+        </plugin>
+
 		</plugins>
 	</build>
 	
