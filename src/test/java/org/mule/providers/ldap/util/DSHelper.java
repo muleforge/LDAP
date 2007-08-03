@@ -68,10 +68,10 @@ public class DSHelper
         // Setup LDAP networking
         cfg.setEnableNetworking(true);
 
-        //cfg.setEnableLdaps(true);
-        //cfg.setLdapsPort(10636);
-        //cfg.setLdapsCertificateFile(new File(
-        //        "src/test/resources/ldaps-server-cert.jks"));
+        cfg.setEnableLdaps(true);
+        cfg.setLdapsPort(10636);
+        cfg.setLdapsCertificateFile(new File(
+              "src/test/resources/ldaps-server-cert.jks"));
 
        
         cfg.setLdapPort(10389);
