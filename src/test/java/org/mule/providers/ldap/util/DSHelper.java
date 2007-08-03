@@ -59,6 +59,10 @@ public class DSHelper
         MutableServerStartupConfiguration cfg = new MutableServerStartupConfiguration();
         cfg.setWorkingDirectory(workingDir);
 
+	//opt
+	//-cfg.setShutdownHookEnabled();
+
+
         // System.out.println(workingDir);
 
         // Setup LDAP networking
@@ -191,7 +195,7 @@ public class DSHelper
 
         env.put(Context.PROVIDER_URL, "");
         env.put(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.directory.server.jndi.ServerContextFactory");
+                "org.apache.directory.server.core.jndi.CoreContextFactory");
 
         env.put(Context.SECURITY_PRINCIPAL, "uid=admin,ou=system");
         env.put(Context.SECURITY_CREDENTIALS, "secret");
