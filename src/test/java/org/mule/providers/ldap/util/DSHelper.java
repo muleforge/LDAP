@@ -80,6 +80,7 @@ public class DSHelper
         // Start the Server
         Hashtable env = createEnv();
         env.putAll(cfg.toJndiEnvironment());
+        System.out.println(""+env);
         new InitialDirContext(env);
         System.out.println("DS started");
 
