@@ -51,7 +51,7 @@
           <configuration>
             <excludes>
             </excludes>
-	  <forkMode>never</forkMode>
+	  <forkMode>none</forkMode>
           </configuration>
         </plugin>
 
