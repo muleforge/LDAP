@@ -26,7 +26,7 @@ public class RandomEntryComponent implements Callable
         attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
 
         LDAPEntry entry = new LDAPEntry("cn=" + cn
-                + ",ou=Berlin,dc=it-fws,dc=de", attr);
+                + ",o=sevenseas", attr);
 
         return new LDAPAddRequest(entry, null);
 

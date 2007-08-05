@@ -386,22 +386,16 @@ public final class DSManager
 
     public static void main(String[] args) throws Exception
     {
-        checkSocketNotConnected();
-
         DSManager m = DSManager.getInstance();
         m.start();
-        checkSocketNotConnected();
-        Thread.sleep(5000);
+        
+        System.out.print("Enter s and Enter to stop: ");
+               
+        while(System.in.read() != 115);
+        //System.out.println(i);
+        
         m.stop();
-
-        checkSocketNotConnected();
-
-        m.start();
-        checkSocketNotConnected();
-        Thread.sleep(5000);
-        m.stop();
-
-        checkSocketNotConnected();
+ 
 
     }
 
@@ -409,5 +403,7 @@ public final class DSManager
     {
         return port;
     }
+    
+ 
 
 }

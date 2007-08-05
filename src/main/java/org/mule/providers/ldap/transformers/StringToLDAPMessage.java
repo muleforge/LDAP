@@ -2,6 +2,8 @@ package org.mule.providers.ldap.transformers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.transformers.AbstractTransformer;
@@ -53,7 +55,7 @@ public class StringToLDAPMessage extends AbstractTransformer
 
     }
 
-    private LDAPMessage getOut(boolean dsml, String msg)
+    private List getOut(boolean dsml, String msg)
             throws TransformerException
     {
         InputStream in = IOUtils.toInputStream(msg);
@@ -63,11 +65,16 @@ public class StringToLDAPMessage extends AbstractTransformer
             LDAPReader reader = dsml ? (LDAPReader) new DSMLReader(in)
                     : (LDAPReader) new LDIFReader(in);
 
-            LDAPMessage result = reader.readMessage();
-
-            logger.debug(LDAPUtils.dumpLDAPMessage(result));
-
-            return result;
+                      
+            LDAPMessage result = null;//reader.readMessage();
+            List res = new ArrayList();
+            
+            while((result = reader.readMessage()) != null)
+            {
+                logger.debug(LDAPUtils.dumpLDAPMessage(result));
+                res.add(result);
+            }
+            return res;
 
         } catch (IOException e)
         {

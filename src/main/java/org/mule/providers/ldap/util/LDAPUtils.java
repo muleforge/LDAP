@@ -129,6 +129,7 @@ public class LDAPUtils
         sb.append("ID: " + ldapMsg.getMessageID() + "\n");
         sb.append("Tag: " + ldapMsg.getTag() + "\n");
         sb.append("toString(): " + ldapMsg.toString() + "\n");
+        
         return sb.toString();
     }
 

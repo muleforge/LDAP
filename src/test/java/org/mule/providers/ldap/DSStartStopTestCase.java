@@ -2,7 +2,6 @@ package org.mule.providers.ldap;
 
 import junit.framework.TestCase;
 
-import org.codehaus.stax2.io.EscapingWriterFactory;
 import org.mule.providers.ldap.util.DSManager;
 
 public class DSStartStopTestCase extends TestCase

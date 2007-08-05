@@ -2,6 +2,9 @@ package org.mule.providers.ldap.transformers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mule.transformers.AbstractTransformer;
 import org.mule.umo.transformer.TransformerException;
@@ -32,18 +35,28 @@ public class LDAPMessageToString extends AbstractTransformer
                     "src must not be null"));
         }
 
-        if (!(src instanceof LDAPMessage))
+        if (!(src instanceof LDAPMessage) && !(src instanceof List))
         {
             throw new TransformerException(this, new IllegalArgumentException(
-                    "wrong type " + src.getClass() + ", LDAPMessage excpeted"));
+                    "wrong type " + src.getClass()
+                            + ", LDAPMessage or List excpeted"));
         }
 
-        LDAPMessage msg = ((LDAPMessage) src);
+        List msgs = null;
+
+        if (src instanceof List)
+        {
+            msgs = (List) src;
+        } else
+        {
+            msgs = new ArrayList();
+            msgs.add(src);
+        }
 
         if ("tostring".equalsIgnoreCase(format))
         {
 
-            return msg.toString();
+            return msgs.toString();
 
         } else if ("ldif".equalsIgnoreCase(format))
         {
@@ -51,33 +64,47 @@ public class LDAPMessageToString extends AbstractTransformer
             // TODO ldifcheck
             // if(dsml || msg.getType() != LDAPMessage.SEARCH_RESULT);
 
-            return getOut(false, msg);
+            return getOut(false, msgs);
         } else
         {
-            return getOut(true, msg);
+            return getOut(true, msgs);
         }
 
     }
 
-    private String getOut(boolean dsml, LDAPMessage msg)
+    private String getOut(boolean dsml, List msgList)
             throws TransformerException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         try
         {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
             LDAPWriter writer = dsml ? (LDAPWriter) new DSMLWriter(out)
                     : (LDAPWriter) new LDIFWriter(out);
-            writer.writeMessage(msg);
+
+            for (Iterator iterator = msgList.iterator(); iterator.hasNext();)
+            {
+                LDAPMessage ldapMsg = (LDAPMessage) iterator.next();
+
+                try
+                {
+                    writer.writeMessage(ldapMsg);
+
+                } catch (IOException e)
+                {
+                    throw new TransformerException(this, e);
+                } catch (LDAPException e)
+                {
+                    throw new TransformerException(this, e);
+                }
+
+            }
+
             writer.finish();
             out.close();
             return out.toString();
         } catch (IOException e)
         {
-            throw new TransformerException(this, e);
-        } catch (LDAPException e)
-        {
-            throw new TransformerException(this, e);
+           throw new TransformerException(this,e);
         }
 
     }
