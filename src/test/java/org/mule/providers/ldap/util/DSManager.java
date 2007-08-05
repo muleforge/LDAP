@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.dgc.VMID;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -50,6 +51,24 @@ public final class DSManager
      * 
      */
 
+    static
+    {
+        
+        final String vmid = new VMID().toString();
+        
+        System.out.println("DSManager loaded: VMID: " + vmid );
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+        {
+
+            public void run()
+            {
+                System.out.println("JVM shutdown: "+vmid );
+            }
+        }));
+
+    }
+
     /**
      * A simple testcase for testing JNDI provider functionality.
      * 
@@ -82,7 +101,7 @@ public final class DSManager
 
     private DSManager()
     {
-
+        System.out.println("DSManager instantiated");
     }
 
     public static DSManager getInstance()
@@ -97,24 +116,37 @@ public final class DSManager
      * @see junit.framework.TestCase#setUp()
      */
 
-    public void start() throws Exception
+    public synchronized void start() throws Exception
     {
         start(false);
     }
 
-    public void start(boolean allowAnon) throws Exception
+    public synchronized void start(boolean allowAnon) throws Exception
     {
         if (running)
         {
-            throw new IllegalStateException("already running on port " + port);
+
+            System.err.println("start() called while already running");
+
+            if (checkSocketNotConnected())
+            {
+                System.err.println("start() forced");
+            } else
+            {
+                throw new IllegalStateException("DS already running on port "
+                        + port);
+            }
+
         }
-        
+
+        System.out.println("DS is starting ...");
+
         configuration.setWorkingDirectory(new File(".mule-ldap-ds-tmp/"));
 
         doDelete(configuration.getWorkingDirectory());
         port = 10389;// AvailablePortFinder.getNextAvailable(1024);
         configuration.setLdapPort(port);
-        //cfg.setEnableNetworking(true);
+        // cfg.setEnableNetworking(true);
         configuration.setAccessControlEnabled(false);
         configuration.setShutdownHookEnabled(false);
         configuration.setAllowAnonymousAccess(allowAnon);
@@ -128,6 +160,8 @@ public final class DSManager
         setContexts("uid=admin,ou=system", "secret");
 
         running = true;
+
+        System.out.println("DS now started!");
     }
 
     private void setUpPartition(MutableServerStartupConfiguration configuration)
@@ -240,8 +274,23 @@ public final class DSManager
      * 
      * @see junit.framework.TestCase#tearDown()
      */
-    public void stop() throws Exception
+    public synchronized void stop() throws Exception
     {
+        System.out.println("DS is stopping ...");
+
+        if (!running)
+        {
+            System.err.println("stop() called while is not running");
+
+            if (checkSocketNotConnected())
+            {
+                return;
+            } else
+            {
+                System.err.println("stop() forced");
+            }
+        }
+
         // super.tearDown();
         Hashtable env = new Hashtable();
         env.put(Context.PROVIDER_URL, "ou=system");
@@ -261,6 +310,8 @@ public final class DSManager
         doDelete(configuration.getWorkingDirectory());
         configuration = new MutableServerStartupConfiguration();
         running = false;
+
+        System.out.println("DS now stopped!");
     }
 
     /**
@@ -296,7 +347,7 @@ public final class DSManager
         }
     }
 
-    private static void checkSocketNotConnected()
+    public static boolean checkSocketNotConnected()
     {
 
         try
@@ -304,13 +355,15 @@ public final class DSManager
             Socket s = new Socket("localhost", 10389);
 
             if (s.isConnected())
-                System.err.println("socket is connected, but its not expected");
+                System.out
+                        .println("client socket is connected (server socket bound)");
 
             s.close();
+            return false;
         } catch (Exception e)
         {
 
-            System.out.println("OK " + e.toString());
+            System.out.println("client Socket not connected " + e.toString());
 
         }
 
@@ -318,12 +371,15 @@ public final class DSManager
         {
             ServerSocket s = new ServerSocket(10389);
             if (s.isBound())
-                System.err.println("server socket is bound");
+                System.out
+                        .println("server socket is bound (=was therefore free)");
             s.close();
+            return true;
         } catch (Exception e)
         {
-            System.out.println("ERR " + e.toString());
-            e.printStackTrace();
+            System.out.println("Server socket already bound " + e.toString());
+            // e.printStackTrace();
+            return false;
         }
 
     }

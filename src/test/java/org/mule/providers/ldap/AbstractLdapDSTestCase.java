@@ -9,17 +9,12 @@ public class AbstractLdapDSTestCase extends TestCase
 
     protected boolean allowAnonymousBind;
 
-    public AbstractLdapDSTestCase(boolean allowAnonymousBind)
+    protected AbstractLdapDSTestCase(boolean allowAnonymousBind)
     {
         super();
         this.allowAnonymousBind = allowAnonymousBind;
     }
     
-    public AbstractLdapDSTestCase()
-    {
-        
-    }
-
     protected void setUp() throws Exception
     {
         // TODO Auto-generated method stub
