@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule-ide-config>
+  <config-file id="config1" path="examples/src/main/resources/SysinAddEntry.xml">
+    <description>AddEntry</description>
+  </config-file>
+  <config-file id="config0" path="examples/src/main/resources/SysinSearchQuery.xml">
+    <description>SysinSearchQueryExample</description>
+  </config-file>
+  <config-file id="config2" path="examples/src/main/resources/ConvertLDIFToDSML.xml">
+    <description>ConertLDIFtoDSML</description>
+  </config-file>
+  <config-set id="set2">
+    <description>ConvertLDIFToDSML</description>
+    <config-file-ref id="config2"/>
+  </config-set>
+  <config-set id="set0">
+    <description>Examples</description>
+    <config-file-ref id="config0"/>
+  </config-set>
+  <config-set id="set1">
+    <description>AddEntryExample</description>
+    <config-file-ref id="config1"/>
+  </config-set>
+</mule-ide-config>
