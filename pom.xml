@@ -50,22 +50,22 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             
-            <includes>
+           <!--   <includes>
             <include>**/DSStartStopTestCase.java</include>
              <include>**/DSStartStopTestCase2.java</include>
-            </includes>
+            </includes> -->
             
-            <!-- <excludes>
+            <excludes>
             <exclude>**/LdapSConnectorTestCase.java</exclude>
             <exclude>**/TestHelper.java</exclude>
             <exclude>**/AbstractLdapDSTestCase.java</exclude>
-            <exclude>**/*.java</exclude>
+           
             
             </excludes>  
             
             
             
-            -->
+            
             
             <forkMode>pertest</forkMode>
 	  		

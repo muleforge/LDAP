@@ -326,7 +326,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             count++;
         }
 
-        assertTrue(count == expected);
+        assertTrue(count == expected); fails because of list returnded?
         assertNull(result);
         assertNotNull(lastResult);
         assertTrue(lastResult.getPayload() instanceof LDAPResponse);

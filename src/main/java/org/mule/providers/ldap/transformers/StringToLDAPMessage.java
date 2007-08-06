@@ -48,10 +48,16 @@ public class StringToLDAPMessage extends AbstractTransformer
         // TODO ldifcheck
         if ("ldif".equalsIgnoreCase(format))
         {
-            return getOut(false, msg);
+            List res = getOut(false, msg);
+            if(res.size() == 1) return res.get(0);
+            
+            return res;
         }
 
-        return getOut(true, msg);
+        List res = getOut(true, msg);
+        if(res.size() == 1) return res.get(0);
+        
+        return res;
 
     }
 

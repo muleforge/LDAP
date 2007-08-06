@@ -3,6 +3,7 @@ package org.mule.providers.ldap.transformers;
 import java.io.File;
 import java.io.IOException;
 
+import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.umo.transformer.UMOTransformer;
 //import org.mule.util.FileUtils;
 
@@ -54,6 +55,8 @@ public class LdapMessageToStringTransformerTestCase extends
 
     public boolean compareRoundtripResults(Object expected, Object result)
     {
+        System.out.println(LDAPUtils.dumpLDAPMessage(expected));
+        System.out.println("resu"+ LDAPUtils.dumpLDAPMessage(result));
 
         if (!(expected instanceof LDAPDeleteRequest)
                 || !(result instanceof LDAPDeleteRequest))
@@ -68,9 +71,8 @@ public class LdapMessageToStringTransformerTestCase extends
 
         return false;
 
-        // TODO Auto-generated method stub
-        // System.out.println(LDAPUtils.dumpLDAPMessage(expected));
-        // System.out.println("resu"+ LDAPUtils.dumpLDAPMessage(result));
+      
+        
     }
 
 }
