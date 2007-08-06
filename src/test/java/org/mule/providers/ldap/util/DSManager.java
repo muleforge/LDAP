@@ -58,14 +58,14 @@ public final class DSManager
         
         System.out.println("DSManager loaded: VMID: " + vmid );
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
+        /*Runtime.getRuntime().addShutdownHook(new Thread(new Runnable()
         {
 
             public void run()
             {
                 System.out.println("JVM shutdown: "+vmid );
             }
-        }));
+        }));*/
 
     }
 

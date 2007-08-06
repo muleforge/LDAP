@@ -41,42 +41,65 @@
 
 	<model name="SysinDeleteEntry">
 
+		<exception-strategy
+			className="org.mule.impl.DefaultComponentExceptionStrategy">
+
+			<endpoint address="file://err.queue" />
+
+		</exception-strategy>
+
 		<mule-descriptor name="synchonousDelete"
-			implementation="org.mule.components.simple.BridgeComponent">
+			implementation="org.mule.components.simple.EchoComponent">
+
+
+
 
 			<inbound-router>
-				
+
 				<endpoint synchronous="true"
 					address="stream://System.in?promptMessage=Enter dn to delete: " />
-					
-					<endpoint synchronous="true"
-					address="ldaps://ldap.in" />
-			
+
+				<endpoint synchronous="true" address="ldaps://ldap.in" />
+
 			</inbound-router>
 
 			<outbound-router>
+
 				<router
 					className="org.mule.routing.outbound.FilteringOutboundRouter">
 
 					<endpoint address="ldaps://ldap.out"
 						transformers="StringToDeleteRequest">
 					</endpoint>
-   
-   					<filter expectedType="java.lang.String" className="org.mule.routing.filters.PayloadTypeFilter"></filter>
-   
+
+					<filter expectedType="java.lang.String"
+						className="org.mule.routing.filters.PayloadTypeFilter">
+					</filter>
+
 				</router>
-				
+
 				<router
 					className="org.mule.routing.outbound.FilteringOutboundRouter">
 
-					<endpoint address="stream://System.out">
-					</endpoint>
-   
-   					<filter expectedType="com.novell.ldap.LDAPExtendedResponse" className="org.mule.routing.filters.PayloadTypeFilter"></filter>
-   
+					<endpoint address="stream://System.out"></endpoint>
+
+					<filter
+						expectedType="com.novell.ldap.LDAPExtendedResponse"
+						className="org.mule.routing.filters.PayloadTypeFilter">
+					</filter>
+
 				</router>
+
+
+
+
 			</outbound-router>
+
+
+
 		</mule-descriptor>
+
+
 
 	</model>
 </mule-configuration>

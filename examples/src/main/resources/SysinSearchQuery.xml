@@ -7,7 +7,7 @@
 
 
 	<!--  serverUrl="" disables tcp port-->
-	<mule-environment-properties serverUrl="">	
+	<mule-environment-properties serverUrl="">
 	</mule-environment-properties>
 
 

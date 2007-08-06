@@ -3,22 +3,17 @@ package org.mule.providers.ldap.transformers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.umo.transformer.UMOTransformer; //import org.mule.util.FileUtils;
+import org.mule.umo.transformer.UMOTransformer;
 
 import com.novell.ldap.LDAPAddRequest;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public class LdapMessageToStringTransformerMultipleTestCase extends
         org.mule.tck.AbstractTransformerTestCase
