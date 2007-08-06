@@ -9,6 +9,9 @@
   <config-file id="config2" path="examples/src/main/resources/ConvertLDIFToDSML.xml">
     <description>ConertLDIFtoDSML</description>
   </config-file>
+  <config-file id="config3" path="examples/src/main/resources/SysinDeleteEntry.xml">
+    <description>SysinDeleteEntry</description>
+  </config-file>
   <config-set id="set2">
     <description>ConvertLDIFToDSML</description>
     <config-file-ref id="config2"/>
@@ -16,6 +19,10 @@
   <config-set id="set0">
     <description>Examples</description>
     <config-file-ref id="config0"/>
+  </config-set>
+  <config-set id="set3">
+    <description>SysinDeleteEntry</description>
+    <config-file-ref id="config3"/>
   </config-set>
   <config-set id="set1">
     <description>AddEntryExample</description>

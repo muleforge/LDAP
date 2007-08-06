@@ -11,6 +11,7 @@ public class AbstractLdapDSTestCase extends TestCase
 
     protected AbstractLdapDSTestCase(boolean allowAnonymousBind)
     {
+        
         super();
         this.allowAnonymousBind = allowAnonymousBind;
     }

@@ -397,6 +397,7 @@ public final class DSManager
         m.stop();
  
 
+        System.out.println("main() finished");
     }
 
     public int getPort()

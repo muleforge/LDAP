@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mule-configuration PUBLIC "-//MuleSource //DTD mule-configuration XML V1.0//EN"
+                                "http://mule.mulesource.org/dtds/mule-configuration.dtd">
+
+<mule-configuration id="SysinDeleteEntry" version="1.0">
+
+
+	<!--  serverUrl="" disables tcp port-->
+	<mule-environment-properties serverUrl="">
+	</mule-environment-properties>
+
+
+	<connector name="ldapConnector"
+		className="org.mule.providers.ldap.LdapSConnector">
+
+		<properties>
+			<property name="ldapHost" value="localhost" />
+			<property name="ldapPort" value="10636" />
+			<property name="loginDN" value="uid=admin,ou=system" />
+			<property name="password" value="secret" />
+			<property name="searchBase" value="o=sevenseas" />
+
+			<property name="startUnsolicitedNotificationListener"
+				value="true" />
+
+
+
+			<property name="trustAll" value="true" />
+
+		</properties>
+	</connector>
+
+	<transformers>
+		<transformer name="StringToDeleteRequest"
+			className="org.mule.providers.ldap.transformers.StringToDeleteRequest">
+
+		</transformer>
+
+	</transformers>
+
+	<model name="SysinDeleteEntry">
+
+		<mule-descriptor name="synchonousDelete"
+			implementation="org.mule.components.simple.BridgeComponent">
+
+			<inbound-router>
+				
+				<endpoint synchronous="true"
+					address="stream://System.in?promptMessage=Enter dn to delete: " />
+					
+					<endpoint synchronous="true"
+					address="ldaps://ldap.in" />
+			
+			</inbound-router>
+
+			<outbound-router>
+				<router
+					className="org.mule.routing.outbound.FilteringOutboundRouter">
+
+					<endpoint address="ldaps://ldap.out"
+						transformers="StringToDeleteRequest">
+					</endpoint>
+   
+   					<filter expectedType="java.lang.String" className="org.mule.routing.filters.PayloadTypeFilter"></filter>
+   
+				</router>
+				
+				<router
+					className="org.mule.routing.outbound.FilteringOutboundRouter">
+
+					<endpoint address="stream://System.out">
+					</endpoint>
+   
+   					<filter expectedType="com.novell.ldap.LDAPExtendedResponse" className="org.mule.routing.filters.PayloadTypeFilter"></filter>
+   
+				</router>
+			</outbound-router>
+		</mule-descriptor>
+
+	</model>
+</mule-configuration>
