@@ -300,20 +300,40 @@ public final class DSManager
         env.put(Context.SECURITY_PRINCIPAL, "uid=admin,ou=system");
         env.put(Context.SECURITY_CREDENTIALS, "secret");
         
-        new InitialContext(env);
+        try
+        {
+            new InitialContext(env);
+        } catch (Exception e)
+        {
+            //ignored
+            //dont remove try catch block!!
+        }
        
 
         sysRoot = null;
         doDelete(configuration.getWorkingDirectory());
         configuration = new MutableServerStartupConfiguration();
-        running = false;
+        
 
-        System.out.println("DS now stopped!");
+        System.out.println("DS waiting for socket release ...");
+        
+        //wait for shutdown
+        int i=0;
+        
+        while(i<20 && !checkSocketNotConnected())
+        {
+            Thread.sleep(2000);
+            i++;
+            System.out.println("Try "+i);
+        }
         
         if(!checkSocketNotConnected())
         {
             throw new Exception("Shutdown of DS not successfull, server socket was not freed");
         }
+        
+        System.out.println("DS now stopped!");
+        running = false;
         
     }
 
