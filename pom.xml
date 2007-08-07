@@ -129,7 +129,7 @@
 							**/AbstractLdapDSTestCase.java
 						</exclude>
 					</excludes>
-					<forkMode>pertest</forkMode>
+					<forkMode>once</forkMode>
 				</configuration>
 			</plugin>
 
