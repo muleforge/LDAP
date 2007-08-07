@@ -62,7 +62,7 @@
 		<snapshotRepository>
 			<id>muleforge.webdav.snapshots</id>
 			<url>
-				dav:https://dav.muleforge.org/snapshots.dist/${artifactId}/
+				dav:https://dav.muleforge.org/snapshots.repository/${artifactId}/
 			</url>
 		</snapshotRepository>
 		<site>
