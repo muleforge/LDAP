@@ -126,11 +126,11 @@ public final class DSManager
         if (running)
         {
 
-            System.err.println("start() called while already running");
+            System.out.println("start() called while already running");
 
             if (checkSocketNotConnected())
             {
-                System.err.println("start() forced");
+                System.out.println("start() forced");
             } else
             {
                 throw new IllegalStateException("DS already running on port "
@@ -150,11 +150,11 @@ public final class DSManager
         configuration.setAccessControlEnabled(false);
         configuration.setShutdownHookEnabled(false);
         configuration.setAllowAnonymousAccess(allowAnon);
-        configuration.setEnableLdaps(true);
+        /*configuration.setEnableLdaps(true);
         configuration.setLdapsPort(10636);
         configuration.setLdapsCertificateFile(new File(
                 "src/test/resources/ldaps-server-cert.jks"));
-
+         */
         setUpPartition(configuration);
 
         setContexts("uid=admin,ou=system", "secret");
@@ -280,14 +280,14 @@ public final class DSManager
 
         if (!running)
         {
-            System.err.println("stop() called while is not running");
+            System.out.println("stop() called while is not running");
 
             if (checkSocketNotConnected())
             {
                 return;
             } else
             {
-                System.err.println("stop() forced");
+                System.out.println("stop() forced");
             }
         }
 
@@ -299,12 +299,9 @@ public final class DSManager
         env.putAll(new ShutdownConfiguration().toJndiEnvironment());
         env.put(Context.SECURITY_PRINCIPAL, "uid=admin,ou=system");
         env.put(Context.SECURITY_CREDENTIALS, "secret");
-        try
-        {
-            new InitialContext(env);
-        } catch (Exception e)
-        {
-        }
+        
+        new InitialContext(env);
+       
 
         sysRoot = null;
         doDelete(configuration.getWorkingDirectory());
@@ -312,6 +309,12 @@ public final class DSManager
         running = false;
 
         System.out.println("DS now stopped!");
+        
+        if(!checkSocketNotConnected())
+        {
+            throw new Exception("Shutdown of DS not successfull, server socket was not freed");
+        }
+        
     }
 
     /**
