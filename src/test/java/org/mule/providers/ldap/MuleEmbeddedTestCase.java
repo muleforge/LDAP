@@ -46,7 +46,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         FunctionalTestNotificationListener
 {
     protected final Log logger = LogFactory.getLog(getClass());
-    
+
     protected QuickConfigurationBuilder builder;
     protected LdapConnector connector = null;
 
@@ -174,7 +174,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         {
             client.send("ldap://ldap.out", addReq, null);
             fail();
-        } catch (DispatchException e)
+        }
+        catch (DispatchException e)
         {
             // expected, dup entry
             assertEquals(((LDAPException) e.getCause()).getResultCode(), 68);
@@ -249,15 +250,17 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         LDAPAddRequest last = null;
 
         for (int i = 0; i < addCount; i++)
+        {
             client.dispatch("ldap://ldap.out", last = TestHelper
                     .getRandomEntryAddRequest(), null);
+        }
 
-        Thread.sleep(1000);
+        // Thread.sleep(1000);
 
         client.dispatch("ldap://ldap.out", new LDAPDeleteRequest(last
                 .getEntry().getDN(), null), null);
 
-        Thread.sleep(1000);
+        // Thread.sleep(1000);
 
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out/cn.payload", "*", null);
@@ -273,10 +276,11 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         while (true)
         {
-            result = client.receive("ldap://ldap.in", 15000);
+            result = client.receive("ldap://ldap.in", 40000);
 
             if (result == null)
             {
+                logger.debug("The " + count + ". message was null");
                 break;
             }
 
@@ -286,8 +290,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             count++;
         }
 
-        assertTrue("count (" + count + ") != expected (" + expected + ")",
-                count == expected);
+        logger.warn("count (" + count + ") != expected (" + expected + ")");
         assertNull("result was not null", result);
         assertNotNull("lastResult was null", lastResult);
         assertTrue(lastResult.getPayload().getClass().toString()
@@ -298,7 +301,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                         + " type not expected (" + LDAPMessage.SEARCH_RESULT
                         + ")",
                 ((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
-
+        assertTrue("count (" + count + ") != expected (" + expected + ")",
+                count == expected);
         // TODO not predictable
 
     }
@@ -421,7 +425,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                         current++;
                     }
 
-                } catch (UMOException e)
+                }
+                catch (UMOException e)
                 {
                     fail(e.toString());
 
