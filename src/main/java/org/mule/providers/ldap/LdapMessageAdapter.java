@@ -1,5 +1,5 @@
 /*
- * $Id: LdapMessageAdapter.java,v 1.2 2007/08/01 21:33:18 hsaly Exp $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
@@ -11,7 +11,7 @@
 package org.mule.providers.ldap;
 
 // import org.mule.impl.ThreadSafeAccess;
-//import org.mule.impl.ThreadSafeAccess;
+// import org.mule.impl.ThreadSafeAccess;
 import org.mule.providers.AbstractMessageAdapter;
 import org.mule.umo.MessagingException;
 import org.mule.umo.provider.MessageTypeNotSupportedException;
@@ -47,7 +47,9 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
             String id = this.ldapMessage.getTag();
 
             if (id != null)
+            {
                 setProperty(CORRELATION_ID, id);
+            }
 
             setBooleanProperty("IS_REQUEST", this.ldapMessage.isRequest());
 
@@ -57,14 +59,16 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
                 setStringProperty("TAG", tag);
             }
 
-        } else if (message instanceof LDAPSearchResults)
+        }
+        else if (message instanceof LDAPSearchResults)
         {
             this.searchResults = (LDAPSearchResults) message;
 
             setBooleanProperty("IS_REQUEST", false);
             setBooleanProperty("IS_ASYNC", false);
 
-        } else
+        }
+        else
         {
             throw new MessageTypeNotSupportedException(message, getClass());
         }
@@ -74,8 +78,6 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
     // @Override
     public String getCorrelationId()
     {
-        // System.out.println("getcor"
-        // +String.valueOf(getProperty(CORRELATION_ID)));
         return (String) (getProperty(CORRELATION_ID));
     }
 
@@ -84,7 +86,8 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
         if (ldapMessage != null)
         {
             return ldapMessage;
-        } else
+        }
+        else
         {
             return searchResults;
         }
@@ -96,7 +99,8 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
         if (ldapMessage != null)
         {
             return ldapMessage.toString().getBytes();
-        } else
+        }
+        else
         {
             return searchResults.toString().getBytes();
         }
@@ -108,7 +112,8 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
         if (ldapMessage != null)
         {
             return ldapMessage.toString();
-        } else
+        }
+        else
         {
             return searchResults.toString();
         }
@@ -118,11 +123,11 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
     // @Override
     public String getUniqueId()
     {
-        // TODO Auto-generated method stub
         if (ldapMessage != null)
         {
             return super.getUniqueId() + "-ID-" + ldapMessage.getMessageID();
-        } else
+        }
+        else
         {
             return super.getUniqueId();
         }
@@ -130,24 +135,16 @@ public class LdapMessageAdapter extends AbstractMessageAdapter
     }
 
     // TODO what is it?
-    /*public ThreadSafeAccess newThreadCopy()
-    {
-
-        return null;
-    }*/
+    /*
+     * public ThreadSafeAccess newThreadCopy() {
+     * 
+     * return null; }
+     */
 
     // @Override
     public void setCorrelationId(String correlationId)
     {
-        // System.out.println("setcor "+ Integer.valueOf(correlationId));
         setProperty(CORRELATION_ID, (correlationId));
-    }
-
-    // @Override
-    public String toString()
-    {
-        // TODO Auto-generated method stub
-        return super.toString();
     }
 
 }
