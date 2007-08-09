@@ -204,10 +204,12 @@ public class LDAPUtils
                 if (obj instanceof LDAPMessage)
                 {
                     sb.append("   " + dumpLDAPMessage((LDAPMessage) obj));
-                } else if (obj instanceof LDAPEntry)
+                }
+                else if (obj instanceof LDAPEntry)
                 {
                     sb.append("   " + dumpLDAPEntry((LDAPEntry) obj));
-                } else
+                }
+                else
                 {
                     sb.append("Unknown\n");
                     sb.append("Class: " + obj.getClass() + "\n");

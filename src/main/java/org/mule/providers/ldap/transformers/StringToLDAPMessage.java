@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap.transformers;
 
 import java.io.IOException;
@@ -21,7 +31,7 @@ public class StringToLDAPMessage extends AbstractTransformer
 
     public static final String PROPERTY_LDAP_HOST = "format";
 
-    protected String format;
+    private String format;
 
     // DSML(default), LDIF
 
@@ -49,20 +59,25 @@ public class StringToLDAPMessage extends AbstractTransformer
         if ("ldif".equalsIgnoreCase(format))
         {
             List res = getOut(false, msg);
-            if(res.size() == 1) return res.get(0);
-            
+            if (res.size() == 1)
+            {
+                return res.get(0);
+            }
+
             return res;
         }
 
         List res = getOut(true, msg);
-        if(res.size() == 1) return res.get(0);
-        
+        if (res.size() == 1)
+        {
+            return res.get(0);
+        }
+
         return res;
 
     }
 
-    private List getOut(boolean dsml, String msg)
-            throws TransformerException
+    private List getOut(boolean dsml, String msg) throws TransformerException
     {
         InputStream in = IOUtils.toInputStream(msg);
 
@@ -71,21 +86,22 @@ public class StringToLDAPMessage extends AbstractTransformer
             LDAPReader reader = dsml ? (LDAPReader) new DSMLReader(in)
                     : (LDAPReader) new LDIFReader(in);
 
-                      
-            LDAPMessage result = null;//reader.readMessage();
+            LDAPMessage result = null;// reader.readMessage();
             List res = new ArrayList();
-            
-            while((result = reader.readMessage()) != null)
+
+            while ((result = reader.readMessage()) != null)
             {
                 logger.debug(LDAPUtils.dumpLDAPMessage(result));
                 res.add(result);
             }
             return res;
 
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             throw new TransformerException(this, e);
-        } catch (LDAPException e)
+        }
+        catch (LDAPException e)
         {
             throw new TransformerException(this, e);
         }

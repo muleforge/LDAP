@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap;
 
 import java.util.Enumeration;
@@ -22,10 +32,10 @@ import com.novell.ldap.LDAPSearchResultReference;
 class LDAPQueueReceiver implements javax.resource.spi.work.Work
 {
 
-    protected LdapConnector connector;
+    private LdapConnector connector;
 
-    protected UMOImmutableEndpoint endpoint;
-    protected LDAPQueueListener listener;
+    private UMOImmutableEndpoint endpoint;
+    private LDAPQueueListener listener;
 
     public LDAPQueueReceiver(LdapConnector connector,
             UMOImmutableEndpoint endpoint, LDAPQueueListener listener)
@@ -77,10 +87,13 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                     System.out.println("Search result references:");
 
                     for (int i = 0; i < urls.length; i++)
+                    {
 
                         System.out.println(urls[i]);
+                    }
 
-                } else if (message instanceof LDAPSearchResult)
+                }
+                else if (message instanceof LDAPSearchResult)
                 {
 
                     LDAPEntry entry = ((LDAPSearchResult) message).getEntry();
@@ -155,8 +168,10 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                         System.out.println("Referrals:");
 
                         for (int i = 0; i < urls.length; i++)
+                        {
 
                             System.out.println(urls[i]);
+                        }
 
                     }
 
@@ -195,13 +210,16 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                         .getMessageAdapter(message);
 
                 if (synchronus)
+                {
                     return new MuleMessage(adapter);
+                }
 
                 listener.onMessage(new MuleMessage(adapter), endpoint);
 
             }// endif
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             // e.printStackTrace();
             connector.handleException(e);

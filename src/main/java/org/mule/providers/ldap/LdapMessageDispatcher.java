@@ -1,5 +1,5 @@
 /*
- * $Id: LdapMessageDispatcher.java,v 1.2 2007/08/01 21:33:18 hsaly Exp $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
@@ -73,13 +73,16 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
             connector.doAsyncRequest(tranformed);
 
-        } else
+        }
+        else
         // not an instance of LDAPMessage
         {
             Object unknownMsg = event.getTransformedMessage();
 
             if (unknownMsg == null)
+            {
                 return;
+            }
 
             logger.debug("unknown is of type: " + unknownMsg.getClass());
 
@@ -123,14 +126,17 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
             if (tranformed instanceof LDAPAddRequest)
             {
                 lc.add(((LDAPAddRequest) tranformed).getEntry());
-            } else if (tranformed instanceof LDAPDeleteRequest)
+            }
+            else if (tranformed instanceof LDAPDeleteRequest)
             {
                 lc.delete(((LDAPDeleteRequest) tranformed).getDN());
-            } else if (tranformed instanceof LDAPModifyRequest)
+            }
+            else if (tranformed instanceof LDAPModifyRequest)
             {
                 lc.modify(((LDAPModifyRequest) tranformed).getDN(),
                         ((LDAPModifyRequest) tranformed).getModifications());
-            } else if (tranformed instanceof LDAPSearchRequest)
+            }
+            else if (tranformed instanceof LDAPSearchRequest)
             {
 
                 LDAPSearchRequest sr = ((LDAPSearchRequest) tranformed);
@@ -142,7 +148,8 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
                 UMOMessageAdapter adapter = connector.getMessageAdapter(res);
 
                 return new MuleMessage(adapter);
-            } else
+            }
+            else
             {
                 throw new IllegalArgumentException("type "
                         + tranformed.getClass() + " cannot be send");
@@ -150,13 +157,16 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
             // return event.getMessage();
 
-        } else
+        }
+        else
         // not an instance of LDAPMessage
         {
             Object unknownMsg = event.getTransformedMessage();
 
             if (unknownMsg == null)
+            {
                 return null;
+            }
 
             logger.debug("unknown is of type: " + unknownMsg.getClass());
 
@@ -204,7 +214,9 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
             UMOMessage msg = receiver.pollOnce();
 
             if (msg != null)
+            {
                 return msg;
+            }
 
             long sleep = Math.min(2000, timeout
                     - (System.currentTimeMillis() - t0));
@@ -216,14 +228,16 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
                     logger.debug("No results, sleeping for " + sleep);
                 }
                 Thread.sleep(sleep);
-            } else
+            }
+            else
             {
 
                 logger.debug("Timeout");
                 return null;
             }
 
-        } while (true);
+        }
+        while (true);
 
     }// end method
 

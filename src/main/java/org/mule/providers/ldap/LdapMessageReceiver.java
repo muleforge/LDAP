@@ -1,5 +1,5 @@
 /*
- * $Id: LdapMessageReceiver.java,v 1.1 2007/07/30 22:34:33 hsaly Exp $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
@@ -38,7 +38,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
      * http://mule.mulesource.org/display/MULE/Writing+Transports
      */
 
-    protected LDAPQueueReceiver queueReceiver;
+    private LDAPQueueReceiver queueReceiver;
 
     public LdapMessageReceiver(UMOConnector connector, UMOComponent component,
             UMOEndpoint endpoint, long pollingFrequency)
@@ -46,7 +46,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
     {
         // TODO
         // ,pollingFrequency
-        super(connector, component, endpoint,pollingFrequency);
+        super(connector, component, endpoint, pollingFrequency);
 
     }
 
@@ -58,24 +58,18 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
 
         logger.debug("The OID in the notification was ==>" + msg.getID());
 
-        byte[] data = msg.getValue();
-
-        if (data == null)
-
-            logger.debug("The DATA in the notification was <null>");
-
-        else
-
-            logger.debug("The DATA in the notification was ==> " + data);
+        // byte[] data = msg.getValue();
 
         try
         {
             UMOMessageAdapter adapter = connector.getMessageAdapter(msg);
             routeMessage(new MuleMessage(adapter), endpoint.isSynchronous());
-        } catch (MessagingException e)
+        }
+        catch (MessagingException e)
         {
             throw new RuntimeException(e);
-        } catch (UMOException e)
+        }
+        catch (UMOException e)
         {
             // TODO Auto-generated catch block
             throw new RuntimeException(e);
@@ -98,7 +92,8 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
         try
         {
             connector.ensureConnected();
-        } catch (ConnectException e)
+        }
+        catch (ConnectException e)
         {
             // TODO Auto-generated catch block
             handleException(e);

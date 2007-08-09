@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap;
 
 import java.io.File;
@@ -16,10 +26,10 @@ public class LdapSConnector extends LdapConnector
 
     public static final String PROPERTY_TRUST_ALL = "trustAll";
 
-    protected LDAPJSSESecureSocketFactory ssf = null;
+    private LDAPJSSESecureSocketFactory ssf = null;
 
-    protected boolean trustAll = false;
-    protected String trustStore = null;
+    private boolean trustAll = false;
+    private String trustStore = null;
 
     public String getTrustStore()
     {
@@ -34,7 +44,7 @@ public class LdapSConnector extends LdapConnector
     public LdapSConnector()
     {
         super();
-        this.ldapPort = LDAPConnection.DEFAULT_SSL_PORT;
+        setLdapPort(LDAPConnection.DEFAULT_SSL_PORT);
 
     }
 
@@ -53,14 +63,14 @@ public class LdapSConnector extends LdapConnector
             if (trustAll)
             {
                 SSLContext context = SSLContext.getInstance("TLS");
-                context.init(null,
-                        trustAll ? TrustAllCertsManager.trustAllCertsManager
-                                : null, null);
+                context.init(null, trustAll ? TrustAllCertsManager
+                        .getTrustAllCertsManager() : null, null);
 
                 // certificate_unknown
                 ssf = new LDAPJSSESecureSocketFactory(context
                         .getSocketFactory());
-            } else
+            }
+            else
             {
                 if (StringUtils.isEmpty(trustStore))
                 {
@@ -94,7 +104,8 @@ public class LdapSConnector extends LdapConnector
             // TODO SSL<->TLS (TLS maybe require startTLS() call on lc
             // ssf = new LDAPJSSEStartTLSFactory();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             // TODO Auto-generated catch block
 
@@ -127,7 +138,7 @@ public class LdapSConnector extends LdapConnector
     // @Override
     protected void setLDAPConnection()
     {
-        ldapConnection = new LDAPConnection(ssf);
+        setLdapConnection(new LDAPConnection(ssf));
     }
 
 }

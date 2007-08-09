@@ -150,11 +150,12 @@ public final class DSManager
         configuration.setAccessControlEnabled(false);
         configuration.setShutdownHookEnabled(false);
         configuration.setAllowAnonymousAccess(allowAnon);
-        /*configuration.setEnableLdaps(true);
+        
+        configuration.setEnableLdaps(true);
         configuration.setLdapsPort(10636);
         configuration.setLdapsCertificateFile(new File(
                 "src/test/resources/ldaps-server-cert.jks"));
-         */
+        
         setUpPartition(configuration);
 
         setContexts("uid=admin,ou=system", "secret");

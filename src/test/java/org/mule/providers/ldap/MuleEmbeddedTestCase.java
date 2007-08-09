@@ -223,7 +223,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         while (true)
         {
-            result = client.receive("ldap://ldap.in", 6000);
+            result = client.receive("ldap://ldap.in", 15000);
 
             if (result == null)
             {
@@ -273,7 +273,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         while (true)
         {
-            result = client.receive("ldap://ldap.in", 6000);
+            result = client.receive("ldap://ldap.in", 15000);
 
             if (result == null)
             {
@@ -335,7 +335,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         while (true)
         {
-            result = client.receive("ldap://ldap.in", 6000);
+            result = client.receive("ldap://ldap.in", 15000);
 
             if (result == null)
             {
@@ -365,7 +365,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         MuleClient client = new MuleClient();
 
-        UMOMessage result = client.receive("ldap://ldap.in", 10000);
+        UMOMessage result = client.receive("ldap://ldap.in", 15000);
 
         assertNull(result);
 

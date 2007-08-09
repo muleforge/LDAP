@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap.util;
 
 import java.security.cert.CertificateException;
@@ -9,8 +19,11 @@ import javax.net.ssl.X509TrustManager;
 public class TrustAllCertsManager implements X509TrustManager
 {
 
-    public static final TrustManager[] trustAllCertsManager = new TrustManager[]
-    { new TrustAllCertsManager() };
+    public static TrustManager[] getTrustAllCertsManager()
+    {
+        return new TrustManager[]
+        { new TrustAllCertsManager() };
+    }
 
     public void checkClientTrusted(X509Certificate[] chain, String authType)
             throws CertificateException
@@ -27,7 +40,8 @@ public class TrustAllCertsManager implements X509TrustManager
     public X509Certificate[] getAcceptedIssuers()
     {
 
-        return null;
+        return new X509Certificate[]
+        {};
     }
 
 }

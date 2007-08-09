@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap;
 
 import java.io.IOException;
@@ -20,15 +30,15 @@ import com.novell.security.sasl.RealmChoiceCallback;
 public class LdapSASLConnector extends LdapConnector
 {
 
-    protected static final String MECHANISM_DIGEST_MD5 = "DIGEST-MD5";
-    protected static final String MECHANISM_DIGEST_EXTERNAL = "EXTERNAL";
-    protected boolean trustAll = false;
+    private static final String MECHANISM_DIGEST_MD5 = "DIGEST-MD5";
+    private static final String MECHANISM_DIGEST_EXTERNAL = "EXTERNAL";
+    private boolean trustAll = false;
 
-    protected String mechanism = MECHANISM_DIGEST_MD5;
+    private String mechanism = MECHANISM_DIGEST_MD5;
 
-    protected LDAPJSSESecureSocketFactory ssf;
+    private LDAPJSSESecureSocketFactory ssf;
 
-    class BindCallbackHandler implements CallbackHandler
+    private static class BindCallbackHandler implements CallbackHandler
     {
 
         private char[] passwordChars;
@@ -53,21 +63,24 @@ public class LdapSASLConnector extends LdapConnector
                     ((PasswordCallback) callbacks[i])
                             .setPassword(passwordChars);
 
-                } else if (callbacks[i] instanceof NameCallback)
+                }
+                else if (callbacks[i] instanceof NameCallback)
                 {
 
                     ((NameCallback) callbacks[i])
                             .setName(((NameCallback) callbacks[i])
                                     .getDefaultName());
 
-                } else if (callbacks[i] instanceof RealmCallback)
+                }
+                else if (callbacks[i] instanceof RealmCallback)
                 {
 
                     ((RealmCallback) callbacks[i])
                             .setText(((RealmCallback) callbacks[i])
                                     .getDefaultText());
 
-                } else if (callbacks[i] instanceof RealmChoiceCallback)
+                }
+                else if (callbacks[i] instanceof RealmChoiceCallback)
                 {
 
                     ((RealmChoiceCallback) callbacks[i]).setSelectedIndex(0);
@@ -83,7 +96,7 @@ public class LdapSASLConnector extends LdapConnector
     public LdapSASLConnector()
     {
         super();
-        this.ldapPort = LDAPConnection.DEFAULT_SSL_PORT;
+        setLdapPort(LDAPConnection.DEFAULT_SSL_PORT);
     }
 
     // @Override
@@ -92,13 +105,15 @@ public class LdapSASLConnector extends LdapConnector
 
         if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
         {
-            ldapConnection.bind((String) null, (String) null, new String[]
+            getLdapConnection().bind((String) null, (String) null, new String[]
             { mechanism }, null, (Object) null);
-        } else
+        }
+        else
         {
 
-            ldapConnection.bind(loginDN, "dn: " + loginDN, new String[]
-            { mechanism }, null, new BindCallbackHandler(password));
+            getLdapConnection()
+                    .bind(getLoginDN(), "dn: " + getLoginDN(), new String[]
+                    { mechanism }, null, new BindCallbackHandler(getPassword()));
         }
     }
 
@@ -165,10 +180,11 @@ public class LdapSASLConnector extends LdapConnector
 
         if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
         {
-            ldapConnection = new LDAPConnection(ssf);
-        } else
+            setLdapConnection(new LDAPConnection(ssf));
+        }
+        else
         {
-            ldapConnection = new LDAPConnection();
+            setLdapConnection(new LDAPConnection());
         }
 
     }

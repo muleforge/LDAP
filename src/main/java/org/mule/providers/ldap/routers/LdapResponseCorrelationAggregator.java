@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap.routers;
 
 import java.util.ArrayList;
@@ -45,7 +55,8 @@ public class LdapResponseCorrelationAggregator extends
                                 .println(">--- aggregator should ---> shouldAggregateEvents return true");
                         return true;
                     }
-                } catch (TransformerException e)
+                }
+                catch (TransformerException e)
                 {
                     throw new RuntimeException(e);
                 }
@@ -76,7 +87,8 @@ public class LdapResponseCorrelationAggregator extends
                 results.add(msg);
 
             }
-        } catch (TransformerException e)
+        }
+        catch (TransformerException e)
         {
             logger.error(e);
 

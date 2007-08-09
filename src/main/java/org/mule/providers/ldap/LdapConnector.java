@@ -1,5 +1,5 @@
 /*
- * $Id: LdapConnector.java,v 1.3 2007/08/01 21:33:18 hsaly Exp $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
@@ -50,20 +50,6 @@ import com.novell.ldap.LDAPUnsolicitedNotificationListener;
 public class LdapConnector extends AbstractConnector
 {
 
-    public LdapConnector()
-    {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-    protected LDAPMessageQueue messageQueue = null;
-
-    public static final String PROPERTY_LDAP_HOST = "ldapHost";
-    public static final String PROPERTY_LDAP_PORT = "ldapPort";
-    public static final String PROPERTY_SEARCH_SCOPE = "searchScope";
-    public static final String PROPERTY_LOGIN_DN = "loginDN";
-    public static final String PROPERTY_PASSWORD = "password";
-    public static final String PROPERTY_SEARCH_BASE = "searchBase";
     public static final String PROPERTY_POLLING_FREQUENCY = "pollingFrequency";
     public static final String PROPERTY_START_UNSOLICITED_NOTIFICATION_LISTENER = "startUnsolicitedNotificationListener";
     private static final Pattern STATEMENT_ARGS = Pattern
@@ -71,44 +57,46 @@ public class LdapConnector extends AbstractConnector
 
     public static final long DEFAULT_POLLING_FREQUENCY = 1000;
 
-    protected long pollingFrequency;
+    private LDAPMessageQueue messageQueue = null;
 
-    protected int ldapPort = LDAPConnection.DEFAULT_PORT;
+    private long pollingFrequency;
 
-    protected int searchScope = LDAPConnection.SCOPE_SUB;
+    private int ldapPort = LDAPConnection.DEFAULT_PORT;
 
-    protected final int ldapVersion = LDAPConnection.LDAP_V3;
+    private int searchScope = LDAPConnection.SCOPE_SUB;
 
-    protected String ldapHost = null;
+    private final int ldapVersion = LDAPConnection.LDAP_V3;
 
-    protected String loginDN = null;
+    private String ldapHost = null;
 
-    protected String password = null;
+    private String loginDN = null;
 
-    protected String searchBase = null;
+    private String password = null;
 
-    protected boolean startUnsolicitedNotificationListener = false;
+    private String searchBase = null;
 
-    protected List attributes = null;// attributes, default all
+    private boolean startUnsolicitedNotificationListener = false;
 
-    protected int dereference = LDAPSearchConstraints.DEREF_NEVER; // dereference,
+    private List attributes = null;// attributes, default all
+
+    private int dereference = LDAPSearchConstraints.DEREF_NEVER; // dereference,
     // default
     // never
 
-    protected int maxResults = Integer.MAX_VALUE; // maxresults, default
+    private int maxResults = Integer.MAX_VALUE; // maxresults, default
     // Integer.MAX_VALUE
 
-    protected int timeLimit = 0; // Timelimit, default 0 (no time limit)
+    private int timeLimit = 0; // Timelimit, default 0 (no time limit)
 
-    protected boolean typesOnly = false; // types only, default false;
+    private boolean typesOnly = false; // types only, default false;
 
-    protected LDAPConnection ldapConnection = null;
+    private LDAPConnection ldapConnection = null;
 
-    protected Map queries;
+    private Map queries;
 
-    protected Set propertyExtractors;
+    private Set propertyExtractors;
 
-    protected Set queryValueExtractors;
+    private Set queryValueExtractors;
 
     protected void doInitialise() throws InitialisationException
     {
@@ -154,7 +142,8 @@ public class LdapConnector extends AbstractConnector
                 propertyExtractors.add(ClassUtils.instanciateClass(s,
                         ClassUtils.NO_ARGS));
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new InitialisationException(CoreMessages
                     .failedToCreate("LDAP Connector"), e, this);
@@ -217,11 +206,13 @@ public class LdapConnector extends AbstractConnector
                 && isAnonBind())
         {
             logger.debug("anonymous bind to " + ldapHost + " successful");
-        } else if (!StringUtils.isEmpty(loginDN))
+        }
+        else if (!StringUtils.isEmpty(loginDN))
         {
             doBind();
             logger.debug("non-anonymous bind of " + loginDN + " successful");
-        } else
+        }
+        else
         {
             throw new Exception(
                     "Unable to bind anonymous (either failed or not supported (SSL/SASL)");
@@ -239,7 +230,8 @@ public class LdapConnector extends AbstractConnector
                     .read("o=XddTz6544inv-II-test-UUI");
             result.getDN();
             return true;
-        } catch (LDAPException e)
+        }
+        catch (LDAPException e)
         {
 
             // excpected
@@ -256,7 +248,8 @@ public class LdapConnector extends AbstractConnector
 
             return false;
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             logger.error(e);
             return false;
@@ -281,9 +274,11 @@ public class LdapConnector extends AbstractConnector
             try
             {
                 ldapConnection.disconnect();
-            } catch (LDAPException e)
+            }
+            catch (LDAPException e)
             {
                 // ignored
+                ldapConnection = null;
             }
         else
         {
@@ -408,7 +403,8 @@ public class LdapConnector extends AbstractConnector
                     endpoint, new Object[]
                     { new Long(polling) });
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new InitialisationException(CoreMessages
                     .failedToCreateObjectWith("Message Receiver",
@@ -440,16 +436,13 @@ public class LdapConnector extends AbstractConnector
 
             }
         }
-        if (query == null)
+        if (query == null && this.queries != null)
         {
 
-            if (this.queries != null)
-            {
+            query = this.queries.get(stmt);
 
-                query = this.queries.get(stmt);
-
-            }
         }
+
         return query == null ? null : query.toString();
     }
 
@@ -644,5 +637,10 @@ public class LdapConnector extends AbstractConnector
     public LDAPConnection getLdapConnection()
     {
         return ldapConnection;
+    }
+
+    protected void setLdapConnection(LDAPConnection ldapConnection)
+    {
+        this.ldapConnection = ldapConnection;
     }
 }

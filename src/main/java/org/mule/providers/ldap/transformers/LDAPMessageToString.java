@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap.transformers;
 
 import java.io.ByteArrayOutputStream;
@@ -20,7 +30,7 @@ public class LDAPMessageToString extends AbstractTransformer
 
     public static final String PROPERTY_LDAP_HOST = "format";
 
-    protected String format;
+    private String format;
 
     // DSML(default), LDIF, toString
 
@@ -47,7 +57,8 @@ public class LDAPMessageToString extends AbstractTransformer
         if (src instanceof List)
         {
             msgs = (List) src;
-        } else
+        }
+        else
         {
             msgs = new ArrayList();
             msgs.add(src);
@@ -58,14 +69,16 @@ public class LDAPMessageToString extends AbstractTransformer
 
             return msgs.toString();
 
-        } else if ("ldif".equalsIgnoreCase(format))
+        }
+        else if ("ldif".equalsIgnoreCase(format))
         {
 
             // TODO ldifcheck
             // if(dsml || msg.getType() != LDAPMessage.SEARCH_RESULT);
 
             return getOut(false, msgs);
-        } else
+        }
+        else
         {
             return getOut(true, msgs);
         }
@@ -89,10 +102,12 @@ public class LDAPMessageToString extends AbstractTransformer
                 {
                     writer.writeMessage(ldapMsg);
 
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
                     throw new TransformerException(this, e);
-                } catch (LDAPException e)
+                }
+                catch (LDAPException e)
                 {
                     throw new TransformerException(this, e);
                 }
@@ -102,9 +117,10 @@ public class LDAPMessageToString extends AbstractTransformer
             writer.finish();
             out.close();
             return out.toString();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
-           throw new TransformerException(this,e);
+            throw new TransformerException(this, e);
         }
 
     }

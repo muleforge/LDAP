@@ -1,5 +1,5 @@
 /*
- * $Id: LdapMessageDispatcherFactory.java,v 1.1 2007/07/30 22:34:33 hsaly Exp $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *

@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap.components;
 
 import java.util.Random;
@@ -25,8 +35,7 @@ public class RandomEntryComponent implements Callable
         attr.add(new LDAPAttribute("sn", sn));
         attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
 
-        LDAPEntry entry = new LDAPEntry("cn=" + cn
-                + ",o=sevenseas", attr);
+        LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas", attr);
 
         return new LDAPAddRequest(entry, null);
 

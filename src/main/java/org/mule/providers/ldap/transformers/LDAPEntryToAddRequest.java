@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap.transformers;
 
 import org.mule.providers.ldap.util.LDAPUtils;
@@ -43,7 +53,8 @@ public class LDAPEntryToAddRequest extends AbstractTransformer
                 LDAPSearchResult sr = (LDAPSearchResult) src;
                 entry = sr.getEntry();
 
-            } else
+            }
+            else
             {
                 entry = (LDAPEntry) src;
             }
@@ -54,7 +65,8 @@ public class LDAPEntryToAddRequest extends AbstractTransformer
             // System.out.println("tranf: id: " + request.getMessageID());
 
             return request;
-        } catch (LDAPException e)
+        }
+        catch (LDAPException e)
         {
             throw new TransformerException(this, e);
         }
