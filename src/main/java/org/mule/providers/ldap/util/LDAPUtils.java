@@ -1,7 +1,16 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -24,14 +33,23 @@ public class LDAPUtils
 
     protected static final Log logger = LogFactory.getLog(LDAPUtils.class);
 
+    private LDAPUtils()
+    {
+        // never instantiated
+    }
+
     public static LDAPSearchRequest createSearchRequest(
             LdapConnector ldapConnector, String searchString)
             throws LDAPException
     {
 
         List attrs = ldapConnector.getAttributes();
-        String[] attributes = (attrs == null ? null : (String[]) attrs
-                .toArray(new String[0]));
+        String[] attributes = null;
+
+        if (attrs != null)
+        {
+            attributes = (String[]) attrs.toArray(new String[attrs.size()]);
+        }
 
         // TODO LDAPCOntrols
         return new LDAPSearchRequest(ldapConnector.getSearchBase(), // base
@@ -53,26 +71,17 @@ public class LDAPUtils
 
         String searchStr = endpoint.getEndpointURI().getPath();
 
-        // if (searchStr == null || "".equals(searchStr))
-        // searchStr = endpoint.getEndpointURI().getAddress();
-
         if (searchStr.startsWith("/"))
+        {
             searchStr = searchStr.substring(1);
+        }
 
         logger.debug("path: " + endpoint.getEndpointURI().getPath());
         logger.debug("adress: " + endpoint.getEndpointURI().getAddress());
-        // logger.debug("query: " + endpoint.getEndpointURI().getQuery());
-        // logger.debug("ressource info: "
-        // + endpoint.getEndpointURI().getResourceInfo());
-        // logger.debug("userinfo: " + endpoint.getEndpointURI().getUserInfo());
-        // logger.debug("user params: "
-        // + endpoint.getEndpointURI().getUserParams());
-
-        // logger.debug("searchStr0: " + searchStr);
 
         LdapConnector ldapConnector = (LdapConnector) endpoint.getConnector();
 
-        String str;
+        String str = null;
         if ((str = ldapConnector.getQuery(endpoint, searchStr)) != null)
         {
             searchStr = str;
@@ -91,23 +100,24 @@ public class LDAPUtils
             throw new IllegalArgumentException("Missing a search statement");
         }
 
-        // logger.debug("searchStr1: " + searchStr);
-
         List paramNames = new ArrayList();
 
         if (transformedMessage != null)
+        {
             logger.debug("type of transformed msg: "
                     + transformedMessage.getClass());
+        }
 
-        logger.debug("transformed msg: " + transformedMessage);
+        // logger.debug("transformed msg: " + transformedMessage);
 
         ldapConnector.parseStatement(searchStr, paramNames);
 
         Object[] paramValues = ldapConnector.getParams(endpoint, paramNames,
                 new MuleMessage(transformedMessage));
 
-        logger.debug("paramValues: " + Arrays.asList(paramValues).toString());
-        logger.debug("searchStr before parsing: " + searchStr);
+        // logger.debug("paramValues: " +
+        // Arrays.asList(paramValues).toString());
+        // logger.debug("searchStr before parsing: " + searchStr);
 
         searchStr = ldapConnector.parseQuery(searchStr, paramValues);
 
@@ -120,7 +130,9 @@ public class LDAPUtils
     public static String dumpLDAPMessage(LDAPMessage ldapMsg)
     {
         if (ldapMsg == null)
+        {
             return "null (LDAPMessage)";
+        }
 
         StringBuffer sb = new StringBuffer();
         sb.append("LDAPMessage" + "\n");
@@ -129,14 +141,16 @@ public class LDAPUtils
         sb.append("ID: " + ldapMsg.getMessageID() + "\n");
         sb.append("Tag: " + ldapMsg.getTag() + "\n");
         sb.append("toString(): " + ldapMsg.toString() + "\n");
-        
+
         return sb.toString();
     }
 
     public static String dumpLDAPEntry(LDAPEntry ldapMsg)
     {
         if (ldapMsg == null)
+        {
             return "null (LDAPEntry)";
+        }
 
         StringBuffer sb = new StringBuffer();
         sb.append("LDAPEntry" + "\n");
@@ -150,7 +164,9 @@ public class LDAPUtils
     {
 
         if (msg == null)
+        {
             return "null (Object)";
+        }
 
         StringBuffer sb = new StringBuffer("\n");
 
