@@ -1,3 +1,13 @@
+/*
+ * $Id$
+ * --------------------------------------------------------------------------------------
+ * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
+ *
+ * The software in this package is published under the terms of the MuleSource MPL
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.providers.ldap;
 
 import java.util.HashMap;
@@ -5,6 +15,8 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.config.builders.QuickConfigurationBuilder;
 import org.mule.extras.client.MuleClient;
 import org.mule.providers.ldap.util.DSManager;
@@ -33,9 +45,10 @@ import com.novell.ldap.LDAPSearchResults;
 public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         FunctionalTestNotificationListener
 {
-
-    QuickConfigurationBuilder builder;
-    LdapConnector connector = null;
+    protected final Log logger = LogFactory.getLog(getClass());
+    
+    protected QuickConfigurationBuilder builder;
+    protected LdapConnector connector = null;
 
     // this is where we create our configuration
 
@@ -45,9 +58,9 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         System.out.println(StringMessageUtils.getBoilerPlate("Testing: "
                 + toString(), '=', 80));
 
-        //DSHelper.startDS();
+        // DSHelper.startDS();
         DSManager.getInstance().start();
-        System.out.println("ds started");
+        logger.debug("ds started");
 
         builder = new QuickConfigurationBuilder();
 
@@ -117,20 +130,21 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         assertNotNull(result);
         assertTrue(result.getPayload() == addReq);
 
-        result = client.send("ldap://ldap.out",
-                LDAPUtils.createSearchRequest(connector, "(cn="
-                        + addReq.getEntry().getAttribute("cn").getStringValue() + ")"), null);
+        result = client.send("ldap://ldap.out", LDAPUtils.createSearchRequest(
+                connector, "(cn="
+                        + addReq.getEntry().getAttribute("cn").getStringValue()
+                        + ")"), null);
 
-        //System.out.println("cn: "+addReq.getEntry().getAttribute("cn").getStringValue());
-        
+        // logger.debug("cn:
+        // "+addReq.getEntry().getAttribute("cn").getStringValue());
+
         assertNotNull(result);
         assertTrue(result.getPayload() instanceof LDAPSearchResults);
-        assertTrue(((LDAPSearchResults) result.getPayload()).next().getDN().equals(addReq.getEntry().getDN()));
+        assertTrue(((LDAPSearchResults) result.getPayload()).next().getDN()
+                .equals(addReq.getEntry().getDN()));
 
-        
-        
     }
-    
+
     public void testSendAddDupl() throws Exception
     {
         MuleClient client = new MuleClient();
@@ -143,15 +157,18 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         assertNotNull(result);
         assertTrue(result.getPayload() == addReq);
 
-        result = client.send("ldap://ldap.out",
-                LDAPUtils.createSearchRequest(connector, "(cn="
-                        + addReq.getEntry().getAttribute("cn").getStringValue() + ")"), null);
+        result = client.send("ldap://ldap.out", LDAPUtils.createSearchRequest(
+                connector, "(cn="
+                        + addReq.getEntry().getAttribute("cn").getStringValue()
+                        + ")"), null);
 
-        //System.out.println("cn: "+addReq.getEntry().getAttribute("cn").getStringValue());
-        
+        // logger.debug("cn:
+        // "+addReq.getEntry().getAttribute("cn").getStringValue());
+
         assertNotNull(result);
         assertTrue(result.getPayload() instanceof LDAPSearchResults);
-        assertTrue(((LDAPSearchResults) result.getPayload()).next().getDN().equals(addReq.getEntry().getDN()));
+        assertTrue(((LDAPSearchResults) result.getPayload()).next().getDN()
+                .equals(addReq.getEntry().getDN()));
 
         try
         {
@@ -159,11 +176,10 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             fail();
         } catch (DispatchException e)
         {
-            //expected, dup entry
-           assertEquals(((LDAPException)e.getCause()).getResultCode(),68);
+            // expected, dup entry
+            assertEquals(((LDAPException) e.getCause()).getResultCode(), 68);
         }
-        
-        
+
     }
 
     public void testDispatchReceiveSearch() throws Exception
@@ -264,21 +280,27 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                 break;
             }
 
-            System.out.println(LDAPUtils.dumpLDAPMessage(result.getPayload()));
+            logger.debug(LDAPUtils.dumpLDAPMessage(result.getPayload()));
 
             lastResult = result;
             count++;
         }
 
-        assertTrue(count == expected);
-        assertNull(result);
-        assertNotNull(lastResult);
-        assertTrue(lastResult.getPayload().getClass().toString(), lastResult
-                .getPayload() instanceof LDAPResponse);
-        assertTrue(((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
-    
-        //TODO not predictable
-    
+        assertTrue("count (" + count + ") != expected (" + expected + ")",
+                count == expected);
+        assertNull("result was not null", result);
+        assertNotNull("lastResult was null", lastResult);
+        assertTrue(lastResult.getPayload().getClass().toString()
+                + " instead of LDAPResponse",
+                lastResult.getPayload() instanceof LDAPResponse);
+        assertTrue(
+                ((LDAPResponse) lastResult.getPayload()).getType()
+                        + " type not expected (" + LDAPMessage.SEARCH_RESULT
+                        + ")",
+                ((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
+
+        // TODO not predictable
+
     }
 
     public void testDispatchReceiveSearchDeleted() throws Exception
@@ -320,13 +342,13 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                 break;
             }
 
-            System.out.println(LDAPUtils.dumpLDAPMessage(result.getPayload()));
+            logger.debug(LDAPUtils.dumpLDAPMessage(result.getPayload()));
 
             lastResult = result;
             count++;
         }
 
-        assertTrue(count == expected); //fails because of list returnded?
+        assertTrue(count == expected); // fails because of list returnded?
         assertNull(result);
         assertNotNull(lastResult);
         assertTrue(lastResult.getPayload() instanceof LDAPResponse);
@@ -395,7 +417,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                                 .getResultCode(), LDAPException.SUCCESS);
                         assertEquals(((LDAPResponse) result.getPayload())
                                 .getType(), LDAPMessage.ADD_RESPONSE);
-                        System.out.println("got " + current);
+                        logger.debug("got " + current);
                         current++;
                     }
 
@@ -434,7 +456,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
     {
         builder.disposeCurrent();
         DSManager.getInstance().stop();
-        //DSHelper.stopDS();
+        // DSHelper.stopDS();
     }
 
     public UMOConnector getConnector() throws Exception
