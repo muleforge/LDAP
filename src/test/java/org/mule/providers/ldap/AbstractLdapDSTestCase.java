@@ -18,15 +18,14 @@ public class AbstractLdapDSTestCase extends TestCase
 
     protected void setUp() throws Exception
     {
-        // TODO Auto-generated method stub
+
         super.setUp();
-        // DSHelper.startDS(allowAnonymousBind);
         DSManager.getInstance().start(allowAnonymousBind);
     }
 
     protected void tearDown() throws Exception
     {
-        // DSHelper.stopDS();
+
         DSManager.getInstance().stop();
         super.tearDown();
     }

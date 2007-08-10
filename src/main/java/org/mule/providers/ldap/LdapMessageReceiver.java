@@ -44,7 +44,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
             UMOEndpoint endpoint, long pollingFrequency)
             throws InitialisationException
     {
-        // TODO
+        // TODO for > 1.4.1
         // ,pollingFrequency
         super(connector, component, endpoint, pollingFrequency);
 
@@ -71,7 +71,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
         }
         catch (UMOException e)
         {
-            // TODO Auto-generated catch block
+
             throw new RuntimeException(e);
         }
 
@@ -95,7 +95,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
         }
         catch (ConnectException e)
         {
-            // TODO Auto-generated catch block
+
             handleException(e);
         }
 
@@ -126,7 +126,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
     {
 
         ((LdapConnector) this.connector).ensureConnected();
-        // TODO Auto-generated method stub
+
         super.doStart();
 
         ((LdapConnector) connector).addLDAPListener(this);

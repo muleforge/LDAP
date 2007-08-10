@@ -61,7 +61,6 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
     public void release()
     {
-        // TODO Auto-generated method stub
 
     }
 

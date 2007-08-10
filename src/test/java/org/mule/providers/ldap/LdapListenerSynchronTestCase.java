@@ -17,7 +17,7 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
 
     protected String getConfigResources()
     {
-        // TODO Auto-generated method stub
+
         return "LdapListenerTest.xml";
     }
 
@@ -83,15 +83,14 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
 
     protected void doFunctionalTearDown() throws Exception
     {
-        // TODO Auto-generated method stub
+
         DSManager.getInstance().stop();
-        // DSHelper.stopDS();
         super.doFunctionalTearDown();
     }
 
     protected void doPreFunctionalSetUp() throws Exception
     {
-        // DSHelper.startDS();
+
         DSManager.getInstance().start();
         super.doPreFunctionalSetUp();
     }

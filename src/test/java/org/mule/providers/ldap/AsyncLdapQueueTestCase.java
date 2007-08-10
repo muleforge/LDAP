@@ -27,7 +27,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
     public AsyncLdapQueueTestCase()
     {
         super(true);
-        // TODO Auto-generated constructor stub
+
     }
 
     public void testQueue() throws Exception

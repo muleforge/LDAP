@@ -116,7 +116,6 @@ public class LdapSConnector extends LdapConnector
 
         // super.setSsf(ssf);
 
-        // TODO Auto-generated method stub
         super.doInitialise();
     }
 
@@ -133,7 +132,7 @@ public class LdapSConnector extends LdapConnector
     // @Override
     protected boolean isAnonymousBindSupported()
     {
-        // TODO Auto-generated method stub
+
         return false;
     }
 

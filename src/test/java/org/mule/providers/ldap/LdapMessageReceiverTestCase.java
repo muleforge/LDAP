@@ -15,7 +15,7 @@ public class LdapMessageReceiverTestCase extends
 
     public UMOEndpoint getEndpoint() throws Exception
     {
-        // TODO Auto-generated method stub
+
         endpoint = new MuleEndpoint("ldap://ldap.in", true);
         return endpoint;
     }

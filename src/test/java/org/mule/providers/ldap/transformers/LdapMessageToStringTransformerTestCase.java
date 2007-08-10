@@ -15,7 +15,7 @@ public class LdapMessageToStringTransformerTestCase extends
 
     public Object getResultData()
     {
-        // TODO Auto-generated method stub
+
         try
         {
             String file = org.mule.util.FileUtils.readFileToString(new File(
@@ -31,13 +31,13 @@ public class LdapMessageToStringTransformerTestCase extends
 
     public UMOTransformer getRoundTripTransformer() throws Exception
     {
-        // TODO Auto-generated method stub
+
         return new StringToLDAPMessage();
     }
 
     public Object getTestData()
     {
-        // TODO Auto-generated method stub
+
         try
         {
             return new LDAPDeleteRequest("dn=test,o=toporga", null);
@@ -50,7 +50,7 @@ public class LdapMessageToStringTransformerTestCase extends
 
     public UMOTransformer getTransformer() throws Exception
     {
-        // TODO Auto-generated method stub
+
         return new LDAPMessageToString();
     }
 

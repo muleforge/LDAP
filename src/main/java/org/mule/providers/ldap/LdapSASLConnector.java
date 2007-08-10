@@ -160,7 +160,7 @@ public class LdapSASLConnector extends LdapConnector
     // @Override
     protected boolean isAnonymousBindSupported()
     {
-        // TODO Auto-generated method stub
+
         return false;
     }
 

@@ -71,13 +71,13 @@ public class LdapSConnectorTestCase extends AbstractConnectorTestCase
 
     public String getTestEndpointURI()
     {
-        // TODO Auto-generated method stub
+
         return "ldaps://ldap.out";
     }
 
     public Object getValidMessage() throws Exception
     {
-        // TODO Auto-generated method stub
+
         return new LDAPDeleteRequest("o=sevenSeas", null);
     }
 
