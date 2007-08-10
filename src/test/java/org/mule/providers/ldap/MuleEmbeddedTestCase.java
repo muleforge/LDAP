@@ -269,14 +269,29 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         UMOMessage lastResult = null;
 
         int count = 0;
-
-        // addCount AddResponses, addCount Search Responses, 1x Search Result
-        // ok, 1 deleted, 1 delete response
-        final int expected = (2 * addCount) + 1 - 1 + 1;
+        int tryCount = 0;
+        
+        // addCount * AddResponses, addCount * Search Responses, 1x Search Result
+        // ok, 1 delete response
+        final int expected = (2* addCount) + 1 - 1 + 1;
+        
+        //Wait until all dispatched messages are processed by DS
+        while(tryCount < 20 && connector.getMessageQueue().getMessageIDs().length != 6)
+        {
+        	Thread.yield();
+            Thread.sleep(2000);
+            logger.debug(tryCount+".try: Outstanding are "+ connector.getMessageQueue().getMessageIDs().length);
+            tryCount++;
+        }
+        
+        
+        assertTrue("Outstanding message count ("+connector.getMessageQueue().getMessageIDs().length+") not expected ("+6+")",connector.getMessageQueue().getMessageIDs().length == 6);
+       
+       
 
         while (true)
         {
-            result = client.receive("ldap://ldap.in", 40000);
+            result = client.receive("ldap://ldap.in", 15000);
 
             if (result == null)
             {
@@ -290,12 +305,18 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             count++;
         }
 
-        logger.warn("count (" + count + ") != expected (" + expected + ")");
+        if(count != expected)
+        {
+        	logger.warn("count (" + count + ") != expected (" + expected + ")");
+        }
+        
         assertNull("result was not null", result);
         assertNotNull("lastResult was null", lastResult);
         assertTrue(lastResult.getPayload().getClass().toString()
                 + " instead of LDAPResponse",
                 lastResult.getPayload() instanceof LDAPResponse);
+        
+        // TODO not predictable
         assertTrue(
                 ((LDAPResponse) lastResult.getPayload()).getType()
                         + " type not expected (" + LDAPMessage.SEARCH_RESULT
@@ -303,7 +324,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                 ((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
         assertTrue("count (" + count + ") != expected (" + expected + ")",
                 count == expected);
-        // TODO not predictable
+        
 
     }
 
