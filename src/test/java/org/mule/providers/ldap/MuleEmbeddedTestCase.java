@@ -255,12 +255,16 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                     .getRandomEntryAddRequest(), null);
         }
 
-        // Thread.sleep(1000);
+        //time for processing 
+        Thread.yield();
+        Thread.sleep(10000);
 
         client.dispatch("ldap://ldap.out", new LDAPDeleteRequest(last
                 .getEntry().getDN(), null), null);
 
-        // Thread.sleep(1000);
+        //time for processing 
+        Thread.yield();
+        Thread.sleep(10000);
 
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out/cn.payload", "*", null);
@@ -295,7 +299,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         while (true)
         {
-            result = client.receive("ldap://ldap.in", 15000);
+            result = client.receive("ldap://ldap.in", 20000);
 
             if (result == null)
             {
