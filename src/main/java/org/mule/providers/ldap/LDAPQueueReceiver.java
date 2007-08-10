@@ -80,7 +80,12 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
             LDAPMessageQueue queue = connector.getMessageQueue();
             LDAPMessage message = null;
 
-            if (queue != null && (message = queue.getResponse()) != null)
+            if (queue != null)
+            {
+                message = queue.getResponse();
+            }
+
+            if (message != null)
             {
 
                 // the message is a search result reference

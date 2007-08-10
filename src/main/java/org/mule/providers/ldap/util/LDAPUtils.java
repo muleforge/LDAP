@@ -81,8 +81,8 @@ public final class LDAPUtils
 
         LdapConnector ldapConnector = (LdapConnector) endpoint.getConnector();
 
-        String str = null;
-        if ((str = ldapConnector.getQuery(endpoint, searchStr)) != null)
+        final String str = ldapConnector.getQuery(endpoint, searchStr);
+        if (str != null)
         {
             searchStr = str;
         }
