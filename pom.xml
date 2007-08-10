@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mule.transports</groupId>
 	<artifactId>mule-transport-ldap</artifactId>
@@ -133,15 +135,16 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<configLocation>
-		http://svn.codehaus.org/mule/trunk/mule/buildtools/src/main/resources/codecheck/checkstyle.xml
-		</configLocation>
+						http://svn.codehaus.org/mule/trunk/mule/buildtools/src/main/resources/codecheck/checkstyle.xml
+					</configLocation>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<configuration>
-					<targetJdk>1.5</targetJdk>
+					<minimumTokens>100</minimumTokens>
+					<targetJdk>1.4</targetJdk>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -171,14 +174,14 @@
 				<configuration>
 					<links>
 						<link>
-		http://java.sun.com/j2ee/1.4/docs/api
-		</link>
+							http://java.sun.com/j2ee/1.4/docs/api
+						</link>
 						<link>
-		http://java.sun.com/j2se/1.4.2/docs/api
-		</link>
+							http://java.sun.com/j2se/1.4.2/docs/api
+						</link>
 						<link>
-		http://java.sun.com/j2se/1.5.0/docs/api
-		</link>
+							http://java.sun.com/j2se/1.5.0/docs/api
+						</link>
 					</links>
 				</configuration>
 			</plugin>
@@ -189,6 +192,10 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
+				<configuration>
+					<threshold>Low</threshold>
+					<effort>Max</effort>
+				</configuration>
 			</plugin>
 		</plugins>
 	</reporting>
