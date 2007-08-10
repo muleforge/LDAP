@@ -22,7 +22,7 @@ public class TrustAllCertsManager implements X509TrustManager
     public static TrustManager[] getTrustAllCertsManager()
     {
         return new TrustManager[]
-        { new TrustAllCertsManager() };
+        {new TrustAllCertsManager()};
     }
 
     public void checkClientTrusted(X509Certificate[] chain, String authType)

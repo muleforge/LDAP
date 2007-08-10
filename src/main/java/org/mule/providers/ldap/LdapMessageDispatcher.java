@@ -33,6 +33,7 @@ import com.novell.ldap.LDAPSearchResults;
 public class LdapMessageDispatcher extends AbstractMessageDispatcher
 {
 
+    private static final int DEFAULT_MINIMAL_TIMEOUT = 2000;
     private LdapConnector connector;
 
     public LdapMessageDispatcher(UMOImmutableEndpoint endpoint)
@@ -218,7 +219,7 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
                 return msg;
             }
 
-            long sleep = Math.min(2000, timeout
+            long sleep = Math.min(DEFAULT_MINIMAL_TIMEOUT, timeout
                     - (System.currentTimeMillis() - t0));
 
             if (sleep > 0)

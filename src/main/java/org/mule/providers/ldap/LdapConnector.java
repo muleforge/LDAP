@@ -10,6 +10,7 @@
 
 package org.mule.providers.ldap;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,6 +51,8 @@ import com.novell.ldap.LDAPUnsolicitedNotificationListener;
 public class LdapConnector extends AbstractConnector
 {
 
+    private static final int ldapVersion = LDAPConnection.LDAP_V3;
+    private static final int DEFAULT_STRINGBUFFER_SIZE = 200;
     public static final String PROPERTY_POLLING_FREQUENCY = "pollingFrequency";
     public static final String PROPERTY_START_UNSOLICITED_NOTIFICATION_LISTENER = "startUnsolicitedNotificationListener";
     private static final Pattern STATEMENT_ARGS = Pattern
@@ -59,13 +62,11 @@ public class LdapConnector extends AbstractConnector
 
     private LDAPMessageQueue messageQueue = null;
 
-    private long pollingFrequency;
+    private long pollingFrequency = DEFAULT_POLLING_FREQUENCY;
 
     private int ldapPort = LDAPConnection.DEFAULT_PORT;
 
     private int searchScope = LDAPConnection.SCOPE_SUB;
-
-    private final int ldapVersion = LDAPConnection.LDAP_V3;
 
     private String ldapHost = null;
 
@@ -77,7 +78,7 @@ public class LdapConnector extends AbstractConnector
 
     private boolean startUnsolicitedNotificationListener = false;
 
-    private List attributes = null;// attributes, default all
+    private List attributes = null; // attributes, default all
 
     private int dereference = LDAPSearchConstraints.DEREF_NEVER; // dereference,
     // default
@@ -92,18 +93,17 @@ public class LdapConnector extends AbstractConnector
 
     private LDAPConnection ldapConnection = null;
 
-    private Map queries;
+    private Map queries = null;
 
-    private Set propertyExtractors;
+    private Set propertyExtractors = null;
 
-    private Set queryValueExtractors;
+    private Set queryValueExtractors = null;
 
     protected void doInitialise() throws InitialisationException
     {
 
         try
         {
-
             // setup property Extractors for queries
             if (queryValueExtractors == null)
             {
@@ -143,18 +143,51 @@ public class LdapConnector extends AbstractConnector
                         ClassUtils.NO_ARGS));
             }
         }
-        catch (Exception e)
+        catch (SecurityException e)
         {
             throw new InitialisationException(CoreMessages
                     .failedToCreate("LDAP Connector"), e, this);
         }
+        catch (IllegalArgumentException e)
+        {
+            throw new InitialisationException(CoreMessages
+                    .failedToCreate("LDAP Connector"), e, this);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new InitialisationException(CoreMessages
+                    .failedToCreate("LDAP Connector"), e, this);
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new InitialisationException(CoreMessages
+                    .failedToCreate("LDAP Connector"), e, this);
+        }
+        catch (InstantiationException e)
+        {
+            throw new InitialisationException(CoreMessages
+                    .failedToCreate("LDAP Connector"), e, this);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new InitialisationException(CoreMessages
+                    .failedToCreate("LDAP Connector"), e, this);
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new InitialisationException(CoreMessages
+                    .failedToCreate("LDAP Connector"), e, this);
+        }
+
     }
 
     protected void ensureConnected() throws ConnectException
     {
 
         if (this.isDisposing())
+        {
             return;
+        }
 
         if (ldapConnection == null || !ldapConnection.isConnected()
                 || !ldapConnection.isConnectionAlive())
@@ -188,9 +221,14 @@ public class LdapConnector extends AbstractConnector
         logger.debug("try connect to " + ldapHost + ":" + ldapPort + " ...");
 
         if (StringUtils.isEmpty(ldapHost))
+        {
             throw new IllegalArgumentException("ldapHost must not be empty");
+        }
+
         if (password == null)
+        {
             password = "";
+        }
 
         setLDAPConnection();
 
@@ -238,11 +276,15 @@ public class LdapConnector extends AbstractConnector
 
             int resultCode = e.getResultCode();
 
-            if (resultCode == 32)
+            if (resultCode == LDAPException.NO_SUCH_OBJECT)
+            {
                 return true;
+            }
 
-            if (resultCode == 50)
+            if (resultCode == LDAPException.INSUFFICIENT_ACCESS_RIGHTS)
+            {
                 return false;
+            }
 
             // e.printStackTrace();
 
@@ -271,6 +313,7 @@ public class LdapConnector extends AbstractConnector
     {
 
         if (ldapConnection != null)
+        {
             try
             {
                 ldapConnection.disconnect();
@@ -280,6 +323,7 @@ public class LdapConnector extends AbstractConnector
                 // ignored
                 ldapConnection = null;
             }
+        }
         else
         {
 
@@ -401,7 +445,7 @@ public class LdapConnector extends AbstractConnector
 
             return serviceDescriptor.createMessageReceiver(this, component,
                     endpoint, new Object[]
-                    { new Long(polling) });
+                    {new Long(polling)});
 
         }
         catch (Exception e)
@@ -466,7 +510,7 @@ public class LdapConnector extends AbstractConnector
             return query;
         }
         Matcher m = STATEMENT_ARGS.matcher(query);
-        StringBuffer sb = new StringBuffer(200);
+        StringBuffer sb = new StringBuffer(DEFAULT_STRINGBUFFER_SIZE);
         int i = 0;
         while (m.find())
         {
@@ -623,7 +667,7 @@ public class LdapConnector extends AbstractConnector
             return stmt;
         }
         Matcher m = STATEMENT_ARGS.matcher(stmt);
-        StringBuffer sb = new StringBuffer(200);
+        StringBuffer sb = new StringBuffer(DEFAULT_STRINGBUFFER_SIZE);
         while (m.find())
         {
             String key = m.group();

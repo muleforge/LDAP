@@ -86,7 +86,7 @@ public class StringToLDAPMessage extends AbstractTransformer
             LDAPReader reader = dsml ? (LDAPReader) new DSMLReader(in)
                     : (LDAPReader) new LDIFReader(in);
 
-            LDAPMessage result = null;// reader.readMessage();
+            LDAPMessage result = null;
             List res = new ArrayList();
 
             while ((result = reader.readMessage()) != null)

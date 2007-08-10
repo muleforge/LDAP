@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import org.mule.impl.MuleMessage;
 import org.mule.providers.ldap.util.LDAPUtils;
+import org.mule.umo.UMOException;
 import org.mule.umo.UMOMessage;
 import org.mule.umo.endpoint.UMOImmutableEndpoint;
 import org.mule.umo.provider.UMOMessageAdapter;
@@ -125,11 +126,11 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                             while (allValues.hasMoreElements())
                             {
 
-                                String Value =
+                                String value =
 
                                 (String) allValues.nextElement();
 
-                                System.out.println("\t\t\t" + Value);
+                                System.out.println("\t\t\t" + value);
 
                             }
 
@@ -219,7 +220,12 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
             }// endif
 
         }
-        catch (Exception e)
+        catch (UMOException e)
+        {
+            // e.printStackTrace();
+            connector.handleException(e);
+        }
+        catch (LDAPException e)
         {
             // e.printStackTrace();
             connector.handleException(e);

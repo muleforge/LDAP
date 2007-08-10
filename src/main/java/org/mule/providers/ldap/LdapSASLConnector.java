@@ -106,14 +106,14 @@ public class LdapSASLConnector extends LdapConnector
         if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
         {
             getLdapConnection().bind((String) null, (String) null, new String[]
-            { mechanism }, null, (Object) null);
+            {mechanism}, null, (Object) null);
         }
         else
         {
 
-            getLdapConnection()
-                    .bind(getLoginDN(), "dn: " + getLoginDN(), new String[]
-                    { mechanism }, null, new BindCallbackHandler(getPassword()));
+            getLdapConnection().bind(getLoginDN(), "dn: " + getLoginDN(),
+                    new String[]
+                    {mechanism}, null, new BindCallbackHandler(getPassword()));
         }
     }
 

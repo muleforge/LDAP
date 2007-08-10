@@ -11,6 +11,8 @@
 package org.mule.providers.ldap;
 
 import java.io.File;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
@@ -59,7 +61,6 @@ public class LdapSConnector extends LdapConnector
 
         try
         {
-
             if (trustAll)
             {
                 SSLContext context = SSLContext.getInstance("TLS");
@@ -103,12 +104,13 @@ public class LdapSConnector extends LdapConnector
 
             // TODO SSL<->TLS (TLS maybe require startTLS() call on lc
             // ssf = new LDAPJSSEStartTLSFactory();
-
         }
-        catch (Exception e)
+        catch (KeyManagementException e)
         {
-            // TODO Auto-generated catch block
-
+            throw new InitialisationException(e, this);
+        }
+        catch (NoSuchAlgorithmException e)
+        {
             throw new InitialisationException(e, this);
         }
 

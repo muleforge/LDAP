@@ -28,7 +28,7 @@ import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPSearchRequest;
 
-public class LDAPUtils
+public final class LDAPUtils
 {
 
     protected static final Log logger = LogFactory.getLog(LDAPUtils.class);
