@@ -13,6 +13,8 @@ package org.mule.providers.ldap;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.impl.MuleMessage;
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.umo.UMOException;
@@ -32,6 +34,11 @@ import com.novell.ldap.LDAPSearchResultReference;
 
 class LDAPQueueReceiver implements javax.resource.spi.work.Work
 {
+
+    /**
+     * logger used by this class
+     */
+    protected final Log logger = LogFactory.getLog(getClass());
 
     private LdapConnector connector;
 
@@ -85,12 +92,12 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
                     ((LDAPSearchResultReference) message).getReferrals();
 
-                    System.out.println("Search result references:");
+                    logger.debug("Search result references:");
 
                     for (int i = 0; i < urls.length; i++)
                     {
 
-                        System.out.println(urls[i]);
+                        logger.debug(urls[i]);
                     }
 
                 }
@@ -99,9 +106,9 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
                     LDAPEntry entry = ((LDAPSearchResult) message).getEntry();
 
-                    System.out.println("\n" + entry.getDN());
+                    logger.debug("\n" + entry.getDN());
 
-                    System.out.println("\tAttributes: ");
+                    logger.debug("\tAttributes: ");
 
                     LDAPAttributeSet attributeSet = entry.getAttributeSet();
 
@@ -116,7 +123,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
                         String attributeName = attribute.getName();
 
-                        System.out.println("\t\t" + attributeName);
+                        logger.debug("\t\t" + attributeName);
 
                         Enumeration allValues = attribute.getStringValues();
 
@@ -130,7 +137,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
                                 (String) allValues.nextElement();
 
-                                System.out.println("\t\t\t" + value);
+                                logger.debug("\t\t\t" + value);
 
                             }
 
@@ -154,8 +161,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                     if (status == LDAPException.SUCCESS)
                     {
 
-                        System.out
-                                .println(">>>> Asynchronous search succeeded.");
+                        logger.debug(">>>> Asynchronous search succeeded.");
 
                     }
 
@@ -166,12 +172,12 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
                         String urls[] = ((LDAPResponse) message).getReferrals();
 
-                        System.out.println("Referrals:");
+                        logger.debug("Referrals:");
 
                         for (int i = 0; i < urls.length; i++)
                         {
 
-                            System.out.println(urls[i]);
+                            logger.debug(urls[i]);
                         }
 
                     }
@@ -179,7 +185,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                     else
                     {
 
-                        System.out.println("Asynchronous search failed.");
+                        logger.debug("Asynchronous search failed.");
 
                         /*
                          * throw new LDAPException(response.getErrorMessage(),
@@ -189,22 +195,19 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                          * response.getMatchedDN());
                          */
 
-                        System.err.println("errmsg: "
-                                + response.getErrorMessage());
-                        System.err.println("status" + status);
-                        System.err.println("res code: "
-                                + response.getResultCode());
-                        System.err.println("dn: " + response.getMatchedDN());
-                        System.err.println("msg was: " + message);
+                        logger.debug("errmsg: " + response.getErrorMessage());
+                        logger.debug("status" + status);
+                        logger.debug("res code: " + response.getResultCode());
+                        logger.debug("dn: " + response.getMatchedDN());
+                        logger.debug("msg was: " + message);
 
                     }
 
                 }
 
-                System.out.println("   >>>>  message id "
-                        + message.getMessageID());
-                System.out.println("   >>>>  message tag " + message.getTag());
-                System.out.println("   >>>>  message "
+                logger.debug("   >>>>  message id " + message.getMessageID());
+                logger.debug("   >>>>  message tag " + message.getTag());
+                logger.debug("   >>>>  message "
                         + LDAPUtils.dumpLDAPMessage(message));
 
                 UMOMessageAdapter adapter = connector

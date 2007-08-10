@@ -32,7 +32,7 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
 
         LDAPSearchResultToString trans = new LDAPSearchResultToString();
         String s = (String) trans.transform(msg.getPayload());
-        System.out.println(s);
+        logger.debug(s);
         assertTrue(s.indexOf("<batchResponse") > -1);
         assertTrue(s.indexOf("<searchResultEntry") > -1);
         assertTrue(s.indexOf("dn=\"o=sevenseas\"><attr name=\"o\">") > -1);
@@ -48,7 +48,7 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
 
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof LDAPMessage);
-        System.out.println(msg.getPayload());
+        logger.debug(msg.getPayload());
 
     }
 
@@ -70,14 +70,11 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof String);
 
-        // System.out.println(msg.getPayload());
+        // logger.debug(msg.getPayload());
 
         assertTrue(msg.getPayloadAsString().indexOf("<batchResponse") > -1);
         assertTrue(msg.getPayloadAsString().indexOf(
                 "<searchResultEntry dn=\"cn=test-cn") > -1);
-
-        System.out.println(StringUtils.countMatches(msg.getPayloadAsString(),
-                "test-cn-"));
 
         assertTrue(StringUtils.countMatches(msg.getPayloadAsString(),
                 "test-cn-") >= addCount);
@@ -88,13 +85,13 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
     {
         // TODO Auto-generated method stub
         DSManager.getInstance().stop();
-        //DSHelper.stopDS();
+        // DSHelper.stopDS();
         super.doFunctionalTearDown();
     }
 
     protected void doPreFunctionalSetUp() throws Exception
     {
-        //DSHelper.startDS();
+        // DSHelper.startDS();
         DSManager.getInstance().start();
         super.doPreFunctionalSetUp();
     }

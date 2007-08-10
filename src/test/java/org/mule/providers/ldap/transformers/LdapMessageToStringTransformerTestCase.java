@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.umo.transformer.UMOTransformer;
-//import org.mule.util.FileUtils;
+import org.mule.umo.transformer.UMOTransformer; //import org.mule.util.FileUtils;
 
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPException;
@@ -21,9 +20,10 @@ public class LdapMessageToStringTransformerTestCase extends
         {
             String file = org.mule.util.FileUtils.readFileToString(new File(
                     "src/test/resources/LDAPDeleteRequest.dsml"));
-            System.out.println(file);
+            logger.debug(file);
             return file;
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             throw new RuntimeException(e);
         }
@@ -41,7 +41,8 @@ public class LdapMessageToStringTransformerTestCase extends
         try
         {
             return new LDAPDeleteRequest("dn=test,o=toporga", null);
-        } catch (LDAPException e)
+        }
+        catch (LDAPException e)
         {
             throw new RuntimeException(e);
         }
@@ -55,8 +56,8 @@ public class LdapMessageToStringTransformerTestCase extends
 
     public boolean compareRoundtripResults(Object expected, Object result)
     {
-        System.out.println(LDAPUtils.dumpLDAPMessage(expected));
-        System.out.println("resu"+ LDAPUtils.dumpLDAPMessage(result));
+        logger.debug(LDAPUtils.dumpLDAPMessage(expected));
+        logger.debug("resu" + LDAPUtils.dumpLDAPMessage(result));
 
         if (!(expected instanceof LDAPDeleteRequest)
                 || !(result instanceof LDAPDeleteRequest))
@@ -71,8 +72,6 @@ public class LdapMessageToStringTransformerTestCase extends
 
         return false;
 
-      
-        
     }
 
 }

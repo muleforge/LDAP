@@ -62,7 +62,7 @@ public class LDAPEntryToAddRequest extends AbstractTransformer
             // TODO LDAPCOntrols
             LDAPAddRequest request = new LDAPAddRequest(entry, null);
 
-            // System.out.println("tranf: id: " + request.getMessageID());
+            // logger.debug("tranf: id: " + request.getMessageID());
 
             return request;
         }

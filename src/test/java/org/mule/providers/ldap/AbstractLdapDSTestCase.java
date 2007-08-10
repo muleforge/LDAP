@@ -11,22 +11,22 @@ public class AbstractLdapDSTestCase extends TestCase
 
     protected AbstractLdapDSTestCase(boolean allowAnonymousBind)
     {
-        
+
         super();
         this.allowAnonymousBind = allowAnonymousBind;
     }
-    
+
     protected void setUp() throws Exception
     {
         // TODO Auto-generated method stub
         super.setUp();
-        //DSHelper.startDS(allowAnonymousBind);
+        // DSHelper.startDS(allowAnonymousBind);
         DSManager.getInstance().start(allowAnonymousBind);
     }
 
     protected void tearDown() throws Exception
     {
-        //DSHelper.stopDS();
+        // DSHelper.stopDS();
         DSManager.getInstance().stop();
         super.tearDown();
     }

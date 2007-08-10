@@ -55,8 +55,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
     protected void setUp() throws Exception
     {
 
-        System.out.println(StringMessageUtils.getBoilerPlate("Testing: "
-                + toString(), '=', 80));
+        logger.debug(StringMessageUtils.getBoilerPlate(
+                "Testing: " + toString(), '=', 80));
 
         // DSHelper.startDS();
         DSManager.getInstance().start();
@@ -255,14 +255,14 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                     .getRandomEntryAddRequest(), null);
         }
 
-        //time for processing 
+        // time for processing
         Thread.yield();
         Thread.sleep(10000);
 
         client.dispatch("ldap://ldap.out", new LDAPDeleteRequest(last
                 .getEntry().getDN(), null), null);
 
-        //time for processing 
+        // time for processing
         Thread.yield();
         Thread.sleep(10000);
 
@@ -274,28 +274,34 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         int count = 0;
         int tryCount = 0;
-        
-        // addCount * AddResponses, addCount * Search Responses, 1x Search Result
+
+        // addCount * AddResponses, addCount * Search Responses, 1x Search
+        // Result
         // ok, 1 delete response
-        final int expected = (2* addCount) + 1 - 1 + 1;
-        
-        //Wait until all dispatched messages are processed by DS
-        while(tryCount < 20 && connector.getMessageQueue().getMessageIDs().length != 6)
+        final int expected = (2 * addCount) + 1 - 1 + 1;
+
+        // Wait until all dispatched messages are processed by DS
+        while (tryCount < 20
+                && connector.getMessageQueue().getMessageIDs().length != 6)
         {
-        	Thread.yield();
+            Thread.yield();
             Thread.sleep(2000);
-            logger.debug(tryCount+".try: Outstanding are "+ connector.getMessageQueue().getMessageIDs().length);
+            logger.debug(tryCount + ".try: Outstanding are "
+                    + connector.getMessageQueue().getMessageIDs().length);
             tryCount++;
         }
-        
-        
-        assertTrue("Outstanding message count ("+connector.getMessageQueue().getMessageIDs().length+") not expected ("+6+")",connector.getMessageQueue().getMessageIDs().length == 6);
-       
-       //time for processing 
+
+        assertTrue("Outstanding message count ("
+                + connector.getMessageQueue().getMessageIDs().length
+                + ") not expected (" + 6 + ")", connector.getMessageQueue()
+                .getMessageIDs().length == 6);
+
+        // time for processing
         Thread.yield();
         Thread.sleep(10000);
-        
-        logger.debug("Outstanding: "+connector.getMessageQueue().getMessageIDs().length);
+
+        logger.debug("Outstanding: "
+                + connector.getMessageQueue().getMessageIDs().length);
 
         while (true)
         {
@@ -313,17 +319,17 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             count++;
         }
 
-        if(count != expected)
+        if (count != expected)
         {
-        	logger.warn("count (" + count + ") != expected (" + expected + ")");
+            logger.warn("count (" + count + ") != expected (" + expected + ")");
         }
-        
+
         assertNull("result was not null", result);
         assertNotNull("lastResult was null", lastResult);
         assertTrue(lastResult.getPayload().getClass().toString()
                 + " instead of LDAPResponse",
                 lastResult.getPayload() instanceof LDAPResponse);
-        
+
         // TODO not predictable
         assertTrue(
                 ((LDAPResponse) lastResult.getPayload()).getType()
@@ -332,7 +338,6 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                 ((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
         assertTrue("count (" + count + ") != expected (" + expected + ")",
                 count == expected);
-        
 
     }
 

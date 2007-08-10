@@ -26,9 +26,10 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
         {
             String file = org.mule.util.FileUtils.readFileToString(new File(
                     "src/test/resources/LDAPMultipleRequest.dsml"));
-            System.out.println(file);
+            logger.debug(file);
             return file;
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             throw new RuntimeException(e);
         }
@@ -74,7 +75,8 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
             list.add(msg);
 
             return list;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }
@@ -88,8 +90,8 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
 
     public boolean compareRoundtripResults(Object expected, Object result)
     {
-        // System.out.println(LDAPUtils.dumpLDAPMessage(expected));
-        // System.out.println("resu"+ LDAPUtils.dumpLDAPMessage(result));
+        // logger.debug(LDAPUtils.dumpLDAPMessage(expected));
+        // logger.debug("resu"+ LDAPUtils.dumpLDAPMessage(result));
 
         if (!(expected instanceof List) || !(result instanceof List))
             return false;
@@ -106,7 +108,7 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
             LDAPMessage m1 = (LDAPMessage) it.next();
             LDAPMessage m2 = (LDAPMessage) ex.get(i);
 
-            //System.out.println(m1.getType()+"//"+m2.getType());
+            // logger.debug(m1.getType()+"//"+m2.getType());
 
             if (m1.getType() != m2.getType())
                 return false;

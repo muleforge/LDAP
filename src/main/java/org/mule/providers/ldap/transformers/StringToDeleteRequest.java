@@ -45,7 +45,7 @@ public class StringToDeleteRequest extends AbstractTransformer
             // TODO LDAPCOntrols
             LDAPDeleteRequest request = new LDAPDeleteRequest(content, null);
 
-            // System.out.println("tranf: id: " + request.getMessageID());
+            // logger.debug("tranf: id: " + request.getMessageID());
 
             return request;
         }

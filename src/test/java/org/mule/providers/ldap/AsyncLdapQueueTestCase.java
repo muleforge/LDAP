@@ -1,5 +1,7 @@
 package org.mule.providers.ldap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.providers.ldap.util.TestHelper;
 
@@ -16,6 +18,11 @@ import com.novell.ldap.LDAPSearchResult;
 
 public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
 {
+
+    /**
+     * logger used by this class
+     */
+    protected final Log logger = LogFactory.getLog(getClass());
 
     public AsyncLdapQueueTestCase()
     {
@@ -75,14 +82,14 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
 
                         try
                         {
-                            System.out.println("resp: "
-                                    + queue.isResponseReceived());
-                        } catch (RuntimeException e1)
-                        {
-                            System.err.println("error response received");
+                            logger.debug("resp: " + queue.isResponseReceived());
                         }
-                        System.out.println("size: "
-                                + queue.getMessageIDs().length);
+                        catch (RuntimeException e1)
+                        {
+                            logger.debug("error response received");
+
+                        }
+                        logger.debug("size: " + queue.getMessageIDs().length);
 
                         try
                         {
@@ -96,17 +103,18 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                             if (msg instanceof LDAPResponse)
                             {
                                 LDAPResponse response = (LDAPResponse) msg;
-                                System.out.println(msg.getClass().getName()
+                                logger.debug(msg.getClass().getName()
                                         + "//Type: "
                                         + LDAPUtils
                                                 .evaluateMessageType(response)
                                         + "//Id: " + response.getMessageID()
                                         + "//Tag: " + response.getTag()
                                         + "//MDN: " + response.getMatchedDN());
-                            } else if (msg instanceof LDAPSearchResult)
+                            }
+                            else if (msg instanceof LDAPSearchResult)
                             {
                                 LDAPSearchResult response = (LDAPSearchResult) msg;
-                                System.out.println(" --> "
+                                logger.debug(" --> "
                                         + msg.getClass().getName()
                                         + "//Type: "
                                         + LDAPUtils
@@ -115,21 +123,24 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                                         + "//Tag: " + response.getTag()
                                         + "//found: "
                                         + response.getEntry().getDN());
-                            } else
+                            }
+                            else
                             {
                                 fail();
                             }
 
                             i++;
 
-                        } catch (Exception e)
+                        }
+                        catch (Exception e)
                         {
                             e.printStackTrace();
                             fail(e.toString());
 
                         }
                     }// end while
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.printStackTrace();
                     fail(e.toString());
@@ -162,7 +173,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
             msg.setTag("test_tag_(" + msg.getEntry().getDN() + ")_" + i);
             // map.put(msg.getTag(), new Integer(id));
             queue = lc.sendRequest(msg, queue);
-            // System.out.println("send "+msg.getMessageID());
+            // logger.debug("send "+msg.getMessageID());
 
             Thread.sleep(200);
 
@@ -182,7 +193,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                         .getDN(), null);
                 delreq.setTag("delete " + i);
                 queue = lc.sendRequest(delreq, queue);
-                // System.out.println("send "+delreq.getMessageID());
+                // logger.debug("send "+delreq.getMessageID());
             }
 
             Thread.sleep(300);
@@ -192,7 +203,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                     Integer.MAX_VALUE, 0, false, null);
             sreq.setTag("search while " + i);
             queue = lc.sendRequest(sreq, queue);
-            // System.out.println("send "+sreq.getMessageID());
+            // logger.debug("send "+sreq.getMessageID());
 
         }
 

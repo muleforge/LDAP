@@ -15,7 +15,8 @@ public class AnonymousBindTestCase extends TestCase
         try
         {
             anonymousBind(true);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             fail(e.toString());
@@ -29,7 +30,8 @@ public class AnonymousBindTestCase extends TestCase
         {
             anonymousBind(false);
             fail("exception expected");
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             // expected
 
@@ -40,7 +42,7 @@ public class AnonymousBindTestCase extends TestCase
     public void anonymousBind(boolean allow) throws Exception
     {
 
-        //DSHelper.startDS(allow);
+        // DSHelper.startDS(allow);
         DSManager.getInstance().start(allow);
 
         LdapConnector c = new LdapConnector();
@@ -56,9 +58,10 @@ public class AnonymousBindTestCase extends TestCase
             c.connect();
             c.ensureConnected();
 
-        } finally
+        }
+        finally
         {
-            //DSHelper.stopDS();
+            // DSHelper.stopDS();
             DSManager.getInstance().stop();
         }
 

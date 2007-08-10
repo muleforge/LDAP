@@ -25,7 +25,8 @@ public class EndpointTestCase extends AbstractMuleTestCase
         {
             new MuleEndpointURI("ldap://ldap.i");
             fail();
-        } catch (MalformedEndpointException e)
+        }
+        catch (MalformedEndpointException e)
         {
 
             assertTrue(true);
@@ -40,7 +41,8 @@ public class EndpointTestCase extends AbstractMuleTestCase
         {
             new MuleEndpointURI("ldap://ldap.in/xxx");
             fail();
-        } catch (MalformedEndpointException e)
+        }
+        catch (MalformedEndpointException e)
         {
 
             assertTrue(true);
@@ -55,7 +57,8 @@ public class EndpointTestCase extends AbstractMuleTestCase
         {
             new MuleEndpointURI("ldap://ldapout");
             fail();
-        } catch (MalformedEndpointException e)
+        }
+        catch (MalformedEndpointException e)
         {
 
             assertTrue(true);

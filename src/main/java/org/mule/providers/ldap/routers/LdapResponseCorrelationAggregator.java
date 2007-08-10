@@ -44,15 +44,15 @@ public class LdapResponseCorrelationAggregator extends
 
                 try
                 {
-                    System.out.println(">--- aggregator should ---> "
+                    logger.debug(">--- aggregator should ---> "
                             + LDAPUtils.dumpLDAPMessage(event
                                     .getTransformedMessage()));
 
                     if (event.getTransformedMessage() instanceof LDAPResponse)
                     {
                         // last message is a LDapResponse
-                        System.out
-                                .println(">--- aggregator should ---> shouldAggregateEvents return true");
+                        logger
+                                .debug(">--- aggregator should ---> shouldAggregateEvents return true");
                         return true;
                     }
                 }
@@ -71,7 +71,7 @@ public class LdapResponseCorrelationAggregator extends
             throws RoutingException
     {
 
-        System.out.println(">--- aggregator enter aggregateEvents ---> ");
+        logger.debug(">--- aggregator enter aggregateEvents ---> ");
 
         LDAPMessage msg = null;
         UMOEvent event = null;
@@ -102,7 +102,7 @@ public class LdapResponseCorrelationAggregator extends
         if (event != null)
         {
 
-            System.out.println(">--- aggregator leave  aggregateEvents with "
+            logger.debug(">--- aggregator leave  aggregateEvents with "
                     + results.size() + " msgs ---> ");
             return new MuleMessage(results, event.getMessage());
         }

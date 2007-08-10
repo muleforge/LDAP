@@ -127,8 +127,8 @@ public class LdapSASLConnector extends LdapConnector
         for (int i = 0; i < ps.length; i++)
         {
             Provider provider = ps[i];
-            System.out.println(provider.getClass() + "/" + provider.getName()
-                    + "/" + provider.getVersion() + "/" + provider.getInfo());
+            logger.debug(provider.getClass() + "/" + provider.getName() + "/"
+                    + provider.getVersion() + "/" + provider.getInfo());
 
         }
 

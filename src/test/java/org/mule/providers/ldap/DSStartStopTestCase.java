@@ -2,18 +2,23 @@ package org.mule.providers.ldap;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.providers.ldap.util.DSManager;
 
 public class DSStartStopTestCase extends TestCase
 {
 
-    
+    /**
+     * logger used by this class
+     */
+    protected final Log logger = LogFactory.getLog(getClass());
 
     public void testDSStartStop() throws Exception
     {
         DSManager m = DSManager.getInstance();
-        
-        System.out.println(m.getClass().getClassLoader());
+
+        logger.debug(m.getClass().getClassLoader());
 
         assertTrue(DSManager.checkSocketNotConnected());
 
@@ -42,7 +47,7 @@ public class DSStartStopTestCase extends TestCase
         assertTrue(DSManager.checkSocketNotConnected());
 
     }
-    
+
     public void testDSAlreadyRunning() throws Exception
     {
         DSManager m = DSManager.getInstance();
@@ -50,26 +55,25 @@ public class DSStartStopTestCase extends TestCase
         assertTrue(DSManager.checkSocketNotConnected());
 
         m.start();
-        
+
         try
         {
             m.start();
             fail();
-        } catch (RuntimeException e)
+        }
+        catch (RuntimeException e)
         {
-           //expected
+            // expected
         }
 
         assertFalse(DSManager.checkSocketNotConnected());
 
         m.stop();
-        
+
         m.stop();
-        
+
         assertTrue(DSManager.checkSocketNotConnected());
 
     }
-    
-    
 
 }

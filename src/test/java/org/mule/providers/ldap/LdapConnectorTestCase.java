@@ -44,7 +44,7 @@ public class LdapConnectorTestCase extends AbstractConnectorTestCase
     protected void doSetUp() throws Exception
     {
         super.doSetUp();
-        //DSHelper.startDS();
+        // DSHelper.startDS();
         DSManager.getInstance().start();
 
     }
@@ -52,7 +52,7 @@ public class LdapConnectorTestCase extends AbstractConnectorTestCase
     protected void doTearDown() throws Exception
     {
         DSManager.getInstance().stop();
-        //DSHelper.stopDS();
+        // DSHelper.stopDS();
         super.doTearDown();
 
     }
