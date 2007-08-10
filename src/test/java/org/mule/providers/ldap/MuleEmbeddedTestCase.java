@@ -287,7 +287,11 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         
         assertTrue("Outstanding message count ("+connector.getMessageQueue().getMessageIDs().length+") not expected ("+6+")",connector.getMessageQueue().getMessageIDs().length == 6);
        
-       
+       //time for processing 
+        Thread.yield();
+        Thread.sleep(10000);
+        
+        logger.debug("Outstanding: "+connector.getMessageQueue().getMessageIDs().length);
 
         while (true)
         {
