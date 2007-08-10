@@ -31,7 +31,7 @@ import com.novell.ldap.LDAPSearchRequest;
 public final class LDAPUtils
 {
 
-    protected static final Log logger = LogFactory.getLog(LDAPUtils.class);
+    private static final Log logger = LogFactory.getLog(LDAPUtils.class);
 
     private LDAPUtils()
     {

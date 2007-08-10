@@ -93,8 +93,10 @@ public class LdapResponseCorrelationAggregator extends
             logger.error(e);
 
             if (event != null)
+            {
                 throw new RoutingException(event.getMessage(), event
                         .getEndpoint());
+            }
 
             throw new RuntimeException(e);
         }

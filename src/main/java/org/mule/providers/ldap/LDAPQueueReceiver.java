@@ -38,7 +38,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
     /**
      * logger used by this class
      */
-    protected final Log logger = LogFactory.getLog(getClass());
+    private final Log logger = LogFactory.getLog(getClass());
 
     private LdapConnector connector;
 
@@ -220,7 +220,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
                 listener.onMessage(new MuleMessage(adapter), endpoint);
 
-            }// endif
+            } // endif
 
         }
         catch (UMOException e)

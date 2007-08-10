@@ -240,7 +240,7 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
         }
         while (true);
 
-    }// end method
+    } // end method
 
     public void doDispose()
     {
