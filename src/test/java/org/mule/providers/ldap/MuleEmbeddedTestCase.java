@@ -352,12 +352,14 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             client.dispatch("ldap://ldap.out", last = TestHelper
                     .getRandomEntryAddRequest(), null);
 
-        Thread.sleep(1000);
+        Thread.yield();
+        Thread.sleep(10000);
 
         client.dispatch("ldap://ldap.out", new LDAPDeleteRequest(last
                 .getEntry().getDN(), null), null);
 
-        Thread.sleep(3000);
+        Thread.yield();
+        Thread.sleep(10000);
 
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out/cn.payload", last.getEntry().getDN(),
@@ -386,16 +388,18 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             count++;
         }
 
-        assertTrue(count == expected); // fails because of list returnded?
+        assertTrue(count == expected); // fails because of list returnded or
+        // processing time to short?
         assertNull(result);
         assertNotNull(lastResult);
         assertTrue(lastResult.getPayload() instanceof LDAPResponse);
 
         // TODO order is not predictable
-        // assertTrue("Check type: "+((LDAPResponse)
-        // lastResult.getPayload()).getType()+" should be
-        // "+LDAPMessage.SEARCH_RESULT,((LDAPResponse)
-        // lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
+        assertTrue(
+                "Check type: "
+                        + ((LDAPResponse) lastResult.getPayload()).getType()
+                        + " should be" + LDAPMessage.SEARCH_RESULT,
+                ((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
     }
 
     public void testReceiveTimeout() throws Exception
