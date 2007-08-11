@@ -111,7 +111,7 @@ public class LdapConnector extends AbstractConnector
                 queryValueExtractors = new HashSet();
                 queryValueExtractors.add(MessagePropertyExtractor.class
                         .getName());
-                //queryValueExtractors.add(NowPropertyExtractor.class.getName());
+                // queryValueExtractors.add(NowPropertyExtractor.class.getName());
                 queryValueExtractors.add(PayloadPropertyExtractor.class
                         .getName());
                 queryValueExtractors.add(MapPropertyExtractor.class.getName());
@@ -526,15 +526,15 @@ public class LdapConnector extends AbstractConnector
     public Object[] getParams(UMOImmutableEndpoint endpoint, List paramNames,
             Object message) throws Exception
     {
-        
+
         logger.debug(paramNames);
-        
+
         Object[] params = new Object[paramNames.size()];
         for (int i = 0; i < paramNames.size(); i++)
         {
             String param = (String) paramNames.get(i);
             String name = param.substring(2, param.length() - 1);
-            logger.debug("param name: "+name);
+            logger.debug("param name: " + name);
             Object value = null;
             // If we find a value and it happens to be null, thats acceptable
             boolean foundValue = false;
@@ -545,7 +545,8 @@ public class LdapConnector extends AbstractConnector
                 {
                     PropertyExtractor pe = (PropertyExtractor) iterator.next();
                     value = pe.getProperty(name, message);
-                    logger.debug("value:: "+value +" (by "+pe.getClass()+" )");
+                    logger.debug("value:: " + value + " (by " + pe.getClass()
+                            + " )");
                     if (value != null)
                     {
                         if (value.equals(StringUtils.EMPTY)
