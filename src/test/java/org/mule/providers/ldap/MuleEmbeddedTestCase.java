@@ -349,8 +349,10 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         LDAPAddRequest last = null;
 
         for (int i = 0; i < addCount; i++)
+        {
             client.dispatch("ldap://ldap.out", last = TestHelper
                     .getRandomEntryAddRequest(), null);
+        }
 
         Thread.yield();
         Thread.sleep(10000);
@@ -364,6 +366,9 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out/cn.payload", last.getEntry().getDN(),
                 null);
+
+        Thread.yield();
+        Thread.sleep(10000);
 
         UMOMessage result = null;
         UMOMessage lastResult = null;
@@ -388,11 +393,14 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
             count++;
         }
 
-        assertTrue(count == expected); // fails because of list returnded or
+        assertTrue("Count (" + count + ") != expected (" + expected + ")",
+                count == expected); // fails because of list returnded or
         // processing time to short?
         assertNull(result);
         assertNotNull(lastResult);
-        assertTrue(lastResult.getPayload() instanceof LDAPResponse);
+        assertTrue("instanceof " + lastResult.getPayload().getClass()
+                + " instead of LDAPResponse",
+                lastResult.getPayload() instanceof LDAPResponse);
 
         // TODO order is not predictable
         assertTrue(
