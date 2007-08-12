@@ -348,8 +348,10 @@ public class LdapConnector extends AbstractConnector
         {
             messageQueue = ldapConnection.sendRequest(request, null);
         }
-
-        ldapConnection.sendRequest(request, messageQueue);
+        else
+        {
+            ldapConnection.sendRequest(request, messageQueue);
+        }
 
         logger.debug("leaving doAsyncRequest()");
 

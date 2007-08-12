@@ -280,7 +280,7 @@ public class MuleEmbeddedTestCase extends TestCase // implements EventCallback,
         final int expected = (2 * addCount) + 1 - 1 + 1;
 
         // Wait until all dispatched messages are processed by DS
-        while (tryCount < 20 && connector.getOutstandingMessageCount() != 7)
+        while (tryCount < 20 && connector.getOutstandingMessageCount() != 6)
         {
             Thread.yield();
             Thread.sleep(2000);
@@ -291,7 +291,7 @@ public class MuleEmbeddedTestCase extends TestCase // implements EventCallback,
 
         assertTrue("Outstanding message count ("
                 + connector.getOutstandingMessageCount() + ") not expected ("
-                + 7 + ")", connector.getOutstandingMessageCount() == 7);
+                + 6 + ")", connector.getOutstandingMessageCount() == 6);
 
         // time for processing
         Thread.yield();
