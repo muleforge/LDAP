@@ -27,7 +27,6 @@ import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
-import com.novell.ldap.LDAPMessageQueue;
 import com.novell.ldap.LDAPResponse;
 import com.novell.ldap.LDAPSearchResult;
 import com.novell.ldap.LDAPSearchResultReference;
@@ -54,9 +53,50 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
         this.listener = listener;
     }
 
-    public synchronized UMOMessage pollOnce()
+    public UMOMessage pollOnce()
     {
         return pollOnce(true);
+    }
+
+    public UMOMessage pollOnce(long timeout)
+    {
+
+        final class InnerThread implements Runnable
+        {
+            UMOMessage msg = null;
+
+            public void run()
+            {
+                logger.debug("awaiting msg");
+                msg = pollOnce(true);
+                logger.debug("got msg");
+            }
+
+            public UMOMessage getMsg()
+            {
+                return msg;
+            }
+
+        }
+
+        InnerThread inner = new InnerThread();
+
+        Thread t = new Thread(inner);
+
+        t.start();
+        try
+        {
+            t.join(timeout);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
+        logger.debug("return msg. Null? " + (inner.getMsg() == null));
+
+        return inner.getMsg();
+
     }
 
     public void release()
@@ -64,25 +104,20 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
     }
 
-    public synchronized void run()
+    public void run()
     {
 
         pollOnce(false);
     }
 
-    protected synchronized UMOMessage pollOnce(boolean synchronus)
+    // make not synchronized
+    protected UMOMessage pollOnce(boolean synchronus)
     {
 
         try
         {
-
-            LDAPMessageQueue queue = connector.getMessageQueue();
-            LDAPMessage message = null;
-
-            if (queue != null)
-            {
-                message = queue.getResponse();
-            }
+            logger.debug("entering pollOnce()");
+            LDAPMessage message = connector.pollQueue();
 
             if (message != null)
             {

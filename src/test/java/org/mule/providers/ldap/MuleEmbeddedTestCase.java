@@ -22,14 +22,8 @@ import org.mule.extras.client.MuleClient;
 import org.mule.providers.ldap.util.DSManager;
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.providers.ldap.util.TestHelper;
-import org.mule.tck.functional.EventCallback;
-import org.mule.tck.functional.FunctionalTestComponent;
-import org.mule.tck.functional.FunctionalTestNotification;
-import org.mule.tck.functional.FunctionalTestNotificationListener;
-import org.mule.umo.UMOEventContext;
 import org.mule.umo.UMOException;
 import org.mule.umo.UMOMessage;
-import org.mule.umo.manager.UMOServerNotification;
 import org.mule.umo.provider.DispatchException;
 import org.mule.umo.provider.UMOConnector;
 import org.mule.util.StringMessageUtils;
@@ -42,8 +36,8 @@ import com.novell.ldap.LDAPResponse;
 import com.novell.ldap.LDAPSearchResult;
 import com.novell.ldap.LDAPSearchResults;
 
-public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
-        FunctionalTestNotificationListener
+public class MuleEmbeddedTestCase extends TestCase // implements EventCallback,
+// FunctionalTestNotificationListener
 {
     protected final Log logger = LogFactory.getLog(getClass());
 
@@ -82,10 +76,11 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         // "LDAPInbound", true);
 
         // we create a FunctionalTestComponent and call it myComponent
-        FunctionalTestComponent funcTestComponent = new FunctionalTestComponent();
+        // FunctionalTestComponent funcTestComponent = new
+        // FunctionalTestComponent();
 
         // we set out Event Callback on our test class
-        funcTestComponent.setEventCallback(this);
+        // funcTestComponent.setEventCallback(this);
 
         // we register our component instance.
         // builder.registerComponentInstance(funcTestComponent, "LDAP",
@@ -96,13 +91,12 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
     }
 
     // callback
-    public void eventReceived(UMOEventContext context, Object Component)
-            throws Exception
-    {
-        // UMOMessage message = context.getMessage();
-        FunctionalTestComponent fc = (FunctionalTestComponent) Component;
-        fc.setReturnMessage("Customized Return Message");
-    }
+    /*
+     * public void eventReceived(UMOEventContext context, Object Component)
+     * throws Exception { // UMOMessage message = context.getMessage();
+     * FunctionalTestComponent fc = (FunctionalTestComponent) Component;
+     * fc.setReturnMessage("Customized Return Message"); }
+     */
 
     public void testSendReceiveSearch() throws Exception
     {
@@ -190,7 +184,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out/oc.payload", "sevenseas", null);
 
-        UMOMessage result = client.receive("ldap://ldap.in", 15000);
+        UMOMessage result = client.receive("ldap://ldap.in", 30000);
 
         assertNotNull(result);
         assertTrue(result.getPayload() instanceof LDAPSearchResult);
@@ -242,7 +236,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         assertTrue(((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
     }
 
-    public void testDispatchReceiveSearchMultipleWithDelete() throws Exception
+    public synchronized void testDispatchReceiveSearchMultipleWithDelete()
+            throws Exception
     {
         MuleClient client = new MuleClient();
 
@@ -268,7 +263,7 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out/cn.payload", "*", null);
-        
+
         // time for processing
         Thread.yield();
         Thread.sleep(10000);
@@ -285,27 +280,24 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
         final int expected = (2 * addCount) + 1 - 1 + 1;
 
         // Wait until all dispatched messages are processed by DS
-        while (tryCount < 20
-                && connector.getMessageQueue().getMessageIDs().length != 6)
+        while (tryCount < 20 && connector.getOutstandingMessageCount() != 7)
         {
             Thread.yield();
             Thread.sleep(2000);
             logger.debug(tryCount + ".try: Outstanding are "
-                    + connector.getMessageQueue().getMessageIDs().length);
+                    + connector.getOutstandingMessageCount());
             tryCount++;
         }
 
         assertTrue("Outstanding message count ("
-                + connector.getMessageQueue().getMessageIDs().length
-                + ") not expected (" + 6 + ")", connector.getMessageQueue()
-                .getMessageIDs().length == 6);
+                + connector.getOutstandingMessageCount() + ") not expected ("
+                + 7 + ")", connector.getOutstandingMessageCount() == 7);
 
         // time for processing
         Thread.yield();
         Thread.sleep(10000);
 
-        logger.debug("Outstanding: "
-                + connector.getMessageQueue().getMessageIDs().length);
+        logger.debug("Outstanding: " + connector.getOutstandingMessageCount());
 
         while (true)
         {
@@ -345,7 +337,8 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
     }
 
-    public void testDispatchReceiveSearchDeleted() throws Exception
+    public synchronized void testDispatchReceiveSearchDeleted()
+            throws Exception
     {
         MuleClient client = new MuleClient();
 
@@ -407,14 +400,16 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
                 lastResult.getPayload() instanceof LDAPResponse);
 
         // TODO order is not predictable
-        //assertTrue(
-        //        "Check type: "
-        //                + ((LDAPResponse) lastResult.getPayload()).getType()
-        //               + " should be " + LDAPMessage.SEARCH_RESULT,
-        //        ((LDAPResponse) lastResult.getPayload()).getType() == LDAPMessage.SEARCH_RESULT);
-    
-        //is 2xaddresponse, 1 searchresult, 1 addresponse, 1 delresponse, 1 addresponse
-    
+        // assertTrue(
+        // "Check type: "
+        // + ((LDAPResponse) lastResult.getPayload()).getType()
+        // + " should be " + LDAPMessage.SEARCH_RESULT,
+        // ((LDAPResponse) lastResult.getPayload()).getType() ==
+        // LDAPMessage.SEARCH_RESULT);
+
+        // is 2xaddresponse, 1 searchresult, 1 addresponse, 1 delresponse, 1
+        // addresponse
+
     }
 
     public void testReceiveTimeout() throws Exception
@@ -505,10 +500,11 @@ public class MuleEmbeddedTestCase extends TestCase implements EventCallback,
 
     }
 
-    public void onNotification(UMOServerNotification notification)
-    {
-        assertTrue(notification.getAction() == FunctionalTestNotification.EVENT_RECEIVED);
-    }
+    /*
+     * public void onNotification(UMOServerNotification notification) {
+     * assertTrue(notification.getAction() ==
+     * FunctionalTestNotification.EVENT_RECEIVED); }
+     */
 
     protected void tearDown() throws Exception
     {

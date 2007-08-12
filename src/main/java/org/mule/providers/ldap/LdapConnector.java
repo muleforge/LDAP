@@ -60,7 +60,7 @@ public class LdapConnector extends AbstractConnector
 
     public static final long DEFAULT_POLLING_FREQUENCY = 1000;
 
-    private LDAPMessageQueue messageQueue = null;
+    private volatile LDAPMessageQueue messageQueue = null;
 
     private long pollingFrequency = DEFAULT_POLLING_FREQUENCY;
 
@@ -338,9 +338,21 @@ public class LdapConnector extends AbstractConnector
         return "ldap";
     }
 
-    protected void doAsyncRequest(LDAPMessage request) throws LDAPException
+    protected synchronized void doAsyncRequest(LDAPMessage request)
+            throws LDAPException
     {
-        messageQueue = ldapConnection.sendRequest(request, messageQueue);
+
+        logger.debug("entering doAsyncRequest()");
+
+        if (messageQueue == null)
+        {
+            messageQueue = ldapConnection.sendRequest(request, null);
+        }
+
+        ldapConnection.sendRequest(request, messageQueue);
+
+        logger.debug("leaving doAsyncRequest()");
+
     }
 
     public int getLdapPort()
@@ -596,15 +608,51 @@ public class LdapConnector extends AbstractConnector
 
     }
 
-    public LDAPMessageQueue getMessageQueue()
+    protected LDAPMessage pollQueue() throws LDAPException
     {
-        return messageQueue;
+        // synchronized (messageQueue)
+        {
+
+            LDAPMessage message = null;
+
+            logger.debug("entering pollQueue()");
+
+            if (messageQueue != null)
+            {
+                logger.debug("polling queue");
+                message = messageQueue.getResponse();
+                logger.debug("polling queue ... OK");
+                return message;
+            }
+
+            logger.debug("return null");
+            return null;
+        }
     }
 
-    public void setMessageQueue(LDAPMessageQueue messageQueue)
+    protected int getOutstandingMessageCount()
     {
-        this.messageQueue = messageQueue;
+        // synchronized (messageQueue)
+        {
+
+            if (messageQueue != null)
+            {
+                return messageQueue.getMessageIDs().length;
+            }
+
+            throw new IllegalArgumentException("message queue not initalised");
+        }
     }
+
+    /*
+     * protected synchronized LDAPMessageQueue getMessageQueue() { return
+     * messageQueue; }
+     */
+
+    /*
+     * public void setMessageQueue(LDAPMessageQueue messageQueue) {
+     * this.messageQueue = messageQueue; }
+     */
 
     public Map getQueries()
     {

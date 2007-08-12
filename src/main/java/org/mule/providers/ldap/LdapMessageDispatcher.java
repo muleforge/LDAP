@@ -211,8 +211,8 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
         do
         {
-
-            UMOMessage msg = receiver.pollOnce();
+            logger.debug("try to poll");
+            UMOMessage msg = receiver.pollOnce(timeout);
 
             if (msg != null)
             {
