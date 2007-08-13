@@ -63,7 +63,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
         final class InnerThread implements Runnable
         {
-            UMOMessage msg = null;
+            private UMOMessage msg = null;
 
             public void run()
             {

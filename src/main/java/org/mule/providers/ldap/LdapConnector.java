@@ -613,7 +613,7 @@ public class LdapConnector extends AbstractConnector
     protected LDAPMessage pollQueue() throws LDAPException
     {
         // synchronized (messageQueue)
-        {
+        //{
 
             LDAPMessage message = null;
 
@@ -629,13 +629,13 @@ public class LdapConnector extends AbstractConnector
 
             logger.debug("return null");
             return null;
-        }
+        //}
     }
 
     protected int getOutstandingMessageCount()
     {
         // synchronized (messageQueue)
-        {
+        //{
 
             if (messageQueue != null)
             {
@@ -643,7 +643,7 @@ public class LdapConnector extends AbstractConnector
             }
 
             throw new IllegalArgumentException("message queue not initalised");
-        }
+        //}
     }
 
     /*
