@@ -612,49 +612,43 @@ public class LdapConnector extends AbstractConnector
 
     protected LDAPMessage pollQueue() throws LDAPException
     {
-        // synchronized (messageQueue)
-        //{
 
-            LDAPMessage message = null;
+        LDAPMessage message = null;
 
-            logger.debug("entering pollQueue()");
+        logger.debug("entering pollQueue()");
 
-            if (messageQueue != null)
+        if (messageQueue != null)
+        {
+            logger.debug("polling queue");
+
+            if (getOutstandingMessageCount() > 0)
             {
-                logger.debug("polling queue");
+
+                // block
                 message = messageQueue.getResponse();
                 logger.debug("polling queue ... OK");
-                return message;
-            }
 
-            logger.debug("return null");
-            return null;
-        //}
+            }
+            else
+            {
+                logger.debug("no message quequed");
+            }
+        }
+
+        return message;
+
     }
 
     protected int getOutstandingMessageCount()
     {
-        // synchronized (messageQueue)
-        //{
+        if (messageQueue != null)
+        {
+            return messageQueue.getMessageIDs().length;
+        }
 
-            if (messageQueue != null)
-            {
-                return messageQueue.getMessageIDs().length;
-            }
+        throw new IllegalArgumentException("message queue not initalised");
 
-            throw new IllegalArgumentException("message queue not initalised");
-        //}
     }
-
-    /*
-     * protected synchronized LDAPMessageQueue getMessageQueue() { return
-     * messageQueue; }
-     */
-
-    /*
-     * public void setMessageQueue(LDAPMessageQueue messageQueue) {
-     * this.messageQueue = messageQueue; }
-     */
 
     public Map getQueries()
     {

@@ -57,8 +57,8 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
     {
         return pollOnce(true);
     }
-
-    public UMOMessage pollOnce(long timeout)
+    
+    /*public UMOMessage pollOnce(long timeout)
     {
 
         final class InnerThread implements Runnable
@@ -97,7 +97,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
         return inner.getMsg();
 
-    }
+    }*/
 
     public void release()
     {
@@ -106,7 +106,6 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
     public void run()
     {
-
         pollOnce(false);
     }
 
@@ -116,7 +115,9 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
         try
         {
-            logger.debug("entering pollOnce()");
+            //logger.debug("entering pollOnce()");
+
+            // may block
             LDAPMessage message = connector.pollQueue();
 
             if (message != null)

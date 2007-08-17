@@ -98,8 +98,8 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
 
             handleException(e);
         }
-
-        getWorkManager().scheduleWork(queueReceiver);
+        getWorkManager().doWork(queueReceiver);
+        // getWorkManager().scheduleWork(queueReceiver);
 
     }
 
