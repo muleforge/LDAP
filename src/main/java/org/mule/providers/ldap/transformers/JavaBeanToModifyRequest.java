@@ -3,31 +3,29 @@
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *
- * The software in this package is published under the terms of the MuleSource MPL
+ * The software in this package is published under the terms of the CPAL v1.0
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
 
 package org.mule.providers.ldap.transformers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mule.transformers.AbstractTransformer;
 import org.mule.umo.transformer.TransformerException;
 import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPModifyRequest;
 
 public class JavaBeanToModifyRequest extends AbstractTransformer
 {
-
-    protected final Log logger = LogFactory.getLog(getClass());
 
     protected Object doTransform(Object src, String encoding)
             throws TransformerException
@@ -43,7 +41,6 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
 
         try
         {
-
             Method[] fields = bean.getClass().getMethods();
             List mods = new ArrayList(50);
 
@@ -92,7 +89,27 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
 
             return request;
         }
-        catch (Exception e)
+        catch (SecurityException e)
+        {
+            throw new TransformerException(this, e);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new TransformerException(this, e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new TransformerException(this, e);
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new TransformerException(this, e);
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new TransformerException(this, e);
+        }
+        catch (LDAPException e)
         {
             throw new TransformerException(this, e);
         }
