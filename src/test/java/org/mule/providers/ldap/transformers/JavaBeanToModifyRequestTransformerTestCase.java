@@ -3,6 +3,8 @@ package org.mule.providers.ldap.transformers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mule.umo.transformer.UMOTransformer;
 
 import com.novell.ldap.LDAPAttribute;
@@ -13,6 +15,8 @@ import com.novell.ldap.LDAPModifyRequest;
 public class JavaBeanToModifyRequestTransformerTestCase extends
 		org.mule.tck.AbstractTransformerTestCase {
 
+    protected final Log logger = LogFactory.getLog(getClass());
+    
 	public Object getResultData() {
 
 		JavaBeanClass bean = new JavaBeanClass();
@@ -116,11 +120,11 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
 		String s2 = out.toString();
 
 		// crop requestID which is always different
-		s1 = s1.substring(s1.indexOf("requestID=") + 13);
-		s2 = s2.substring(s2.indexOf("requestID=") + 13);
+		s1 = s1.substring(s1.indexOf("requestID=") + 14);
+		s2 = s2.substring(s2.indexOf("requestID=") + 14);
 
-		// System.out.println(s1);
-		// System.out.println(s2);
+		logger.debug(s1);
+		logger.debug(s2);
 
 		return s1.equals(s2);
 	}
