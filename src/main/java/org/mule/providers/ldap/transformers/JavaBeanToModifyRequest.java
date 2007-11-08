@@ -24,71 +24,79 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPModifyRequest;
 
-public class JavaBeanToModifyRequest extends AbstractTransformer {
+public class JavaBeanToModifyRequest extends AbstractTransformer
+{
 
-	protected final Log logger = LogFactory.getLog(getClass());
+    protected final Log logger = LogFactory.getLog(getClass());
 
-	protected Object doTransform(Object src, String encoding)
-			throws TransformerException {
+    protected Object doTransform(Object src, String encoding)
+            throws TransformerException
+    {
 
-		if (src == null) {
-			throw new TransformerException(this, new IllegalArgumentException(
-					"src must not be null"));
-		}
+        if (src == null)
+        {
+            throw new TransformerException(this, new IllegalArgumentException(
+                    "src must not be null"));
+        }
 
-		Object bean = src;
+        Object bean = src;
 
-		try {
+        try
+        {
 
-			Method[] fields = bean.getClass().getMethods();
-			List mods = new ArrayList(50);
+            Method[] fields = bean.getClass().getMethods();
+            List mods = new ArrayList(50);
 
-			for (int i = 0; i < fields.length; i++) {
-				Method method = fields[i];
-				String name = method.getName();
+            for (int i = 0; i < fields.length; i++)
+            {
+                Method method = fields[i];
+                String name = method.getName();
 
-				// logger.debug("found method '"+name+"'");
+                // logger.debug("found method '"+name+"'");
 
-				if (!name.startsWith("get") || name.equals("getDn")
-						|| name.equals("getClass")) {
-					continue;
-				}
+                if (!name.startsWith("get") || name.equals("getDn")
+                        || name.equals("getClass"))
+                {
+                    continue;
+                }
 
-				String attributeName = name.substring(3);
-				attributeName = StringUtils.uncapitalize(attributeName);
+                String attributeName = name.substring(3);
+                attributeName = StringUtils.uncapitalize(attributeName);
 
-				logger.debug("going to invoke method '" + name + "'");
+                logger.debug("going to invoke method '" + name + "'");
 
-				Object result = method.invoke(bean, null);
+                Object result = method.invoke(bean, null);
 
-				logger.debug("result of type '"
-						+ (result == null ? null : result.getClass())
-						+ "' (attribute is '" + attributeName + "')");
+                logger.debug("result of type '"
+                        + (result == null ? null : result.getClass())
+                        + "' (attribute is '" + attributeName + "')");
 
-				LDAPAttribute attr = new LDAPAttribute(attributeName,
-						result == null ? null : result.toString());
-				LDAPModification modification = new LDAPModification(
-						LDAPModification.REPLACE, attr);
-				mods.add(modification);
-			}
+                LDAPAttribute attr = new LDAPAttribute(attributeName,
+                        result == null ? null : result.toString());
+                LDAPModification modification = new LDAPModification(
+                        LDAPModification.REPLACE, attr);
+                mods.add(modification);
+            }
 
-			String dn = (String) bean.getClass().getMethod("getDn", null)
-					.invoke(bean, null);
+            String dn = (String) bean.getClass().getMethod("getDn", null)
+                    .invoke(bean, null);
 
-			logger.debug("dn is '" + dn + "'");
+            logger.debug("dn is '" + dn + "'");
 
-			LDAPModification[] modifications = (LDAPModification[]) mods
-					.toArray(new LDAPModification[mods.size()]);
+            LDAPModification[] modifications = (LDAPModification[]) mods
+                    .toArray(new LDAPModification[mods.size()]);
 
-			// TODO LDAPCOntrols
-			LDAPModifyRequest request = new LDAPModifyRequest(dn,
-					modifications, null);
+            // TODO LDAPCOntrols
+            LDAPModifyRequest request = new LDAPModifyRequest(dn,
+                    modifications, null);
 
-			return request;
-		} catch (Exception e) {
-			throw new TransformerException(this, e);
-		}
+            return request;
+        }
+        catch (Exception e)
+        {
+            throw new TransformerException(this, e);
+        }
 
-	}
+    }
 
 }

@@ -9,8 +9,11 @@ import org.mule.tck.FunctionalTestCase;
 import org.mule.umo.UMOMessage;
 import org.mule.util.StringUtils;
 
+import com.novell.ldap.LDAPAddRequest;
+import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPSearchResults;
+import com.novell.ldap.util.DN;
 
 public class LdapListenerSynchronTestCase extends FunctionalTestCase
 {
@@ -81,6 +84,41 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
 
     }
 
+    public void testJavaBeanModificationRequest() throws Exception
+    {
+        MuleClient client = new MuleClient();
+
+        LDAPAddRequest add = TestHelper.getRandomEntryAddRequest();
+
+        client.send("ldap://ldap.out", add, null);
+
+        Bean bean = new Bean();
+
+        bean.setDn(add.getEntry().getDN());
+        bean.setMail("hsaly@mulesource.org");
+        bean.setDescription("desc");
+
+        client.send("vm://test_in_bean", new MuleMessage(bean));
+
+        UMOMessage msg = client.send("ldap://ldap.out", new MuleMessage(new DN(
+                add.getEntry().getDN())));
+
+        assertNotNull(msg);
+
+        assertTrue(msg.getPayload() instanceof LDAPEntry);
+
+        logger.debug(msg.getPayload());
+
+        LDAPEntry res = (LDAPEntry) msg.getPayload();
+
+        assertTrue(res.getDN().equals(add.getEntry().getDN()));
+        assertTrue(res.getAttribute("mail").getStringValue().equals(
+                bean.getMail()));
+        assertTrue(res.getAttribute("description").getStringValue().equals(
+                bean.getDescription()));
+
+    }
+
     protected void doFunctionalTearDown() throws Exception
     {
 
@@ -93,6 +131,45 @@ public class LdapListenerSynchronTestCase extends FunctionalTestCase
 
         DSManager.getInstance().start();
         super.doPreFunctionalSetUp();
+    }
+
+    public static class Bean
+    {
+
+        private String dn;
+        private String description;
+        private String mail;
+
+        public String getDn()
+        {
+            return dn;
+        }
+
+        public void setDn(String dn)
+        {
+            this.dn = dn;
+        }
+
+        public String getDescription()
+        {
+            return description;
+        }
+
+        public void setDescription(String description)
+        {
+            this.description = description;
+        }
+
+        public String getMail()
+        {
+            return mail;
+        }
+
+        public void setMail(String mail)
+        {
+            this.mail = mail;
+        }
+
     }
 
 }

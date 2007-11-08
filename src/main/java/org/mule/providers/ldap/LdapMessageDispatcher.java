@@ -21,11 +21,13 @@ import org.mule.umo.provider.UMOMessageAdapter;
 import com.novell.ldap.LDAPAddRequest;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPDeleteRequest;
+import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPModifyRequest;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchRequest;
 import com.novell.ldap.LDAPSearchResults;
+import com.novell.ldap.util.DN;
 
 /**
  * <code>LdapMessageDispatcher</code> TODO document
@@ -158,6 +160,17 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
             // return event.getMessage();
 
+        }
+        else if (event.getTransformedMessage() instanceof DN)
+        {
+
+            DN dn = (DN) event.getTransformedMessage();
+            LDAPEntry entry = lc.read(dn.toString());
+
+            // TODO
+            // UMOMessageAdapter adapter = connector.getMessageAdapter(entry);
+
+            return new MuleMessage(entry);
         }
         else
         // not an instance of LDAPMessage
