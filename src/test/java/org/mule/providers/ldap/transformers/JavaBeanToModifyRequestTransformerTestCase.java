@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.oro.text.regex.Substitution;
 import org.mule.umo.transformer.UMOTransformer;
 
 import com.novell.ldap.LDAPAttribute;
@@ -120,13 +121,22 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
 		String s2 = out.toString();
 
 		// crop requestID which is always different
-		s1 = s1.substring(s1.indexOf("requestID=") + 14);
-		s2 = s2.substring(s2.indexOf("requestID=") + 14);
+		s1 = cropTillDn(s1);
+		s2 = cropTillDn(s2);
 
 		logger.debug(s1);
 		logger.debug(s2);
 
 		return s1.equals(s2);
+	}
+	
+	private static String cropTillDn(String str)
+	{
+	    
+	    int index = str.indexOf("dn=");
+	    return str.substring(index);
+	    
+	    
 	}
 
 }
