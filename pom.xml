@@ -10,9 +10,9 @@
 		Provides support for connecting directory services via ldap
 	</description>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0-M143_SNAPSHOT</version>
 	<properties>
-		<muleVersion>1.4.1</muleVersion>
+		<muleVersion>1.4.3</muleVersion>
 		<jldapVersion>4.3</jldapVersion>
 		<apacheDsVersion>1.0.2</apacheDsVersion>
 	</properties>

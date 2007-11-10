@@ -53,16 +53,16 @@ public class LdapConnector extends AbstractConnector
 
     private static final int ldapVersion = LDAPConnection.LDAP_V3;
     private static final int DEFAULT_STRINGBUFFER_SIZE = 200;
-    public static final String PROPERTY_POLLING_FREQUENCY = "pollingFrequency";
+    //public static final String PROPERTY_POLLING_FREQUENCY = "pollingFrequency";
     public static final String PROPERTY_START_UNSOLICITED_NOTIFICATION_LISTENER = "startUnsolicitedNotificationListener";
     private static final Pattern STATEMENT_ARGS = Pattern
             .compile("\\$\\{[^\\}]*\\}");
 
-    public static final long DEFAULT_POLLING_FREQUENCY = 1000;
+    //public static final long DEFAULT_POLLING_FREQUENCY = 1000;
 
     private volatile LDAPMessageQueue messageQueue = null;
 
-    private long pollingFrequency = DEFAULT_POLLING_FREQUENCY;
+    //private long pollingFrequency = DEFAULT_POLLING_FREQUENCY;
 
     private int ldapPort = LDAPConnection.DEFAULT_PORT;
 
@@ -422,7 +422,7 @@ public class LdapConnector extends AbstractConnector
         this.searchBase = searchBase;
     }
 
-    public long getPollingFrequency()
+    /*public long getPollingFrequency()
     {
         return pollingFrequency;
     }
@@ -430,14 +430,14 @@ public class LdapConnector extends AbstractConnector
     public void setPollingFrequency(long pollingFrequency)
     {
         this.pollingFrequency = pollingFrequency;
-    }
+    }*/
 
     // @Override
     protected UMOMessageReceiver createReceiver(UMOComponent component,
             UMOEndpoint endpoint) throws Exception
     {
 
-        long polling = pollingFrequency;
+        /*long polling = pollingFrequency;
         Map props = endpoint.getProperties();
         if (props != null)
         {
@@ -453,13 +453,12 @@ public class LdapConnector extends AbstractConnector
             polling = DEFAULT_POLLING_FREQUENCY;
         }
         logger.debug("set polling frequency to " + polling);
-
+*/
         try
         {
 
             return serviceDescriptor.createMessageReceiver(this, component,
-                    endpoint, new Object[]
-                    {new Long(polling)});
+                    endpoint);
 
         }
         catch (Exception e)

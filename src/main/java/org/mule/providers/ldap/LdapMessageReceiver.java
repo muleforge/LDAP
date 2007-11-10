@@ -41,12 +41,12 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
     private LDAPQueueReceiver queueReceiver;
 
     public LdapMessageReceiver(UMOConnector connector, UMOComponent component,
-            UMOEndpoint endpoint, long pollingFrequency)
+            UMOEndpoint endpoint)
             throws InitialisationException
     {
-        // TODO for > 1.4.1
-        // ,pollingFrequency
-        super(connector, component, endpoint, pollingFrequency);
+        //since 1.4.2
+        super(connector, component, endpoint);
+        //super(connector, component, endpoint, pollingFrequency);
 
     }
 
