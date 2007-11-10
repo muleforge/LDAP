@@ -58,31 +58,6 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
         return pollOnce(true);
     }
 
-    /*
-     * public UMOMessage pollOnce(long timeout) {
-     * 
-     * final class InnerThread implements Runnable { private UMOMessage msg =
-     * null;
-     * 
-     * public void run() { logger.debug("awaiting msg"); msg = pollOnce(true);
-     * logger.debug("got msg"); }
-     * 
-     * public UMOMessage getMsg() { return msg; }
-     *  }
-     * 
-     * InnerThread inner = new InnerThread();
-     * 
-     * Thread t = new Thread(inner);
-     * 
-     * t.start(); try { t.join(timeout); } catch (InterruptedException e) {
-     * e.printStackTrace(); }
-     * 
-     * logger.debug("return msg. Null? " + (inner.getMsg() == null));
-     * 
-     * return inner.getMsg();
-     *  }
-     */
-
     public void release()
     {
 
