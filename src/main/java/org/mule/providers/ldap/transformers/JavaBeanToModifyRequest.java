@@ -15,21 +15,29 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.providers.ldap.LdapConnector;
 import org.mule.transformers.AbstractTransformer;
 import org.mule.umo.transformer.TransformerException;
 import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPModifyRequest;
+import com.novell.ldap.LDAPSearchConstraints;
+import com.novell.ldap.LDAPSearchResults;
 
 public class JavaBeanToModifyRequest extends AbstractTransformer
 {
 
+    private String uniqueField;
+
     protected Object doTransform(Object src, String encoding)
             throws TransformerException
     {
+
+        logger.debug("UniqueField Value: '" + getUniqueField() + "'");
 
         if (src == null)
         {
@@ -43,7 +51,7 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
         {
             Method[] fields = bean.getClass().getMethods();
             List mods = new ArrayList(50);
-
+            Object uniqueFieldValue = null;
             for (int i = 0; i < fields.length; i++)
             {
                 Method method = fields[i];
@@ -64,6 +72,12 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
 
                 Object result = method.invoke(bean, null);
 
+                if (!StringUtils.isEmpty(getUniqueField())
+                        && getUniqueField().equals(attributeName))
+                {
+                    uniqueFieldValue = result;
+                }
+
                 logger.debug("result of type '"
                         + (result == null ? null : result.getClass())
                         + "' (attribute is '" + attributeName + "')");
@@ -75,8 +89,41 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
                 mods.add(modification);
             }
 
-            String dn = (String) bean.getClass().getMethod("getDn", null)
-                    .invoke(bean, null);
+            String dn = null;
+            if (uniqueFieldValue == null)
+            {
+                dn = (String) bean.getClass().getMethod("getDn", null).invoke(
+                        bean, null);
+            }
+            else
+            {
+                LdapConnector connector = (LdapConnector) endpoint
+                        .getConnector();
+
+                LDAPConnection lc = connector.getLdapConnection();
+                LDAPSearchConstraints cons = new LDAPSearchConstraints();
+                cons.setBatchSize(0);
+                LDAPSearchResults res = lc.search(connector.getSearchBase(),
+                        connector.getSearchScope(), "(" + getUniqueField()
+                                + "=" + uniqueFieldValue + ")", null, false,
+                        cons);
+
+                if (res.hasMore() && res.getCount() > 0)
+                {
+                    if (res.getCount() > 1)
+                    {
+                        logger
+                                .warn("UniqueField value is not unique, first entry will be modified");
+
+                    }
+
+                    dn = res.next().getDN();
+                }
+                else if (res.getCount() < 1)
+                {
+                    logger.error("UniqueField value didn't match any entry");
+                }
+            }
 
             logger.debug("dn is '" + dn + "'");
 
@@ -114,6 +161,21 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
             throw new TransformerException(this, e);
         }
 
+    }
+
+    public String getUniqueField()
+    {
+        return uniqueField;
+    }
+
+    public void setUniqueField(String uniqueField)
+    {
+        if (uniqueField != null)
+        {
+            uniqueField = uniqueField.trim();
+        }
+
+        this.uniqueField = uniqueField;
     }
 
 }

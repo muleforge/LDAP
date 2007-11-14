@@ -13,149 +13,127 @@ import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPModifyRequest;
 
 public class JavaBeanToModifyRequestTransformerTestCase extends
-        org.mule.tck.AbstractTransformerTestCase
-{
+		org.mule.tck.AbstractTransformerTestCase {
 
-    protected final Log logger = LogFactory.getLog(getClass());
+	protected final Log logger = LogFactory.getLog(getClass());
 
-    public Object getResultData()
-    {
+	public Object getResultData() {
 
-        JavaBeanClass bean = new JavaBeanClass();
+		JavaBeanClass bean = new JavaBeanClass();
 
-        try
-        {
+		try {
 
-            LDAPModification[] mods = new LDAPModification[3];
-            LDAPModification mod = new LDAPModification(
-                    LDAPModification.REPLACE, new LDAPAttribute("mail", bean
-                            .getMail()));
-            mods[0] = mod;
+			LDAPModification[] mods = new LDAPModification[3];
+			LDAPModification mod = new LDAPModification(
+					LDAPModification.REPLACE, new LDAPAttribute("mail", bean
+							.getMail()));
+			mods[0] = mod;
 
-            mod = new LDAPModification(LDAPModification.REPLACE,
-                    new LDAPAttribute("field12", bean.getField12()));
-            mods[1] = mod;
+			mod = new LDAPModification(LDAPModification.REPLACE,
+					new LDAPAttribute("field12", bean.getField12()));
+			mods[1] = mod;
 
-            mod = new LDAPModification(LDAPModification.REPLACE,
-                    new LDAPAttribute("age", String.valueOf(bean.getAge())));
-            mods[2] = mod;
+			mod = new LDAPModification(LDAPModification.REPLACE,
+					new LDAPAttribute("age", String.valueOf(bean.getAge())));
+			mods[2] = mod;
 
-            return new LDAPModifyRequest(bean.getDn(), mods, null);
-        }
-        catch (LDAPException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-        }
-    }
+			return new LDAPModifyRequest(bean.getDn(), mods, null);
+		} catch (LDAPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    public Object getTestData()
-    {
+	public Object getTestData() {
 
-        return new JavaBeanClass();
+		return new JavaBeanClass();
 
-    }
+	}
 
-    public UMOTransformer getTransformer() throws Exception
-    {
+	public UMOTransformer getTransformer() throws Exception {
 
-        return new JavaBeanToModifyRequest();
-    }
+		return new JavaBeanToModifyRequest();
+	}
 
-    public UMOTransformer getRoundTripTransformer() throws Exception
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public UMOTransformer getRoundTripTransformer() throws Exception {
 
-    public static class JavaBeanClass
-    {
-        private String dn = "ou=system";
-        private String mail = "mail@mail.com";
-        private int age = 34;
-        private String field12 = "field12";
+		return null;
+	}
 
-        public String getDn()
-        {
-            return dn;
-        }
+	public static class JavaBeanClass {
+		private String dn = "ou=system";
+		private String mail = "mail@mail.com";
+		private int age = 34;
+		private String field12 = "field12";
 
-        public void setDn(String dn)
-        {
-            this.dn = dn;
-        }
+		public String getDn() {
+			return dn;
+		}
 
-        public String getMail()
-        {
-            return mail;
-        }
+		public void setDn(String dn) {
+			this.dn = dn;
+		}
 
-        public void setMail(String mail)
-        {
-            this.mail = mail;
-        }
+		public String getMail() {
+			return mail;
+		}
 
-        public int getAge()
-        {
-            return age;
-        }
+		public void setMail(String mail) {
+			this.mail = mail;
+		}
 
-        public void setAge(int age)
-        {
-            this.age = age;
-        }
+		public int getAge() {
+			return age;
+		}
 
-        public String getField12()
-        {
-            return field12;
-        }
+		public void setAge(int age) {
+			this.age = age;
+		}
 
-        public void setField12(String field12)
-        {
-            this.field12 = field12;
-        }
+		public String getField12() {
+			return field12;
+		}
 
-    }
+		public void setField12(String field12) {
+			this.field12 = field12;
+		}
 
-    public boolean compareResults(Object expected, Object result)
-    {
+	}
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+	public boolean compareResults(Object expected, Object result) {
 
-        try
-        {
-            ((LDAPModifyRequest) expected).writeDSML(out);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ByteArrayOutputStream out1 = new ByteArrayOutputStream();
 
-            ((LDAPModifyRequest) result).writeDSML(out1);
-        }
-        catch (IOException e)
-        {
+		try {
+			((LDAPModifyRequest) expected).writeDSML(out);
 
-            logger.error(e.toString(), e);
-            return false;
-        }
+			((LDAPModifyRequest) result).writeDSML(out1);
+		} catch (IOException e) {
 
-        String s1 = out1.toString();
-        String s2 = out.toString();
+			logger.error(e.toString(), e);
+			return false;
+		}
 
-        // crop requestID which is always different
-        s1 = cropTillDn(s1);
-        s2 = cropTillDn(s2);
+		String s1 = out1.toString();
+		String s2 = out.toString();
 
-        logger.debug(s1);
-        logger.debug(s2);
+		// crop requestID which is always different
+		s1 = cropTillDn(s1);
+		s2 = cropTillDn(s2);
 
-        return s1.equals(s2);
-    }
+		logger.debug(s1);
+		logger.debug(s2);
 
-    private static String cropTillDn(String str)
-    {
+		return s1.equals(s2);
+	}
 
-        int index = str.indexOf("dn=");
-        return str.substring(index);
+	private static String cropTillDn(String str) {
 
-    }
+		int index = str.indexOf("dn=");
+		return str.substring(index);
+
+	}
 
 }
