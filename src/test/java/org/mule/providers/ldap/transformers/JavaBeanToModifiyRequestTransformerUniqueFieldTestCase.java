@@ -1,20 +1,14 @@
 package org.mule.providers.ldap.transformers;
 
-import org.mule.extras.client.MuleClient;
 import org.mule.impl.ImmutableMuleEndpoint;
-import org.mule.impl.MuleEvent;
 import org.mule.impl.endpoint.MuleEndpointURI;
 import org.mule.providers.ldap.LdapConnector;
 import org.mule.providers.ldap.LdapListenerSynchronTestCase;
 import org.mule.providers.ldap.util.DSManager;
-import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.providers.ldap.util.TestHelper;
-import org.mule.umo.UMOMessage;
 import org.mule.umo.endpoint.UMOImmutableEndpoint;
 import org.mule.umo.provider.UMOConnector;
 import org.mule.umo.transformer.UMOTransformer;
 
-import com.novell.ldap.LDAPAddRequest;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPConnection;
@@ -24,107 +18,117 @@ import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPModifyRequest;
 
 public class JavaBeanToModifiyRequestTransformerUniqueFieldTestCase extends
-		JavaBeanToModifyRequestTransformerTestCase {
+        JavaBeanToModifyRequestTransformerTestCase
+{
 
-	public Object getResultData() {
+    public Object getResultData()
+    {
 
-		LdapListenerSynchronTestCase.BeanWithoutDn bean = (LdapListenerSynchronTestCase.BeanWithoutDn) getTestData();
+        LdapListenerSynchronTestCase.BeanWithoutDn bean = (LdapListenerSynchronTestCase.BeanWithoutDn) getTestData();
 
-		try {
+        try
+        {
 
-			LDAPModification[] mods = new LDAPModification[2];
+            LDAPModification[] mods = new LDAPModification[2];
 
-			LDAPModification mod = new LDAPModification(
-					LDAPModification.REPLACE, new LDAPAttribute("description",
-							bean.getDescription()));
-			mods[0] = mod;
+            LDAPModification mod = new LDAPModification(
+                    LDAPModification.REPLACE, new LDAPAttribute("description",
+                            bean.getDescription()));
+            mods[0] = mod;
 
-			mod = new LDAPModification(LDAPModification.REPLACE,
-					new LDAPAttribute("mail", bean.getMail()));
-			mods[1] = mod;
+            mod = new LDAPModification(LDAPModification.REPLACE,
+                    new LDAPAttribute("mail", bean.getMail()));
+            mods[1] = mod;
 
-			return new LDAPModifyRequest("cn=test-cn-javabean,o=sevenseas", mods, null);
-		} catch (LDAPException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+            return new LDAPModifyRequest("cn=test-cn-javabean,o=sevenseas",
+                    mods, null);
+        }
+        catch (LDAPException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
 
-	}
+    }
 
-	public Object getTestData() {
+    public Object getTestData()
+    {
 
-		LdapListenerSynchronTestCase.BeanWithoutDn bean = new LdapListenerSynchronTestCase.BeanWithoutDn();
-		bean.setDescription("test");
-		bean.setMail("mail@mail.com");
-		return bean;
+        LdapListenerSynchronTestCase.BeanWithoutDn bean = new LdapListenerSynchronTestCase.BeanWithoutDn();
+        bean.setDescription("test");
+        bean.setMail("mail@mail.com");
+        return bean;
 
-	}
-	
-	protected String getUniqueField()
-	{
-		return "mail";
-	}
+    }
 
-	public UMOTransformer getTransformer() throws Exception {
-		JavaBeanToModifyRequest trans = new JavaBeanToModifyRequest();
-		
-		trans.setUniqueField(getUniqueField());
+    protected String getUniqueField()
+    {
+        return "mail";
+    }
 
-		UMOConnector connector = getConnector();
+    public UMOTransformer getTransformer() throws Exception
+    {
+        JavaBeanToModifyRequest trans = new JavaBeanToModifyRequest();
 
-		UMOImmutableEndpoint ep = new ImmutableMuleEndpoint("ldap",
-				new MuleEndpointURI("ldap://ldap.out"), connector, null,
-				ImmutableMuleEndpoint.ENDPOINT_TYPE_SENDER, 0, null, null);
+        trans.setUniqueField(getUniqueField());
 
-	
-		LDAPAttributeSet attr = new LDAPAttributeSet();
-		attr.add(new LDAPAttribute("cn", "test-cn-javabean"));
-		attr.add(new LDAPAttribute("sn", "test-sn-javabean"));
-		attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
-		attr.add(new LDAPAttribute("mail", "mail@mail.com"));
+        UMOConnector connector = getConnector();
 
-		LDAPEntry entry = new LDAPEntry("cn=test-cn-javabean,o=sevenseas", attr);
+        UMOImmutableEndpoint ep = new ImmutableMuleEndpoint("ldap",
+                new MuleEndpointURI("ldap://ldap.out"), connector, null,
+                ImmutableMuleEndpoint.ENDPOINT_TYPE_SENDER, 0, null, null);
 
-		LDAPConnection con = new LDAPConnection();
-		con.connect("localhost", 10389);
-		con.bind(LDAPConnection.LDAP_V3, "uid=admin,ou=system", "secret"
-				.getBytes());
-		con.add(entry);
-		con.disconnect();
+        LDAPAttributeSet attr = new LDAPAttributeSet();
+        attr.add(new LDAPAttribute("cn", "test-cn-javabean"));
+        attr.add(new LDAPAttribute("sn", "test-sn-javabean"));
+        attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
+        attr.add(new LDAPAttribute("mail", "mail@mail.com"));
 
-		trans.setEndpoint(ep);
+        LDAPEntry entry = new LDAPEntry("cn=test-cn-javabean,o=sevenseas", attr);
 
-		return trans;
-	}
+        LDAPConnection con = new LDAPConnection();
+        con.connect("localhost", 10389);
+        con.bind(LDAPConnection.LDAP_V3, "uid=admin,ou=system", "secret"
+                .getBytes());
+        con.add(entry);
+        con.disconnect();
 
-	public UMOConnector getConnector() throws Exception {
+        trans.setEndpoint(ep);
 
-		LdapConnector c = new LdapConnector();
-		c.setLdapHost("localhost");
-		c.setLdapPort(10389);
-		c.setName("ldapTestConnector");
+        return trans;
+    }
 
-		c.setLoginDN("uid=admin,ou=system");
-		c.setPassword("secret");
+    public UMOConnector getConnector() throws Exception
+    {
 
-		c.setSearchBase("o=sevenSeas");
-		c.setStartUnsolicitedNotificationListener(true);
-		c.initialise();
-		c.connect();
+        LdapConnector c = new LdapConnector();
+        c.setLdapHost("localhost");
+        c.setLdapPort(10389);
+        c.setName("ldapTestConnector");
 
-		return c;
-	}
+        c.setLoginDN("uid=admin,ou=system");
+        c.setPassword("secret");
 
-	protected void doSetUp() throws Exception {
+        c.setSearchBase("o=sevenSeas");
+        c.setStartUnsolicitedNotificationListener(true);
+        c.initialise();
+        c.connect();
 
-		super.doSetUp();
-		DSManager.getInstance().start();
-	}
+        return c;
+    }
 
-	protected void doTearDown() throws Exception {
-		DSManager.getInstance().stop();
-		super.doTearDown();
-	}
+    protected void doSetUp() throws Exception
+    {
+
+        super.doSetUp();
+        DSManager.getInstance().start();
+    }
+
+    protected void doTearDown() throws Exception
+    {
+        DSManager.getInstance().stop();
+        super.doTearDown();
+    }
 
 }
