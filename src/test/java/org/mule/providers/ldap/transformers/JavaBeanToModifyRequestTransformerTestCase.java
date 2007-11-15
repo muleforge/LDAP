@@ -1,7 +1,7 @@
 package org.mule.providers.ldap.transformers;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,7 +65,7 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
 
     public UMOTransformer getRoundTripTransformer() throws Exception
     {
-        // TODO Auto-generated method stub
+
         return null;
     }
 
@@ -121,40 +121,95 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
     public boolean compareResults(Object expected, Object result)
     {
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+        LDAPModifyRequest expectedReq = ((LDAPModifyRequest) expected);
+        LDAPModifyRequest resultReq = ((LDAPModifyRequest) result);
 
-        try
+        if (!expectedReq.getDN().equals(resultReq.getDN()))
         {
-            ((LDAPModifyRequest) expected).writeDSML(out);
-
-            ((LDAPModifyRequest) result).writeDSML(out1);
-        }
-        catch (IOException e)
-        {
-
-            logger.error(e.toString(), e);
             return false;
         }
 
-        String s1 = out1.toString();
-        String s2 = out.toString();
+        LDAPModification[] expectedMods = expectedReq.getModifications();
 
-        // crop requestID which is always different
-        s1 = cropTillDn(s1);
-        s2 = cropTillDn(s2);
+        LDAPModification[] resultMods = resultReq.getModifications();
 
-        logger.debug(s1);
-        logger.debug(s2);
+        if (expectedMods == null && resultMods == null)
+        {
+            return true;
+        }
 
-        return s1.equals(s2);
+        if (expectedMods == null && resultMods != null)
+        {
+            return false;
+        }
+
+        if (expectedMods != null && resultMods == null)
+        {
+            return false;
+        }
+
+        if (expectedMods.length != resultMods.length)
+        {
+            return false;
+        }
+        Comparator comp = new LDAPModificationComparator();
+
+        Arrays.sort(expectedMods, comp);
+        Arrays.sort(resultMods, comp);
+
+        for (int i = 0; i < resultMods.length; i++)
+        {
+            LDAPModification modificationR = resultMods[i];
+            LDAPModification modificationE = expectedMods[i];
+
+            if (!modificationE.getAttribute().getName().equals(
+                    modificationR.getAttribute().getName()))
+            {
+                return false;
+
+            }
+
+            if (!modificationE.getAttribute().getStringValue().equals(
+                    modificationR.getAttribute().getStringValue()))
+            {
+                return false;
+
+            }
+        }
+
+        return true;
+
+        /*
+         * ByteArrayOutputStream out = new ByteArrayOutputStream();
+         * ByteArrayOutputStream out1 = new ByteArrayOutputStream();
+         * 
+         * String s1 = out1.toString(); String s2 = out.toString(); // crop
+         * requestID which is always different s1 = cropTillDn(s1); s2 =
+         * cropTillDn(s2);
+         * 
+         * logger.debug(s1); logger.debug(s2);
+         * 
+         * return s1.equals(s2);
+         */
     }
 
-    private static String cropTillDn(String str)
+    /*
+     * private static String cropTillDn(String str) {
+     * 
+     * int index = str.indexOf("dn="); return str.substring(index); }
+     */
+
+    private static class LDAPModificationComparator implements Comparator
     {
 
-        int index = str.indexOf("dn=");
-        return str.substring(index);
+        public int compare(Object o1, Object o2)
+        {
+            LDAPModification expectedMods = (LDAPModification) o1;
+            LDAPModification resultMods = (LDAPModification) o2;
+
+            return expectedMods.getAttribute().getName().compareTo(
+                    resultMods.getAttribute().getName());
+        }
 
     }
 

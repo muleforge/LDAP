@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mule-configuration PUBLIC "-//MuleSource //DTD mule-configuration XML V1.0//EN"
+                                "http://mule.mulesource.org/dtds/mule-configuration.dtd">
+
+<mule-configuration id="ResponseAggregatorTest" version="1.0">
+
+
+	<!--  serverUrl="" disables tcp port-->
+	<mule-environment-properties serverUrl=""></mule-environment-properties>
+
+
+
+	<connector name="ldapConnector"
+		className="org.mule.providers.ldap.LdapConnector">
+
+		<properties>
+			<property name="ldapHost" value="localhost" />
+			<property name="ldapPort" value="10389" />
+			<property name="loginDN" value="uid=admin,ou=system" />
+			<property name="password" value="secret" />
+			<property name="searchBase" value="o=sevenseas" />
+			<property name="searchScope" value="2" />
+			<property name="pollingFrequency" value="500" />
+			<property name="startUnsolicitedNotificationListener"
+				value="false" />
+
+			<property name="typesOnly" value="false" />
+
+			<property name="dereference" value="0" />
+
+			<property name="maxResults" value="0x7fffffff" />
+
+			<property name="timeLimit" value="0" />
+
+
+		</properties>
+	</connector>
+
+	<transformers>
+
+		<transformer name="ObjectToString"
+			className="org.mule.transformers.simple.ObjectToString">
+
+		</transformer>
+
+		<transformer name="FileToString"
+			className="org.mule.providers.file.transformers.FileToString">
+
+		</transformer>
+
+		<transformer name="StringToSearchRequest"
+			className="org.mule.providers.ldap.transformers.StringToSearchRequest">
+
+		</transformer>
+
+		<transformer name="StringToDeleteRequest"
+			className="org.mule.providers.ldap.transformers.StringToDeleteRequest">
+
+		</transformer>
+
+		<transformer name="LDAPEntryToAddRequest"
+			className="org.mule.providers.ldap.transformers.LDAPEntryToAddRequest">
+
+		</transformer>
+
+		<transformer name="JavaBeanToModifyRequest"
+			className="org.mule.providers.ldap.transformers.JavaBeanToModifyRequest">
+
+		</transformer>
+
+
+		<transformer name="LDAPMessageToString"
+			className="org.mule.providers.ldap.transformers.LDAPMessageToString">
+			<properties>
+				<property name="format" value="DSML" />
+			</properties>
+
+		</transformer>
+
+		<transformer name="StringToLDAPMessage"
+			className="org.mule.providers.ldap.transformers.StringToLDAPMessage">
+
+
+			<properties>
+				<property name="format" value="LDIF" />
+			</properties>
+
+		</transformer>
+
+		<transformer name="LDAPSearchResultToString"
+			className="org.mule.providers.ldap.transformers.LDAPSearchResultToString">
+
+			<properties>
+				<property name="format" value="DSML" />
+			</properties>
+
+		</transformer>
+	</transformers>
+
+	<model name="LDAPTest">
+
+
+		<!-- Lauscht der response router immer?? -->
+
+		<mule-descriptor name="response-router-1"
+			implementation="org.mule.components.simple.EchoComponent">
+
+			<inbound-router>
+				<endpoint address="vm://test_in" synchronous="true" />
+			</inbound-router>
+
+			<outbound-router>
+				<router
+					className="org.mule.routing.outbound.OutboundPassThroughRouter">
+
+					<endpoint
+						address="ldap://ldap.out/(cn=test-cn*)">
+					</endpoint>
+
+					<reply-to address="ldap://ldap.in" />
+
+				</router>
+			</outbound-router>
+
+			<response-router timeout="15000">
+				<endpoint address="ldap://ldap.in"></endpoint>
+				<router
+					className="org.mule.providers.ldap.routers.LdapResponseCorrelationAggregator">
+
+				</router>
+
+			</response-router>
+		</mule-descriptor>
+
+		<!--  
+			<mule-descriptor name="asyncSearchAndResultAsDSML"
+			implementation="org.mule.components.simple.EchoComponent">
+			
+			<inbound-router>
+			<endpoint address="vm://test_in_async"
+			responseTransformers="LDAPSearchResultToString" />
+			</inbound-router>
+			
+			<outbound-router>
+			<router
+			className="org.mule.routing.outbound.OutboundPassThroughRouter">
+			
+			<endpoint transformers="StringToSearchRequest"
+			address="ldap://ldap.out">
+			</endpoint>
+			
+			</router>
+			</outbound-router>
+			</mule-descriptor>
+			
+			<mule-descriptor name="asyncJavaBean"
+			implementation="org.mule.components.simple.EchoComponent">
+			
+			<inbound-router>
+			<endpoint address="vm://test_in_bean" />
+			</inbound-router>
+			
+			<outbound-router>
+			<router
+			className="org.mule.routing.outbound.OutboundPassThroughRouter">
+			
+			<endpoint transformers="JavaBeanToModifyRequest"
+			address="ldap://ldap.out">
+			</endpoint>
+			
+			</router>
+			</outbound-router>
+			</mule-descriptor>
+		-->
+
+	</model>
+</mule-configuration>
