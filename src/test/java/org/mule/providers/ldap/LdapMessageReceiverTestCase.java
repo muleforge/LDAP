@@ -31,7 +31,7 @@ public class LdapMessageReceiverTestCase extends
 
         return new LdapMessageReceiver((AbstractConnector) endpoint
                 .getConnector(), (UMOComponent) mockComponent.proxy(),
-                endpoint, 0);
+                endpoint);
     }
 
 }
