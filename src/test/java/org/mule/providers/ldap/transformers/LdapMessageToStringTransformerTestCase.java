@@ -74,4 +74,35 @@ public class LdapMessageToStringTransformerTestCase extends
 
     }
 
+    @Override
+    public boolean compareResults(Object expected, Object result)
+    {
+        logger.debug("compareResults");
+        logger.debug(expected);
+        logger.debug(result);
+        
+        if(expected == null || result == null) return false;
+        
+        int index = expected.toString().indexOf("requestID");
+        
+        if(index == -1) return false;
+        
+        if(index != result.toString().indexOf("requestID"))
+        {
+            return false;
+        }
+        
+        if(result.toString().indexOf("dn=test,o=toporga") != -1 && expected.toString().indexOf("dn=test,o=toporga") != -1)
+            return true ;
+
+
+        
+        
+                return false;
+        
+        
+    }
+
+
+
 }
