@@ -74,7 +74,7 @@ public class LdapMessageToStringTransformerTestCase extends
 
     }
 
-    @Override
+    //@Override
     public boolean compareResults(Object expected, Object result)
     {
         logger.debug("compareResults");
