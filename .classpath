@@ -37,7 +37,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/geronimo/specs/geronimo-jta_1.0.1B_spec/1.0.1/geronimo-jta_1.0.1B_spec-1.0.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar" sourcepath="M2_REPO/javax/activation/activation/1.1/activation-1.1-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.3.1/commons-io-1.3.1.jar" sourcepath="M2_REPO/commons-io/commons-io/1.3.1/commons-io-1.3.1-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/novell/ldap/jldap/4.3/jldap-4.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/directory/server/apacheds-server-unit/1.0.2/apacheds-server-unit-1.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/directory/server/apacheds-core/1.0.2/apacheds-core-1.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/directory/server/apacheds-server-jndi/1.0.2/apacheds-server-jndi-1.0.2.jar"/>
@@ -62,5 +61,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/mule-tests-functional"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/mule-transport-vm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/mule-transport-stream"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jladp Oct 06"/>
+	<classpathentry kind="var" path="M2_REPO/gnu-crypto/gnu-crypto/2.0.1/gnu-crypto-2.0.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/gnu-crypto/javax-crypto/2.0.1/javax-crypto-2.0.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/gnu-crypto/javax-security/2.0.1/javax-security-2.0.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mule-transport-http"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

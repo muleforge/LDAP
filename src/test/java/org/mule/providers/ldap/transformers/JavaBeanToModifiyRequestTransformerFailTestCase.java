@@ -1,7 +1,5 @@
 package org.mule.providers.ldap.transformers;
 
-import org.mule.umo.transformer.TransformerException;
-
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;

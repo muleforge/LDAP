@@ -3,6 +3,9 @@
   <config-file id="config1" path="examples/src/main/resources/SysinAddEntry.xml">
     <description>AddEntry</description>
   </config-file>
+  <config-file id="config4" path="examples/src/main/resources/HTTPSearchQuery.xml">
+    <description>HTTPSearchQuery</description>
+  </config-file>
   <config-file id="config0" path="examples/src/main/resources/SysinSearchQuery.xml">
     <description>SysinSearchQueryExample</description>
   </config-file>
@@ -12,6 +15,10 @@
   <config-file id="config3" path="examples/src/main/resources/SysinDeleteEntry.xml">
     <description>SysinDeleteEntry</description>
   </config-file>
+  <config-set id="set4">
+    <description>HTTPSearchQuery</description>
+    <config-file-ref id="config4"/>
+  </config-set>
   <config-set id="set2">
     <description>ConvertLDIFToDSML</description>
     <config-file-ref id="config2"/>
