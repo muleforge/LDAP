@@ -79,12 +79,10 @@ public class LdapSASLConnector extends LdapConnector
          * 
          * if (sunSASL != null) { logger .debug("SunSASL implementation (JDK >=
          * 1.5) detected. Use it."); try { Sasl.setSaslClientFactory(new
-         * SaslBridgeClientFactory());
-         *  } catch (RuntimeException e) { logger.warn(e.toString()); } } else {
-         * logger .debug("No SunSASL implementation (JDK >= 1.5 detected. Fall
-         * back to JDK 1.4 mode"); Security.addProvider(new
-         * com.novell.sasl.client.SaslProvider()); }
-         *  }
+         * SaslBridgeClientFactory()); } catch (RuntimeException e) {
+         * logger.warn(e.toString()); } } else { logger .debug("No SunSASL
+         * implementation (JDK >= 1.5 detected. Fall back to JDK 1.4 mode");
+         * Security.addProvider(new com.novell.sasl.client.SaslProvider()); } }
          */
 
         if (logger.isDebugEnabled())
@@ -301,10 +299,10 @@ public class LdapSASLConnector extends LdapConnector
                     logger.debug(result);
 
                 }
-                else if (callbacks[i] instanceof javax.security.sasl.RealmCallback)
+                else if (callbacks[i] instanceof RealmCallback)
                 {
 
-                    String result = ((javax.security.sasl.RealmCallback) callbacks[i])
+                    String result = ((RealmCallback) callbacks[i])
                             .getDefaultText();
 
                     if (realm != null)
@@ -312,8 +310,7 @@ public class LdapSASLConnector extends LdapConnector
                         result = realm;
                     }
 
-                    ((javax.security.sasl.RealmCallback) callbacks[i])
-                            .setText(result);
+                    ((RealmCallback) callbacks[i]).setText(result);
 
                     logger.debug(result);
 
@@ -324,7 +321,7 @@ public class LdapSASLConnector extends LdapConnector
                     ((RealmChoiceCallback) callbacks[i]).setSelectedIndex(0);
 
                 }
-                else if (callbacks[i] instanceof javax.security.sasl.RealmChoiceCallback)
+                else if (callbacks[i] instanceof RealmChoiceCallback)
                 {
 
                     ((RealmChoiceCallback) callbacks[i]).setSelectedIndex(0);
