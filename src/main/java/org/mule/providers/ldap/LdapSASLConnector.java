@@ -10,17 +10,25 @@
 
 package org.mule.providers.ldap;
 
+import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
 
+import javax.net.ssl.SSLContext;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.mule.providers.ldap.util.TrustAllCertsManager;
 import org.mule.umo.lifecycle.InitialisationException;
+import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
@@ -33,75 +41,148 @@ public class LdapSASLConnector extends LdapConnector
     private static final String MECHANISM_DIGEST_MD5 = "DIGEST-MD5";
     private static final String MECHANISM_DIGEST_EXTERNAL = "EXTERNAL";
     private boolean trustAll = false;
+    private String trustStore = null;
+    private final boolean forceJDK14 = true;
+    private String realm = null;
 
     private String mechanism = MECHANISM_DIGEST_MD5;
 
     private LDAPJSSESecureSocketFactory ssf;
 
-    private static class BindCallbackHandler implements CallbackHandler
+    public LdapSASLConnector()
     {
+        super();
 
-        private char[] passwordChars;
-
-        BindCallbackHandler(String password)
+        if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
         {
-
-            passwordChars = new char[password.length()];
-            password.getChars(0, password.length(), passwordChars, 0);
+            setLdapPort(LDAPConnection.DEFAULT_SSL_PORT);
         }
-
-        public void handle(Callback[] callbacks) throws IOException,
-                UnsupportedCallbackException
+        else
         {
 
-            for (int i = 0; i < callbacks.length; i++)
-            {
-
-                if (callbacks[i] instanceof PasswordCallback)
-                {
-
-                    ((PasswordCallback) callbacks[i])
-                            .setPassword(passwordChars);
-
-                }
-                else if (callbacks[i] instanceof NameCallback)
-                {
-
-                    ((NameCallback) callbacks[i])
-                            .setName(((NameCallback) callbacks[i])
-                                    .getDefaultName());
-
-                }
-                else if (callbacks[i] instanceof RealmCallback)
-                {
-
-                    ((RealmCallback) callbacks[i])
-                            .setText(((RealmCallback) callbacks[i])
-                                    .getDefaultText());
-
-                }
-                else if (callbacks[i] instanceof RealmChoiceCallback)
-                {
-
-                    ((RealmChoiceCallback) callbacks[i]).setSelectedIndex(0);
-
-                }
-
-            }
-
+            setLdapPort(LDAPConnection.DEFAULT_PORT);
         }
 
     }
 
-    public LdapSASLConnector()
+    // @Override
+    protected void doInitialise() throws InitialisationException
     {
-        super();
-        setLdapPort(LDAPConnection.DEFAULT_SSL_PORT);
+
+        //if (isForceJDK14())
+        //{
+            //logger.debug("forcing JDK 1.4 SASL mode");
+            Security.addProvider(new com.novell.sasl.client.SaslProvider());
+        //}
+        /*else
+        {
+            Provider sunSASL = Security.getProvider("SunSASL");
+
+            if (sunSASL != null)
+            {
+                logger
+                        .debug("SunSASL implementation (JDK >= 1.5) detected. Use it.");
+                try
+                {
+                    Sasl.setSaslClientFactory(new SaslBridgeClientFactory());
+
+                }
+                catch (RuntimeException e)
+                {
+                    logger.warn(e.toString());
+                }
+            }
+            else
+            {
+                logger
+                        .debug("No SunSASL implementation (JDK >= 1.5 detected. Fall back to JDK 1.4 mode");
+                Security.addProvider(new com.novell.sasl.client.SaslProvider());
+            }
+
+        }*/
+
+        if (logger.isDebugEnabled())
+        {
+
+            Provider[] ps = Security.getProviders();
+            for (int i = 0; i < ps.length; i++)
+            {
+                Provider provider = ps[i];
+                logger.debug(provider.getClass() + "/" + provider.getName()
+                        + "/" + provider.getVersion() + "/"
+                        + provider.getInfo());
+
+            }
+        }
+
+        if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
+        {
+
+            try
+            {
+                if (trustAll)
+                {
+                    SSLContext context = SSLContext.getInstance("TLS");
+                    context.init(null, trustAll ? TrustAllCertsManager
+                            .getTrustAllCertsManager() : null, null);
+
+                    // certificate_unknown
+                    ssf = new LDAPJSSESecureSocketFactory(context
+                            .getSocketFactory());
+                }
+                else
+                {
+                    if (StringUtils.isEmpty(trustStore))
+                    {
+                        throw new InitialisationException(
+                                new IllegalArgumentException(
+                                        "Either trustAll value must be true or the trustStore parameter must be set"),
+                                this);
+                    }
+
+                    File trustStoreFile = new File(trustStore);
+
+                    if (!trustStoreFile.exists() || !trustStoreFile.canRead())
+                    {
+                        throw new InitialisationException(
+                                new IllegalArgumentException("truststore file "
+                                        + trustStoreFile.getAbsolutePath()
+                                        + " do not exist or is not readable"),
+                                this);
+                    }
+
+                    System.setProperty("javax.net.ssl.trustStore", trustStore);
+
+                    logger.debug("truststore set to "
+                            + trustStoreFile.getAbsolutePath());
+
+                    ssf = new LDAPJSSESecureSocketFactory();
+                }
+                // pix path
+                // ssf = new LDAPJSSESecureSocketFactory((SSLSocketFactory)
+                // SSLSocketFactory.getDefault());
+
+                // TODO SSL<->TLS (TLS maybe require startTLS() call on lc
+                // ssf = new LDAPJSSEStartTLSFactory();
+            }
+            catch (KeyManagementException e)
+            {
+                throw new InitialisationException(e, this);
+            }
+            catch (NoSuchAlgorithmException e)
+            {
+                throw new InitialisationException(e, this);
+            }
+
+        }
+
+        super.doInitialise();
     }
 
     // @Override
     protected void doBind() throws Exception
     {
+        logger.debug("bind with mechanism " + mechanism);
 
         if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
         {
@@ -111,45 +192,9 @@ public class LdapSASLConnector extends LdapConnector
         else
         {
 
-            getLdapConnection().bind(getLoginDN(), "dn: " + getLoginDN(),
-                    new String[]
-                    {mechanism}, null, new BindCallbackHandler(getPassword()));
+            getLdapConnection().bind(getLoginDN(), getLoginDN(), new String[]
+            {mechanism}, null, new BindCallbackHandler(getPassword()));
         }
-    }
-
-    // @Override
-    protected void doInitialise() throws InitialisationException
-    {
-
-        Security.addProvider(new com.novell.sasl.client.SaslProvider());
-
-        Provider[] ps = Security.getProviders();
-        for (int i = 0; i < ps.length; i++)
-        {
-            Provider provider = ps[i];
-            logger.debug(provider.getClass() + "/" + provider.getName() + "/"
-                    + provider.getVersion() + "/" + provider.getInfo());
-
-        }
-
-        if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
-        {
-
-            /*
-             * try { SSLContext context = SSLContext.getInstance("TLS");
-             * context.init(null,
-             * trustAll?TrustAllCertsManager.trustAllCertsManager:null , null);
-             * ssf = new
-             * LDAPJSSESecureSocketFactory(context.getSocketFactory()); } catch
-             * (Exception e) { throw new InitialisationException(e, this); }
-             */
-
-            // TODO SSL<->TLS (TLS maybe require startTLS() call on lc
-            // ssf = new LDAPJSSEStartTLSFactory()
-            ssf = new LDAPJSSESecureSocketFactory();
-        }
-
-        super.doInitialise();
     }
 
     public String getProtocol()
@@ -180,11 +225,11 @@ public class LdapSASLConnector extends LdapConnector
 
         if (MECHANISM_DIGEST_EXTERNAL.equals(mechanism))
         {
-            setLdapConnection(new LDAPConnection(ssf));
+            super.setLdapConnection(new LDAPConnection(ssf));
         }
         else
         {
-            setLdapConnection(new LDAPConnection());
+            super.setLdapConnection(new LDAPConnection());
         }
 
     }
@@ -197,6 +242,113 @@ public class LdapSASLConnector extends LdapConnector
     public void setTrustAll(boolean trustAll)
     {
         this.trustAll = trustAll;
+    }
+
+    public String getRealm()
+    {
+        return realm;
+    }
+
+    public void setRealm(String realm)
+    {
+        this.realm = realm;
+    }
+
+    public boolean isForceJDK14()
+    {
+        return forceJDK14;
+    }
+
+    private class BindCallbackHandler implements CallbackHandler
+    {
+        private final Log logger = LogFactory.getLog(getClass());
+        private char[] passwordChars;
+
+        BindCallbackHandler(String password)
+        {
+
+            passwordChars = new char[password.length()];
+            password.getChars(0, password.length(), passwordChars, 0);
+        }
+
+        public void handle(Callback[] callbacks) throws IOException,
+                UnsupportedCallbackException
+        {
+
+            for (int i = 0; i < callbacks.length; i++)
+            {
+                logger.debug(callbacks[i].getClass());
+
+                if (callbacks[i] instanceof PasswordCallback)
+                {
+
+                    logger.debug("******");
+
+                    ((PasswordCallback) callbacks[i])
+                            .setPassword(passwordChars);
+
+                }
+                else if (callbacks[i] instanceof NameCallback)
+                {
+                    logger
+                            .debug(((NameCallback) callbacks[i])
+                                    .getDefaultName());
+
+                    ((NameCallback) callbacks[i])
+                            .setName(((NameCallback) callbacks[i])
+                                    .getDefaultName());
+
+                }
+                else if (callbacks[i] instanceof RealmCallback)
+                {
+
+                    String result = ((RealmCallback) callbacks[i])
+                            .getDefaultText();
+
+                    if (realm != null)
+                    {
+                        result = realm;
+                    }
+
+                    ((RealmCallback) callbacks[i]).setText(result);
+
+                    logger.debug(result);
+
+                }
+                else if (callbacks[i] instanceof javax.security.sasl.RealmCallback)
+                {
+
+                    String result = ((javax.security.sasl.RealmCallback) callbacks[i])
+                            .getDefaultText();
+
+                    if (realm != null)
+                    {
+                        result = realm;
+                    }
+
+                    ((javax.security.sasl.RealmCallback) callbacks[i])
+                            .setText(result);
+
+                    logger.debug(result);
+
+                }
+                else if (callbacks[i] instanceof RealmChoiceCallback)
+                {
+
+                    ((RealmChoiceCallback) callbacks[i]).setSelectedIndex(0);
+
+                }
+                else if (callbacks[i] instanceof javax.security.sasl.RealmChoiceCallback)
+                {
+
+                    ((RealmChoiceCallback) callbacks[i]).setSelectedIndex(0);
+
+                }
+
+            }
+
+        }
+
     }
 
 }
