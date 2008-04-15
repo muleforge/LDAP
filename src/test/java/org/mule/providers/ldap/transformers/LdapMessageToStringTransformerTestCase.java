@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.umo.transformer.UMOTransformer; //import org.mule.util.FileUtils;
+import org.mule.umo.transformer.UMOTransformer;
 
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPException;
@@ -74,35 +74,32 @@ public class LdapMessageToStringTransformerTestCase extends
 
     }
 
-    //@Override
+    // @Override
     public boolean compareResults(Object expected, Object result)
     {
         logger.debug("compareResults");
         logger.debug(expected);
         logger.debug(result);
-        
-        if(expected == null || result == null) return false;
-        
+
+        if (expected == null || result == null)
+            return false;
+
         int index = expected.toString().indexOf("requestID");
-        
-        if(index == -1) return false;
-        
-        if(index != result.toString().indexOf("requestID"))
+
+        if (index == -1)
+            return false;
+
+        if (index != result.toString().indexOf("requestID"))
         {
             return false;
         }
-        
-        if(result.toString().indexOf("dn=test,o=toporga") != -1 && expected.toString().indexOf("dn=test,o=toporga") != -1)
-            return true ;
 
+        if (result.toString().indexOf("dn=test,o=toporga") != -1
+                && expected.toString().indexOf("dn=test,o=toporga") != -1)
+            return true;
 
-        
-        
-                return false;
-        
-        
+        return false;
+
     }
-
-
 
 }

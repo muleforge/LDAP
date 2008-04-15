@@ -29,10 +29,10 @@ public class HttpRequestToString extends AbstractTransformer
     public Object doTransform(Object src, String encoding)
             throws TransformerException
     {
-        
-        logger.debug("Type: "+src.getClass().toString());
-        logger.debug("Content: "+src.toString());
-                       
+
+        logger.debug("Type: " + src.getClass().toString());
+        logger.debug("Content: " + src.toString());
+
         String param;
 
         if (src instanceof byte[])

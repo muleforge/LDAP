@@ -69,37 +69,23 @@ public class LdapSASLConnector extends LdapConnector
     protected void doInitialise() throws InitialisationException
     {
 
-        //if (isForceJDK14())
-        //{
-            //logger.debug("forcing JDK 1.4 SASL mode");
-            Security.addProvider(new com.novell.sasl.client.SaslProvider());
-        //}
-        /*else
-        {
-            Provider sunSASL = Security.getProvider("SunSASL");
-
-            if (sunSASL != null)
-            {
-                logger
-                        .debug("SunSASL implementation (JDK >= 1.5) detected. Use it.");
-                try
-                {
-                    Sasl.setSaslClientFactory(new SaslBridgeClientFactory());
-
-                }
-                catch (RuntimeException e)
-                {
-                    logger.warn(e.toString());
-                }
-            }
-            else
-            {
-                logger
-                        .debug("No SunSASL implementation (JDK >= 1.5 detected. Fall back to JDK 1.4 mode");
-                Security.addProvider(new com.novell.sasl.client.SaslProvider());
-            }
-
-        }*/
+        // if (isForceJDK14())
+        // {
+        // logger.debug("forcing JDK 1.4 SASL mode");
+        Security.addProvider(new com.novell.sasl.client.SaslProvider());
+        // }
+        /*
+         * else { Provider sunSASL = Security.getProvider("SunSASL");
+         * 
+         * if (sunSASL != null) { logger .debug("SunSASL implementation (JDK >=
+         * 1.5) detected. Use it."); try { Sasl.setSaslClientFactory(new
+         * SaslBridgeClientFactory());
+         *  } catch (RuntimeException e) { logger.warn(e.toString()); } } else {
+         * logger .debug("No SunSASL implementation (JDK >= 1.5 detected. Fall
+         * back to JDK 1.4 mode"); Security.addProvider(new
+         * com.novell.sasl.client.SaslProvider()); }
+         *  }
+         */
 
         if (logger.isDebugEnabled())
         {
