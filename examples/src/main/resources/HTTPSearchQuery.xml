@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mule-configuration PUBLIC "-//MuleSource //DTD mule-configuration XML V1.0//EN"
+                                "http://mule.mulesource.org/dtds/mule-configuration.dtd">
+<mule-configuration id="SysinSearchQuery" version="1.0">
+	<!--  serverUrl="" disables tcp port-->
+	<mule-environment-properties serverUrl="" synchronous="true">
+	</mule-environment-properties>
+	<connector name="ldapConnector" className="org.mule.providers.ldap.LdapConnector">
+		<properties>
+			<property name="ldapHost" value="localhost"/>
+			<property name="ldapPort" value="10389"/>
+			<property name="loginDN" value="uid=admin,ou=system"/>
+			<property name="password" value="secret"/>
+			<property name="searchBase" value="ou=system"/>
+			<property name="searchScope" value="2"/>
+			<property name="pollingFrequency" value="500"/>
+			<property name="startUnsolicitedNotificationListener" value="false"/>
+			<list name="attributes">
+				<entry value="cn"/>
+				<entry value="sn"/>
+			</list>
+			<property name="typesOnly" value="false"/>
+			<property name="dereference" value="0"/>
+			<property name="maxResults" value="0x7fffffff"/>
+			<property name="timeLimit" value="0"/>
+			<map name="queries">
+				<property name="cn.payload" value="(cn=${payload})"/>
+			</map>
+		</properties>
+	</connector>
+	<transformers>
+		<transformer name="ObjectToString" className="org.mule.transformers.simple.ObjectToString">
+
+		</transformer>
+		<transformer name="FileToString" className="org.mule.providers.file.transformers.FileToString">
+
+		</transformer>
+		<transformer name="StringToSearchRequest" className="org.mule.providers.ldap.transformers.StringToSearchRequest">
+
+		</transformer>
+		<transformer name="StringToDeleteRequest" className="org.mule.providers.ldap.transformers.StringToDeleteRequest">
+
+		</transformer>
+		<transformer name="LDAPEntryToAddRequest" className="org.mule.providers.ldap.transformers.LDAPEntryToAddRequest">
+
+		</transformer>
+		<transformer name="LDAPMessageToString" className="org.mule.providers.ldap.transformers.LDAPMessageToString">
+			<properties>
+				<property name="format" value="DSML"/>
+			</properties>
+		</transformer>
+		<transformer name="StringToLDAPMessage" className="org.mule.providers.ldap.transformers.StringToLDAPMessage">
+			<properties>
+				<property name="format" value="LDIF"/>
+			</properties>
+		</transformer>
+		<transformer name="LDAPSearchResultToString" className="org.mule.providers.ldap.transformers.LDAPSearchResultToString">
+			<properties>
+				<property name="format" value="DSML"/>
+			</properties>
+		</transformer>
+		<transformer name="HttpRequestToString" className="org.mule.providers.ldap.transformers.HttpRequestToString"/>
+	</transformers>
+	<model name="SysinToSearchTest">
+		<mule-descriptor name="sysinSearch" implementation="org.mule.components.simple.EchoComponent">
+			<inbound-router>
+				<endpoint address="http://localhost:8889" transformers="HttpRequestToString" responseTransformers="LDAPSearchResultToString">
+					<filter className="org.mule.routing.filters.logic.NotFilter">
+						<filter pattern="/favicon.ico" className="org.mule.providers.http.filters.HttpRequestWildcardFilter"/>
+					</filter>
+					<properties>
+						<property name="Content-Type" value="text/plain"/>
+					</properties>
+				</endpoint>
+			</inbound-router>
+			<outbound-router>
+				<router className="org.mule.routing.outbound.OutboundPassThroughRouter">
+					<endpoint address="ldap://ldap.out/cn.payload">
+					</endpoint>
+				</router>
+			</outbound-router>
+		</mule-descriptor>
+	</model>
+</mule-configuration>
