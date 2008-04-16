@@ -15,189 +15,169 @@ import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.util.DN;
 
-public class LdapListenerSynchronTestCase extends FunctionalTestCase
-{
+public class LdapListenerSynchronTestCase extends FunctionalTestCase {
 
-    protected String getConfigResources()
-    {
+	protected String getConfigResources() {
 
-        return "LdapListenerTest.xml";
-    }
+		return "LdapListenerTest.xml";
+	}
 
-    public void testSearch() throws Exception
-    {
+	public void testSearch() throws Exception {
 
-        MuleClient client = new MuleClient();
-        UMOMessage msg = client.send("ldap://ldap.out/", new MuleMessage(
-                "(objectclass=*)"));
-        assertNotNull(msg);
-        assertTrue(msg.getPayload() instanceof LDAPSearchResults);
+		MuleClient client = new MuleClient();
+		UMOMessage msg = client.send("ldap://ldap.out/", new MuleMessage(
+				"(objectclass=*)"));
+		assertNotNull(msg);
+		assertTrue(msg.getPayload() instanceof LDAPSearchResults);
 
-        LDAPSearchResultToString trans = new LDAPSearchResultToString();
-        String s = (String) trans.transform(msg.getPayload());
-        logger.debug(s);
-        assertTrue(s.indexOf("<batchResponse") > -1);
-        assertTrue(s.indexOf("<searchResultEntry") > -1);
-        assertTrue(s.indexOf("dn=\"o=sevenseas\"><attr name=\"o\">") > -1);
-    }
+		LDAPSearchResultToString trans = new LDAPSearchResultToString();
+		String s = (String) trans.transform(msg.getPayload());
+		logger.debug(s);
+		assertTrue(s.indexOf("<batchResponse") > -1);
+		assertTrue(s.indexOf("<searchResultEntry") > -1);
+		assertTrue(s.indexOf("dn=\"o=sevenseas\"><attr name=\"o\">") > -1);
+	}
 
-    public void testAsyncSearch() throws Exception
-    {
+	public void testAsyncSearch() throws Exception {
 
-        MuleClient client = new MuleClient();
-        client.dispatch("ldap://ldap.out", new MuleMessage("(cn=*)"));
+		MuleClient client = new MuleClient();
+		client.dispatch("ldap://ldap.out", new MuleMessage("(cn=*)"));
 
-        UMOMessage msg = client.receive("ldap://ldap.in", 15000);
+		UMOMessage msg = client.receive("ldap://ldap.in", 15000);
 
-        assertNotNull(msg);
-        assertTrue(msg.getPayload() instanceof LDAPMessage);
-        logger.debug(msg.getPayload());
+		assertNotNull(msg);
+		assertTrue(msg.getPayload() instanceof LDAPMessage);
+		logger.debug(msg.getPayload());
 
-    }
+	}
 
-    public void testAddSearch() throws Exception
-    {
-        MuleClient client = new MuleClient();
+	public void testAddSearch() throws Exception {
+		MuleClient client = new MuleClient();
 
-        final int addCount = 4;
+		final int addCount = 4;
 
-        for (int i = 0; i < addCount; i++)
-            client.dispatch("ldap://ldap.out", TestHelper
-                    .getRandomEntryAddRequest(), null);
+		for (int i = 0; i < addCount; i++)
+			client.dispatch("ldap://ldap.out", TestHelper
+					.getRandomEntryAddRequest(), null);
 
-        Thread.sleep(1000);
+		Thread.sleep(1000);
 
-        UMOMessage msg = client.send("vm://test_in_async", new MuleMessage(
-                "(cn=*)"));
+		UMOMessage msg = client.send("vm://test_in_async", new MuleMessage(
+				"(cn=*)"));
 
-        assertNotNull(msg);
-        assertTrue(msg.getPayload() instanceof String);
+		assertNotNull(msg);
+		assertTrue(msg.getPayload() instanceof String);
 
-        // logger.debug(msg.getPayload());
+		// logger.debug(msg.getPayload());
 
-        assertTrue(msg.getPayloadAsString().indexOf("<batchResponse") > -1);
-        assertTrue(msg.getPayloadAsString().indexOf(
-                "<searchResultEntry dn=\"cn=test-cn") > -1);
+		assertTrue(msg.getPayloadAsString().indexOf("<batchResponse") > -1);
+		assertTrue(msg.getPayloadAsString().indexOf(
+				"<searchResultEntry dn=\"cn=test-cn") > -1);
 
-        assertTrue(StringUtils.countMatches(msg.getPayloadAsString(),
-                "test-cn-") >= addCount);
+		assertTrue(StringUtils.countMatches(msg.getPayloadAsString(),
+				"test-cn-") >= addCount);
 
-    }
+	}
 
-    public void testJavaBeanModificationRequest() throws Exception
-    {
-        MuleClient client = new MuleClient();
+	public void testJavaBeanModificationRequest() throws Exception {
+		MuleClient client = new MuleClient();
 
-        LDAPAddRequest add = TestHelper.getRandomEntryAddRequest();
+		LDAPAddRequest add = TestHelper.getRandomEntryAddRequest();
 
-        client.send("ldap://ldap.out", add, null);
+		client.send("ldap://ldap.out", add, null);
 
-        Bean bean = new Bean();
+		Bean bean = new Bean();
 
-        bean.setDn(add.getEntry().getDN());
-        bean.setMail("hsaly@mulesource.org");
-        bean.setDescription("desc");
+		bean.setDn(add.getEntry().getDN());
+		bean.setMail("hsaly@mulesource.org");
+		bean.setDescription("desc");
 
-        client.send("vm://test_in_bean", new MuleMessage(bean));
+		client.send("vm://test_in_bean", new MuleMessage(bean));
 
-        UMOMessage msg = client.send("ldap://ldap.out", new MuleMessage(new DN(
-                add.getEntry().getDN())));
+		UMOMessage msg = client.send("ldap://ldap.out", new MuleMessage(new DN(
+				add.getEntry().getDN())));
 
-        assertNotNull(msg);
+		assertNotNull(msg);
 
-        assertTrue(msg.getPayload() instanceof LDAPEntry);
+		assertTrue(msg.getPayload() instanceof LDAPEntry);
 
-        logger.debug(msg.getPayload());
+		logger.debug(msg.getPayload());
 
-        LDAPEntry res = (LDAPEntry) msg.getPayload();
+		LDAPEntry res = (LDAPEntry) msg.getPayload();
 
-        assertTrue(res.getDN().equals(add.getEntry().getDN()));
-        assertTrue(res.getAttribute("mail").getStringValue().equals(
-                bean.getMail()));
-        assertTrue(res.getAttribute("description").getStringValue().equals(
-                bean.getDescription()));
+		assertTrue(res.getDN().equals(add.getEntry().getDN()));
+		assertTrue(res.getAttribute("mail").getStringValue().equals(
+				bean.getMail()));
+		assertTrue(res.getAttribute("description").getStringValue().equals(
+				bean.getDescription()));
 
-    }
+	}
 
-    protected void doFunctionalTearDown() throws Exception
-    {
+	protected void doFunctionalTearDown() throws Exception {
 
-        DSManager.getInstance().stop();
-        super.doFunctionalTearDown();
-    }
+		DSManager.getInstance().stop();
+		super.doFunctionalTearDown();
+	}
 
-    protected void doPreFunctionalSetUp() throws Exception
-    {
+	protected void doPreFunctionalSetUp() throws Exception {
 
-        DSManager.getInstance().start();
-        super.doPreFunctionalSetUp();
-    }
+		DSManager.getInstance().start();
+		super.doPreFunctionalSetUp();
+	}
 
-    public static class Bean
-    {
+	public static class Bean {
 
-        private String dn;
-        private String description;
-        private String mail;
+		private String dn;
+		private String description;
+		private String mail;
 
-        public String getDn()
-        {
-            return dn;
-        }
+		public String getDn() {
+			return dn;
+		}
 
-        public void setDn(String dn)
-        {
-            this.dn = dn;
-        }
+		public void setDn(String dn) {
+			this.dn = dn;
+		}
 
-        public String getDescription()
-        {
-            return description;
-        }
+		public String getDescription() {
+			return description;
+		}
 
-        public void setDescription(String description)
-        {
-            this.description = description;
-        }
+		public void setDescription(String description) {
+			this.description = description;
+		}
 
-        public String getMail()
-        {
-            return mail;
-        }
+		public String getMail() {
+			return mail;
+		}
 
-        public void setMail(String mail)
-        {
-            this.mail = mail;
-        }
+		public void setMail(String mail) {
+			this.mail = mail;
+		}
 
-    }
+	}
 
-    public static class BeanWithoutDn
-    {
+	public static class BeanWithoutDn {
 
-        private String description;
-        private String mail;
+		private String description;
+		private String mail;
 
-        public String getDescription()
-        {
-            return description;
-        }
+		public String getDescription() {
+			return description;
+		}
 
-        public void setDescription(String description)
-        {
-            this.description = description;
-        }
+		public void setDescription(String description) {
+			this.description = description;
+		}
 
-        public String getMail()
-        {
-            return mail;
-        }
+		public String getMail() {
+			return mail;
+		}
 
-        public void setMail(String mail)
-        {
-            this.mail = mail;
-        }
+		public void setMail(String mail) {
+			this.mail = mail;
+		}
 
-    }
+	}
 
 }

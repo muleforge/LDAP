@@ -5,68 +5,70 @@ import java.util.List;
 import org.mule.MuleManager;
 import org.mule.extras.client.MuleClient;
 import org.mule.impl.MuleMessage;
+import org.mule.providers.ldap.transformers.LDAPSearchResultToString;
 import org.mule.providers.ldap.util.DSManager;
 import org.mule.providers.ldap.util.TestHelper;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.umo.UMOMessage;
+import org.mule.util.StringUtils;
 
-public class ResponseAggregatorTestCase extends FunctionalTestCase
-{
+import com.novell.ldap.LDAPAddRequest;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPMessage;
+import com.novell.ldap.LDAPSearchResult;
+import com.novell.ldap.LDAPSearchResults;
+import com.novell.ldap.util.DN;
 
-    protected String getConfigResources()
-    {
+public class ResponseAggregatorTestCase extends FunctionalTestCase {
 
-        return "ResponseAggregatorTest.xml";
-    }
+	protected String getConfigResources() {
 
-    public void testAsyncResponse() throws Exception
-    {
-        MuleClient client = new MuleClient();
+		return "ResponseAggregatorTest.xml";
+	}
 
-        final int addCount = 4;
+	public void testAsyncResponse() throws Exception {
+		MuleClient client = new MuleClient();
 
-        for (int i = 0; i < addCount; i++)
-            client.send("ldap://ldap.out", TestHelper
-                    .getRandomEntryAddRequest(), null);
+		final int addCount = 4;
 
-        Thread.sleep(1000);
+		for (int i = 0; i < addCount; i++)
+			client.send("ldap://ldap.out", TestHelper
+					.getRandomEntryAddRequest(), null);
 
-        // logger.debug("add messages sended");
+		Thread.sleep(1000);
+		
+		//logger.debug("add messages sended");
 
-        UMOMessage msg = client.send("vm://test_in", new MuleMessage(
-                "dummy_for_static_search"));
+		UMOMessage msg = client.send("vm://test_in", new MuleMessage("dummy_for_static_search"));
 
-        assertNotNull(msg);
+		assertNotNull(msg);
+				
+		//logger.debug(msg.getPayload().getClass().toString());
+		
+		assertTrue(msg.getPayload().getClass().toString(),msg.getPayload() instanceof List);
 
-        // logger.debug(msg.getPayload().getClass().toString());
+		List list = (List) msg.getPayload();
+		
+		//logger.debug(list);
 
-        assertTrue(msg.getPayload().getClass().toString(),
-                msg.getPayload() instanceof List);
+		assertEquals(list.size(), addCount+1);
+		
+		client.dispose();
+		MuleManager.getInstance().stop();
+		MuleManager.getInstance().dispose();
 
-        List list = (List) msg.getPayload();
+	}
 
-        // logger.debug(list);
+	protected void doFunctionalTearDown() throws Exception {
 
-        assertEquals(list.size(), addCount + 1);
+		DSManager.getInstance().stop();
+		super.doFunctionalTearDown();
+	}
 
-        client.dispose();
-        MuleManager.getInstance().stop();
-        MuleManager.getInstance().dispose();
+	protected void doPreFunctionalSetUp() throws Exception {
 
-    }
-
-    protected void doFunctionalTearDown() throws Exception
-    {
-
-        DSManager.getInstance().stop();
-        super.doFunctionalTearDown();
-    }
-
-    protected void doPreFunctionalSetUp() throws Exception
-    {
-
-        DSManager.getInstance().start();
-        super.doPreFunctionalSetUp();
-    }
+		DSManager.getInstance().start();
+		super.doPreFunctionalSetUp();
+	}
 
 }
