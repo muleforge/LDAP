@@ -5,19 +5,10 @@ import java.util.List;
 import org.mule.MuleManager;
 import org.mule.extras.client.MuleClient;
 import org.mule.impl.MuleMessage;
-import org.mule.providers.ldap.transformers.LDAPSearchResultToString;
 import org.mule.providers.ldap.util.DSManager;
 import org.mule.providers.ldap.util.TestHelper;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.umo.UMOMessage;
-import org.mule.util.StringUtils;
-
-import com.novell.ldap.LDAPAddRequest;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPMessage;
-import com.novell.ldap.LDAPSearchResult;
-import com.novell.ldap.LDAPSearchResults;
-import com.novell.ldap.util.DN;
 
 public class ResponseAggregatorTestCase extends FunctionalTestCase {
 
