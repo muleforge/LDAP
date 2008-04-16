@@ -1,0 +1,30 @@
+add transformer for java beans
+
+Release 1.0 
+- exception handling verbessern
+- ldaps glattsziehen
+- anonymous prüfen
+- sasl md5/external (bleibt aber experimentel wg keine testmöglichkeit)
+- sun sasl provider (auch in java 1.4.2 ??)
+- startTLS
+- modify transformer
+- transformer ldif sicher machen
+- unit tests
+- mehr tranformer schreiben
+- dealing with attributeset und ldapentry vereinfachen (add, modify)
+- konfigurierbar machen (referrals, suchbare attribute etc) --> done
+- refactoring ldapconnector (doconnect) bzgl. sasl und ldaps --> done
+- maven buildfile/pom
+
+
+-----------------------------------------------------------------------------
+Futher Releases:
+-----------------------------------------------------------------------------
+- schema operations (list etc)
+- sorting (LDAPControls)
+- connection pool
+- sasl md5/external stabil
+- mehr DSML Kram (soap, com.sun.jndi.dsmlv2.soap.DsmlSoapCtxFactory etc)
+siehe http://developer.novell.com/documentation/samplecode/jldap_sample/dsmlsamples/DSMLSoapClient.java.html
+und http://developer.novell.com/documentation/samplecode/jldap_sample/dsml_consumers/Search.java.html
+
