@@ -17,9 +17,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.impl.MuleMessage;
+import org.mule.DefaultMuleMessage;
+import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.providers.ldap.LdapConnector;
-import org.mule.umo.endpoint.UMOImmutableEndpoint;
 import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPControl;
@@ -65,7 +65,7 @@ public final class LDAPUtils
     }
 
     public static String getSearchStringFromEndpoint(
-            UMOImmutableEndpoint endpoint, Object transformedMessage)
+            ImmutableEndpoint endpoint, Object transformedMessage)
             throws Exception
     {
 
@@ -112,8 +112,9 @@ public final class LDAPUtils
 
         ldapConnector.parseStatement(searchStr, paramNames);
 
+        //TODO "" query not ok
         Object[] paramValues = ldapConnector.getParams(endpoint, paramNames,
-                new MuleMessage(transformedMessage));
+                new DefaultMuleMessage(transformedMessage),"");
 
         // logger.debug("paramValues: " +
         // Arrays.asList(paramValues).toString());

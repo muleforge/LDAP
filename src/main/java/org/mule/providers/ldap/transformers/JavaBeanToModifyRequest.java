@@ -15,9 +15,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.api.transformer.TransformerException;
 import org.mule.providers.ldap.LdapConnector;
-import org.mule.transformers.AbstractTransformer;
-import org.mule.umo.transformer.TransformerException;
+import org.mule.transformer.AbstractTransformer;
 import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPAttribute;
@@ -27,7 +27,6 @@ import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPModifyRequest;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchResults;
-
 public class JavaBeanToModifyRequest extends AbstractTransformer
 {
 

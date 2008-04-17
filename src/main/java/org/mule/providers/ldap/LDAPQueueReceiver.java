@@ -15,12 +15,12 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.impl.MuleMessage;
+import org.mule.DefaultMuleMessage;
+import org.mule.api.MuleException;
+import org.mule.api.MuleMessage;
+import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.transport.MessageAdapter;
 import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.umo.UMOException;
-import org.mule.umo.UMOMessage;
-import org.mule.umo.endpoint.UMOImmutableEndpoint;
-import org.mule.umo.provider.UMOMessageAdapter;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
@@ -41,11 +41,11 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
     private LdapConnector connector;
 
-    private UMOImmutableEndpoint endpoint;
+    private ImmutableEndpoint endpoint;
     private LDAPQueueListener listener;
 
     public LDAPQueueReceiver(LdapConnector connector,
-            UMOImmutableEndpoint endpoint, LDAPQueueListener listener)
+            ImmutableEndpoint endpoint, LDAPQueueListener listener)
     {
         super();
         this.connector = connector;
@@ -53,7 +53,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
         this.listener = listener;
     }
 
-    public UMOMessage pollOnce()
+    public MuleMessage pollOnce()
     {
         return pollOnce(true);
     }
@@ -69,7 +69,7 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
     }
 
     // make not synchronized
-    protected UMOMessage pollOnce(boolean synchronus)
+    protected MuleMessage pollOnce(boolean synchronus)
     {
 
         try
@@ -209,20 +209,20 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                 logger.debug("   >>>>  message "
                         + LDAPUtils.dumpLDAPMessage(message));
 
-                UMOMessageAdapter adapter = connector
+                MessageAdapter adapter = connector
                         .getMessageAdapter(message);
 
                 if (synchronus)
                 {
-                    return new MuleMessage(adapter);
+                    return new DefaultMuleMessage(adapter);
                 }
 
-                listener.onMessage(new MuleMessage(adapter), endpoint);
+                listener.onMessage(new DefaultMuleMessage(adapter), endpoint);
 
             } // endif
 
         }
-        catch (UMOException e)
+        catch (MuleException e)
         {
             // e.printStackTrace();
             connector.handleException(e);

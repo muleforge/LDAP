@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.transformers.AbstractTransformer;
-import org.mule.umo.transformer.TransformerException;
+import org.mule.api.transformer.TransformerException;
+import org.mule.transformer.AbstractTransformer;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;

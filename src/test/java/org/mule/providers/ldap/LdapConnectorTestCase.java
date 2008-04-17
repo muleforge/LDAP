@@ -1,8 +1,8 @@
 package org.mule.providers.ldap;
 
+import org.mule.api.transport.Connector;
 import org.mule.providers.ldap.util.DSManager;
-import org.mule.tck.providers.AbstractConnectorTestCase;
-import org.mule.umo.provider.UMOConnector;
+import org.mule.transport.AbstractConnectorTestCase;
 
 import com.novell.ldap.LDAPDeleteRequest;
 
@@ -11,7 +11,14 @@ public class LdapConnectorTestCase extends AbstractConnectorTestCase
 
     // running
 
-    public UMOConnector getConnector() throws Exception
+    @Override
+    public Connector createConnector() throws Exception
+    {
+      //FIXME
+        return null;
+    }
+
+    public Connector getConnector()
     {
 
         LdapConnector c = new LdapConnector();
@@ -24,7 +31,9 @@ public class LdapConnectorTestCase extends AbstractConnectorTestCase
 
         c.setSearchBase("o=sevenSeas");
         c.setStartUnsolicitedNotificationListener(true);
-        c.initialise();
+        
+        //FIXME
+        //c.initialise();
 
         return c;
     }
@@ -56,5 +65,7 @@ public class LdapConnectorTestCase extends AbstractConnectorTestCase
         super.doTearDown();
 
     }
+
+ 
 
 }

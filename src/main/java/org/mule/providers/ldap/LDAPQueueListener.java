@@ -10,9 +10,10 @@
 
 package org.mule.providers.ldap;
 
-import org.mule.umo.UMOException;
-import org.mule.umo.UMOMessage;
-import org.mule.umo.endpoint.UMOImmutableEndpoint;
+import org.mule.api.MuleException;
+import org.mule.api.MuleMessage;
+import org.mule.api.endpoint.ImmutableEndpoint;
+
 
 /**
  * 
@@ -27,7 +28,7 @@ public interface LDAPQueueListener
      * @param endpoint
      * @throws UMOException
      */
-    void onMessage(UMOMessage message, UMOImmutableEndpoint endpoint)
-            throws UMOException;
+    void onMessage(MuleMessage message, ImmutableEndpoint endpoint)
+            throws MuleException;
 
 }

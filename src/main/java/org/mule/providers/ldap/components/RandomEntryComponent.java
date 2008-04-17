@@ -12,8 +12,10 @@ package org.mule.providers.ldap.components;
 
 import java.util.Random;
 
-import org.mule.umo.UMOEventContext;
-import org.mule.umo.lifecycle.Callable;
+import javax.naming.event.EventContext;
+
+import org.mule.api.MuleEventContext;
+import org.mule.api.lifecycle.Callable;
 
 import com.novell.ldap.LDAPAddRequest;
 import com.novell.ldap.LDAPAttribute;
@@ -25,7 +27,7 @@ public class RandomEntryComponent implements Callable
 
     private Random rand = new Random(System.currentTimeMillis());
 
-    public Object onCall(UMOEventContext eventContext) throws Exception
+    public Object onCall(MuleEventContext eventContext) throws Exception
     {
 
         String cn = "hsaly-" + rand.nextInt(Integer.MAX_VALUE);

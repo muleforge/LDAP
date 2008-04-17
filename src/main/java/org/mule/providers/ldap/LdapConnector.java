@@ -10,32 +10,24 @@
 
 package org.mule.providers.ldap;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.mule.api.MuleException;
+import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.service.Service;
+import org.mule.api.transport.MessageReceiver;
 import org.mule.config.i18n.CoreMessages;
-import org.mule.providers.AbstractConnector;
-import org.mule.providers.ConnectException;
-import org.mule.umo.UMOComponent;
-import org.mule.umo.UMOException;
-import org.mule.umo.endpoint.UMOEndpoint;
-import org.mule.umo.endpoint.UMOImmutableEndpoint;
-import org.mule.umo.lifecycle.InitialisationException;
-import org.mule.umo.provider.UMOMessageReceiver;
-import org.mule.util.ClassUtils;
+import org.mule.transport.AbstractConnector;
+import org.mule.transport.ConnectException;
 import org.mule.util.StringUtils;
-import org.mule.util.properties.BeanPropertyExtractor;
-import org.mule.util.properties.MapPropertyExtractor;
-import org.mule.util.properties.MessagePropertyExtractor;
-import org.mule.util.properties.PayloadPropertyExtractor;
-import org.mule.util.properties.PropertyExtractor;
+import org.mule.util.expression.ExpressionEvaluatorManager;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
@@ -51,18 +43,19 @@ import com.novell.ldap.LDAPUnsolicitedNotificationListener;
 public class LdapConnector extends AbstractConnector
 {
 
+
+
     private static final int ldapVersion = LDAPConnection.LDAP_V3;
     private static final int DEFAULT_STRINGBUFFER_SIZE = 200;
-    //public static final String PROPERTY_POLLING_FREQUENCY = "pollingFrequency";
+    
     public static final String PROPERTY_START_UNSOLICITED_NOTIFICATION_LISTENER = "startUnsolicitedNotificationListener";
-    private static final Pattern STATEMENT_ARGS = Pattern
-            .compile("\\$\\{[^\\}]*\\}");
+    private static final Pattern STATEMENT_ARGS = Pattern.compile("\\$\\{[^\\}]*\\}");
 
-    //public static final long DEFAULT_POLLING_FREQUENCY = 1000;
+   
 
     private volatile LDAPMessageQueue messageQueue = null;
 
-    //private long pollingFrequency = DEFAULT_POLLING_FREQUENCY;
+  
 
     private int ldapPort = LDAPConnection.DEFAULT_PORT;
 
@@ -99,86 +92,12 @@ public class LdapConnector extends AbstractConnector
 
     private Set queryValueExtractors = null;
 
+  
+    @Override
     protected void doInitialise() throws InitialisationException
     {
-
-        try
-        {
-            // setup property Extractors for queries
-            if (queryValueExtractors == null)
-            {
-                // Add defaults
-                queryValueExtractors = new HashSet();
-                queryValueExtractors.add(MessagePropertyExtractor.class
-                        .getName());
-                // queryValueExtractors.add(NowPropertyExtractor.class.getName());
-                queryValueExtractors.add(PayloadPropertyExtractor.class
-                        .getName());
-                queryValueExtractors.add(MapPropertyExtractor.class.getName());
-                queryValueExtractors.add(BeanPropertyExtractor.class.getName());
-
-                if (ClassUtils.isClassOnPath(
-                        "org.mule.util.properties.Dom4jPropertyExtractor",
-                        getClass()))
-                {
-                    queryValueExtractors
-                            .add("org.mule.util.properties.Dom4jPropertyExtractor");
-                }
-
-                if (ClassUtils.isClassOnPath(
-                        "org.mule.util.properties.JDomPropertyExtractor",
-                        getClass()))
-                {
-                    queryValueExtractors
-                            .add("org.mule.util.properties.JDomPropertyExtractor");
-                }
-            }
-
-            propertyExtractors = new HashSet();
-            for (Iterator iterator = queryValueExtractors.iterator(); iterator
-                    .hasNext();)
-            {
-                String s = (String) iterator.next();
-                propertyExtractors.add(ClassUtils.instanciateClass(s,
-                        ClassUtils.NO_ARGS));
-            }
-        }
-        catch (SecurityException e)
-        {
-            throw new InitialisationException(CoreMessages
-                    .failedToCreate("LDAP Connector"), e, this);
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new InitialisationException(CoreMessages
-                    .failedToCreate("LDAP Connector"), e, this);
-        }
-        catch (ClassNotFoundException e)
-        {
-            throw new InitialisationException(CoreMessages
-                    .failedToCreate("LDAP Connector"), e, this);
-        }
-        catch (NoSuchMethodException e)
-        {
-            throw new InitialisationException(CoreMessages
-                    .failedToCreate("LDAP Connector"), e, this);
-        }
-        catch (InstantiationException e)
-        {
-            throw new InitialisationException(CoreMessages
-                    .failedToCreate("LDAP Connector"), e, this);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new InitialisationException(CoreMessages
-                    .failedToCreate("LDAP Connector"), e, this);
-        }
-        catch (InvocationTargetException e)
-        {
-            throw new InitialisationException(CoreMessages
-                    .failedToCreate("LDAP Connector"), e, this);
-        }
-
+        // TODO Auto-generated method stub
+        
     }
 
     protected void ensureConnected() throws ConnectException
@@ -433,8 +352,7 @@ public class LdapConnector extends AbstractConnector
     }*/
 
     // @Override
-    protected UMOMessageReceiver createReceiver(UMOComponent component,
-            UMOEndpoint endpoint) throws Exception
+    public MessageReceiver createReceiver(Service service, InboundEndpoint endpoint) throws Exception
     {
 
         /*long polling = pollingFrequency;
@@ -457,15 +375,16 @@ public class LdapConnector extends AbstractConnector
         try
         {
 
-            return serviceDescriptor.createMessageReceiver(this, component,
+            return getServiceDescriptor().createMessageReceiver(this, service,
                     endpoint);
 
         }
         catch (Exception e)
         {
+            //TODO getServiceDescriptor() maybe not correct
             throw new InitialisationException(CoreMessages
                     .failedToCreateObjectWith("Message Receiver",
-                            serviceDescriptor.getMessageReceiver()), e, this);
+                            getServiceDescriptor()), e, this);
         }
     }
 
@@ -480,7 +399,7 @@ public class LdapConnector extends AbstractConnector
         this.startUnsolicitedNotificationListener = startUnsolicitedNotificationListener;
     }
 
-    public String getQuery(UMOImmutableEndpoint endpoint, String stmt)
+    public String getQuery(ImmutableEndpoint endpoint, String stmt)
     {
         Object query = null;
 
@@ -536,60 +455,41 @@ public class LdapConnector extends AbstractConnector
         return sb.toString();
     }
 
-    public Object[] getParams(UMOImmutableEndpoint endpoint, List paramNames,
-            Object message) throws Exception
+    public Object[] getParams(ImmutableEndpoint endpoint, List paramNames, Object message, String query)
+    throws Exception
+{
+
+    Object[] params = new Object[paramNames.size()];
+    for (int i = 0; i < paramNames.size(); i++)
     {
-
-        logger.debug(paramNames);
-
-        Object[] params = new Object[paramNames.size()];
-        for (int i = 0; i < paramNames.size(); i++)
+        String param = (String)paramNames.get(i);
+        String name = param.substring(2, param.length() - 1);
+        Object value = null;
+        // If we find a value and it happens to be null, thats acceptable
+        boolean foundValue = false;
+        //There must be an expression namespace to use the ExpresionEvaluator i.e. header:type
+        if (message != null && ExpressionEvaluatorManager.isValidExpression(name))
         {
-            String param = (String) paramNames.get(i);
-            String name = param.substring(2, param.length() - 1);
-            logger.debug("param name: " + name);
-            Object value = null;
-            // If we find a value and it happens to be null, thats acceptable
-            boolean foundValue = false;
-            if (message != null)
-            {
-                for (Iterator iterator = propertyExtractors.iterator(); iterator
-                        .hasNext();)
-                {
-                    PropertyExtractor pe = (PropertyExtractor) iterator.next();
-                    value = pe.getProperty(name, message);
-                    logger.debug("value:: " + value + " (by " + pe.getClass()
-                            + " )");
-                    if (value != null)
-                    {
-                        if (value.equals(StringUtils.EMPTY)
-                                && pe instanceof BeanPropertyExtractor)
-                        {
-                            value = null;
-                        }
-                        foundValue = true;
-                        break;
-                    }
-                }
-            }
-            if (!foundValue)
-            {
-                value = endpoint.getProperty(name);
-            }
-
-            // Allow null values which may be acceptable to the user
-            // Why shouldn't nulls be allowed? Otherwise every null parameter
-            // has to
-            // be defined
-            // if (value == null && !foundValue)
-            // {
-            // throw new IllegalArgumentException("Can not retrieve argument " +
-            // name);
-            // }
-            params[i] = value;
+            value = ExpressionEvaluatorManager.evaluate(name, message);
+            foundValue = value!=null;
         }
-        return params;
+        if (!foundValue)
+        {
+            value = endpoint.getProperty(name);
+        }
+
+        // Allow null values which may be acceptable to the user
+        // Why shouldn't nulls be allowed? Otherwise every null parameter has to
+        // be defined
+        // if (value == null && !foundValue)
+        // {
+        // throw new IllegalArgumentException("Can not retrieve argument " +
+        // name);
+        // }
+        params[i] = value;
     }
+    return params;
+}
 
     // @Override
     protected void doDispose()
@@ -597,17 +497,7 @@ public class LdapConnector extends AbstractConnector
 
     }
 
-    // @Override
-    protected void doStart() throws UMOException
-    {
 
-    }
-
-    // @Override
-    protected void doStop() throws UMOException
-    {
-
-    }
 
     protected LDAPMessage pollQueue() throws LDAPException
     {
@@ -735,5 +625,19 @@ public class LdapConnector extends AbstractConnector
     protected void setLdapConnection(LDAPConnection ldapConnection)
     {
         this.ldapConnection = ldapConnection;
+    }
+    
+    @Override
+    protected void doStart() throws MuleException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected void doStop() throws MuleException
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

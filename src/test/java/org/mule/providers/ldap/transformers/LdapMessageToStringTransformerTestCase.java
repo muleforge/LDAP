@@ -3,14 +3,15 @@ package org.mule.providers.ldap.transformers;
 import java.io.File;
 import java.io.IOException;
 
+import org.mule.api.transformer.Transformer;
 import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.umo.transformer.UMOTransformer;
+import org.mule.transformer.AbstractTransformerTestCase;
 
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPException;
 
 public class LdapMessageToStringTransformerTestCase extends
-        org.mule.tck.AbstractTransformerTestCase
+        AbstractTransformerTestCase
 {
 
     public Object getResultData()
@@ -29,7 +30,7 @@ public class LdapMessageToStringTransformerTestCase extends
         }
     }
 
-    public UMOTransformer getRoundTripTransformer() throws Exception
+    public Transformer getRoundTripTransformer() throws Exception
     {
 
         return new StringToLDAPMessage();
@@ -48,7 +49,7 @@ public class LdapMessageToStringTransformerTestCase extends
         }
     }
 
-    public UMOTransformer getTransformer() throws Exception
+    public Transformer getTransformer() throws Exception
     {
 
         return new LDAPMessageToString();

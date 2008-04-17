@@ -15,9 +15,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mule.api.transformer.TransformerException;
 import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.transformers.AbstractTransformer;
-import org.mule.umo.transformer.TransformerException;
+import org.mule.transformer.AbstractTransformer;
 import org.mule.util.IOUtils;
 
 import com.novell.ldap.LDAPException;

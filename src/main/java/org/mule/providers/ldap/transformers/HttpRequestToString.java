@@ -12,9 +12,10 @@ package org.mule.providers.ldap.transformers;
 
 import java.io.UnsupportedEncodingException;
 
+import org.mule.api.transformer.TransformerException;
 import org.mule.config.i18n.MessageFactory;
-import org.mule.transformers.AbstractTransformer;
-import org.mule.umo.transformer.TransformerException;
+import org.mule.transformer.AbstractTransformer;
+
 
 public class HttpRequestToString extends AbstractTransformer
 {
@@ -65,7 +66,7 @@ public class HttpRequestToString extends AbstractTransformer
         }
         else
         {
-            throw new TransformerException(MessageFactory
+            throw new org.mule.api.transformer.TransformerException(MessageFactory
                     .createStaticMessage("Failed to parse param string: "
                             + param), this);
         }

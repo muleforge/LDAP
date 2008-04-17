@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.umo.transformer.UMOTransformer;
+import org.mule.api.transformer.Transformer;
+import org.mule.transformer.AbstractTransformerTestCase;
 
 import com.novell.ldap.LDAPAddRequest;
 import com.novell.ldap.LDAPAttribute;
@@ -16,7 +17,7 @@ import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPMessage;
 
 public class LdapMessageToStringTransformerMultipleTestCase extends
-        org.mule.tck.AbstractTransformerTestCase
+        AbstractTransformerTestCase
 {
 
     public Object getResultData()
@@ -35,7 +36,7 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
         }
     }
 
-    public UMOTransformer getRoundTripTransformer() throws Exception
+    public Transformer getRoundTripTransformer() throws Exception
     {
 
         return new StringToLDAPMessage();
@@ -82,7 +83,7 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
         }
     }
 
-    public UMOTransformer getTransformer() throws Exception
+    public Transformer getTransformer() throws Exception
     {
 
         return new LDAPMessageToString();

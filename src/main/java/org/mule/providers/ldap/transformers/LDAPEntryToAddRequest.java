@@ -10,9 +10,9 @@
 
 package org.mule.providers.ldap.transformers;
 
+import org.mule.api.transformer.TransformerException;
 import org.mule.providers.ldap.util.LDAPUtils;
-import org.mule.transformers.AbstractTransformer;
-import org.mule.umo.transformer.TransformerException;
+import org.mule.transformer.AbstractTransformer;
 
 import com.novell.ldap.LDAPAddRequest;
 import com.novell.ldap.LDAPEntry;

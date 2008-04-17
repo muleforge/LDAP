@@ -10,18 +10,21 @@
 
 package org.mule.providers.ldap;
 
-import org.mule.impl.MuleMessage;
-import org.mule.providers.AbstractPollingMessageReceiver;
-import org.mule.providers.ConnectException;
-import org.mule.umo.MessagingException;
-import org.mule.umo.UMOComponent;
-import org.mule.umo.UMOException;
-import org.mule.umo.UMOMessage;
-import org.mule.umo.endpoint.UMOEndpoint;
-import org.mule.umo.endpoint.UMOImmutableEndpoint;
-import org.mule.umo.lifecycle.InitialisationException;
-import org.mule.umo.provider.UMOConnector;
-import org.mule.umo.provider.UMOMessageAdapter;
+
+
+import org.mule.DefaultMuleMessage;
+import org.mule.api.MessagingException;
+import org.mule.api.MuleException;
+import org.mule.api.MuleMessage;
+import org.mule.api.component.Component;
+import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.lifecycle.CreateException;
+import org.mule.api.lifecycle.InitialisationException;
+import org.mule.api.service.Service;
+import org.mule.api.transport.Connector;
+import org.mule.api.transport.MessageAdapter;
+import org.mule.transport.ConnectException;
 
 import com.novell.ldap.LDAPExtendedResponse;
 import com.novell.ldap.LDAPUnsolicitedNotificationListener;
@@ -29,7 +32,7 @@ import com.novell.ldap.LDAPUnsolicitedNotificationListener;
 /**
  * <code>LdapMessageReceiver</code> TODO document
  */
-public class LdapMessageReceiver extends AbstractPollingMessageReceiver
+public class LdapMessageReceiver extends org.mule.transport.AbstractPollingMessageReceiver
         implements LDAPUnsolicitedNotificationListener, LDAPQueueListener
 {
 
@@ -40,13 +43,13 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
 
     private LDAPQueueReceiver queueReceiver;
 
-    public LdapMessageReceiver(UMOConnector connector, UMOComponent component,
-            UMOEndpoint endpoint)
-            throws InitialisationException
+    public LdapMessageReceiver(Connector connector, Service service,
+            InboundEndpoint endpoint)
+            throws CreateException
     {
-        //since 1.4.2
-        super(connector, component, endpoint);
-        //super(connector, component, endpoint, pollingFrequency);
+     
+        super(connector, service, endpoint);
+
 
     }
 
@@ -62,14 +65,14 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
 
         try
         {
-            UMOMessageAdapter adapter = connector.getMessageAdapter(msg);
-            routeMessage(new MuleMessage(adapter), endpoint.isSynchronous());
+            MessageAdapter adapter = connector.getMessageAdapter(msg);
+            routeMessage(new DefaultMuleMessage(adapter), endpoint.isSynchronous());
         }
         catch (MessagingException e)
         {
             throw new RuntimeException(e);
         }
-        catch (UMOException e)
+        catch (MuleException e)
         {
 
             throw new RuntimeException(e);
@@ -77,8 +80,8 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
 
     }
 
-    public void onMessage(UMOMessage message, UMOImmutableEndpoint endpoint)
-            throws UMOException
+    public void onMessage(MuleMessage message, ImmutableEndpoint endpoint)
+            throws MuleException
     {
         routeMessage(message, endpoint.isSynchronous());
 
@@ -93,7 +96,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
         {
             connector.ensureConnected();
         }
-        catch (ConnectException e)
+        catch (org.mule.transport.ConnectException e)
         {
 
             handleException(e);
@@ -122,7 +125,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
     }
 
     // @Override
-    protected void doStart() throws UMOException
+    protected void doStart() throws MuleException
     {
 
         ((LdapConnector) this.connector).ensureConnected();

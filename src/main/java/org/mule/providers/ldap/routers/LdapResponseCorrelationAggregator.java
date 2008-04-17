@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mule.impl.MuleMessage;
+import org.mule.DefaultMuleMessage;
+import org.mule.api.MuleEvent;
+import org.mule.api.MuleMessage;
+import org.mule.api.routing.RoutingException;
+import org.mule.api.transformer.TransformerException;
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.routing.inbound.EventGroup;
 import org.mule.routing.response.ResponseCorrelationAggregator;
-import org.mule.umo.UMOEvent;
-import org.mule.umo.UMOMessage;
-import org.mule.umo.routing.RoutingException;
-import org.mule.umo.transformer.TransformerException;
 
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPResponse;
@@ -40,15 +40,15 @@ public class LdapResponseCorrelationAggregator extends
             Iterator it = events.iterator();
             while (it.hasNext())
             {
-                UMOEvent event = (UMOEvent) it.next();
+                MuleEvent event = (MuleEvent) it.next();
 
                 try
                 {
                     logger.debug(">--- aggregator should ---> "
                             + LDAPUtils.dumpLDAPMessage(event
-                                    .getTransformedMessage()));
+                                    .transformMessage()));
 
-                    if (event.getTransformedMessage() instanceof LDAPResponse)
+                    if (event.transformMessage() instanceof LDAPResponse)
                     {
                         // last message is a LDapResponse
                         logger
@@ -67,22 +67,22 @@ public class LdapResponseCorrelationAggregator extends
     }
 
     // @Override
-    protected UMOMessage aggregateEvents(EventGroup events)
+    protected MuleMessage aggregateEvents(EventGroup events)
             throws RoutingException
     {
 
         logger.debug(">--- aggregator enter aggregateEvents ---> ");
 
         LDAPMessage msg = null;
-        UMOEvent event = null;
+        MuleEvent event = null;
         List results = new ArrayList();
 
         try
         {
             for (Iterator iterator = events.iterator(); iterator.hasNext();)
             {
-                event = (UMOEvent) iterator.next();
-                msg = (LDAPMessage) event.getTransformedMessage();
+                event = (MuleEvent) iterator.next();
+                msg = (LDAPMessage) event.transformMessage();
 
                 results.add(msg);
 
@@ -106,7 +106,7 @@ public class LdapResponseCorrelationAggregator extends
 
             logger.debug(">--- aggregator leave  aggregateEvents with "
                     + results.size() + " msgs ---> ");
-            return new MuleMessage(results, event.getMessage());
+            return new DefaultMuleMessage(results, event.getMessage());
         }
 
         throw new RuntimeException("event is null");

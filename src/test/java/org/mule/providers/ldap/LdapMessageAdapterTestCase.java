@@ -2,13 +2,12 @@ package org.mule.providers.ldap;
 
 import java.util.Date;
 
-import org.mule.tck.providers.AbstractMessageAdapterTestCase;
-import org.mule.umo.MessagingException;
-import org.mule.umo.provider.UMOMessageAdapter;
+import org.mule.api.MessagingException;
+import org.mule.api.transport.MessageAdapter;
 
 import com.novell.ldap.LDAPDeleteRequest;
 
-public class LdapMessageAdapterTestCase extends AbstractMessageAdapterTestCase
+public class LdapMessageAdapterTestCase extends org.mule.transport.AbstractMessageAdapterTestCase
 {
 
     public Object getInvalidMessage()
@@ -17,7 +16,7 @@ public class LdapMessageAdapterTestCase extends AbstractMessageAdapterTestCase
         return new Date();
     }
 
-    public UMOMessageAdapter createAdapter(Object payload)
+    public MessageAdapter createAdapter(Object payload)
             throws MessagingException
     {
 

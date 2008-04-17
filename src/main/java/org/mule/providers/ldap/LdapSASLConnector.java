@@ -26,8 +26,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mule.api.lifecycle.InitialisationException;
 import org.mule.providers.ldap.util.TrustAllCertsManager;
-import org.mule.umo.lifecycle.InitialisationException;
 import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPConnection;

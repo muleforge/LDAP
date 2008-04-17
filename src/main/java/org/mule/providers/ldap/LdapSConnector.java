@@ -16,8 +16,8 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
+import org.mule.api.lifecycle.InitialisationException;
 import org.mule.providers.ldap.util.TrustAllCertsManager;
-import org.mule.umo.lifecycle.InitialisationException;
 import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPConnection;

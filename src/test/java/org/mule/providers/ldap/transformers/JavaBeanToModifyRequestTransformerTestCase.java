@@ -5,7 +5,8 @@ import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.umo.transformer.UMOTransformer;
+import org.mule.api.transformer.Transformer;
+import org.mule.transformer.AbstractTransformerTestCase;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPException;
@@ -13,7 +14,7 @@ import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPModifyRequest;
 
 public class JavaBeanToModifyRequestTransformerTestCase extends
-        org.mule.tck.AbstractTransformerTestCase
+       AbstractTransformerTestCase
 {
 
     protected final Log logger = LogFactory.getLog(getClass());
@@ -57,13 +58,13 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
 
     }
 
-    public UMOTransformer getTransformer() throws Exception
+    public Transformer getTransformer() throws Exception
     {
 
         return new JavaBeanToModifyRequest();
     }
 
-    public UMOTransformer getRoundTripTransformer() throws Exception
+    public Transformer getRoundTripTransformer() throws Exception
     {
 
         return null;

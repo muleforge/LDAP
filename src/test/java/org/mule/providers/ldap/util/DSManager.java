@@ -149,18 +149,21 @@ public final class DSManager
         configuration.setWorkingDirectory(new File(".mule-ldap-ds-tmp/"));
 
         doDelete(configuration.getWorkingDirectory());
-        port = 10389;// AvailablePortFinder.getNextAvailable(1024);
-        configuration.setLdapPort(port);
-        // cfg.setEnableNetworking(true);
+        port = 10389;
+        
+        //FIXME
+        //configuration.setLdapPort(port);
+       
         configuration.setAccessControlEnabled(false);
         configuration.setShutdownHookEnabled(false);
         configuration.setAllowAnonymousAccess(allowAnon);
 
-        configuration.setEnableLdaps(true);
+        //FIXME
+       /* configuration.setEnableLdaps(true);
         configuration.setLdapsPort(10636);
         configuration.setLdapsCertificateFile(new File(
                 "src/test/resources/ldaps-server-cert.jks"));
-
+*/
         setUpPartition(configuration);
 
         setContexts("uid=admin,ou=system", "secret");
@@ -175,7 +178,10 @@ public final class DSManager
     {
         // Add partition 'sevenSeas'
         MutablePartitionConfiguration pcfg = new MutablePartitionConfiguration();
-        pcfg.setName("sevenSeas");
+        
+        //FIXME
+        //pcfg.setName("sevenSeas");
+        
         pcfg.setSuffix("o=sevenseas");
 
         // Create some indices
@@ -206,11 +212,10 @@ public final class DSManager
         Set pcfgs = new HashSet();
         pcfgs.add(pcfg);
 
-        configuration.setContextPartitionConfigurations(pcfgs);
+      //TODO not correct
+        //configuration.setContextPartitionConfigurations(pcfgs);
 
-        // Create a working directory
-        // File workingDirectory = new File( "server-work" );
-        // configuration.setWorkingDirectory( workingDirectory );
+      
 
     }
 

@@ -12,9 +12,8 @@ package org.mule.providers.ldap;
 
 // import org.mule.impl.ThreadSafeAccess;
 // import org.mule.impl.ThreadSafeAccess;
-import org.mule.providers.AbstractMessageAdapter;
-import org.mule.umo.MessagingException;
-import org.mule.umo.provider.MessageTypeNotSupportedException;
+import org.mule.api.MessagingException;
+import org.mule.api.transport.MessageTypeNotSupportedException;
 
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPSearchResults;
@@ -22,7 +21,7 @@ import com.novell.ldap.LDAPSearchResults;
 /**
  * <code>LdapMessageAdapter</code> TODO document
  */
-public class LdapMessageAdapter extends AbstractMessageAdapter
+public class LdapMessageAdapter extends org.mule.transport.AbstractMessageAdapter
 {
 
     private static final String CORRELATION_ID = "CORRELATION_ID";
