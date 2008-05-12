@@ -15,13 +15,13 @@
 		<repository>
 			<id>muleforge.webdav.releases</id>
 			<name>LDAP Distributions Release Repository</name>
-			<url>dav:https://svn.muleforge.org/dist/mule-transport-ldap</url>
+			<url>dav:https://dav.muleforge.org/dist/mule-transport-ldap</url>
 		</repository>
 		<snapshotRepository>
 			<id>>muleforge.webdav.snapshots</id>
 			<name>LDAP Distributions Snapshot Repository</name>
 			<url>
-				dav:https://svn.muleforge.org/snapshots.dist/mule-transport-ldap</url>
+				dav:https://dav.muleforge.org/snapshots.dist/mule-transport-ldap</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
@@ -50,12 +50,13 @@
 						<descriptor>assembly.xml</descriptor>
 					</descriptors>
 					<appendAssemblyId>false</appendAssemblyId>
+					<tarLongFileMode>gnu</tarLongFileMode>
 				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
-							<goal>assembly</goal>
+							<goal>attached</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -65,9 +66,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<configuration>
-					<repositoryId>PROJECT_ID-dist-releases</repositoryId>
-					<snapshotRepositoryId>
-						PROJECT_ID-dist-snapshots</snapshotRepositoryId>
+					<repositoryId>muleforge.webdav.releases</repositoryId>
+					<snapshotRepositoryId>muleforge.webdav.snapshots</snapshotRepositoryId>
 				</configuration>
 			</plugin>
 		</plugins>
