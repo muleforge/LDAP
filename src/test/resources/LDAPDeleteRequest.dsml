@@ -1,0 +1,1 @@
+<batchRequest xmlns="urn:oasis:names:tc:DSML:2:0:core" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" onError="exit"><delRequest requestID="22" dn="dn=test,o=toporga"></delRequest></batchRequest>
