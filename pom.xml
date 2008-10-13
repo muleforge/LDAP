@@ -9,13 +9,13 @@
 		Provides support for connecting directory services via ldap
 	</description>
 	<packaging>jar</packaging>
-	<version>2.0.0.0-SNAPSHOT</version>
+	<version>2.0.2.0-SNAPSHOT</version>
 	<properties>
-		<muleVersion>2.0.0</muleVersion>
+		<muleVersion>2.0.2</muleVersion>
 		<shortId>LDAP</shortId>
 		<domainName>mule-transport-ldap</domainName>
 		<jldapVersion>4.3</jldapVersion>
-		<apacheDsVersion>1.5.1</apacheDsVersion>
+		<apacheDsVersion>1.5.4</apacheDsVersion>
 	</properties>
 	<issueManagement>
 		<system>Jira</system>
@@ -52,11 +52,15 @@
 	<distributionManagement>
 		<repository>
 			<id>muleforge.webdav.releases</id>
-			<url>dav:https://dav.muleforge.org/repository/${domainName}/</url>
+			<url>
+				dav:https://dav.muleforge.org/repository/${domainName}/
+			</url>
 		</repository>
 		<snapshotRepository>
 			<id>muleforge.webdav.snapshots</id>
-			<url>dav:https://dav.muleforge.org/snapshots.repository/${domainName}/</url>
+			<url>
+				dav:https://dav.muleforge.org/snapshots.repository/${domainName}/
+			</url>
 		</snapshotRepository>
 		<site>
 			<id>muleforge.webdav.sites</id>
@@ -85,19 +89,19 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-webdav</artifactId>
-				<version>1.0-beta-2</version>
+				<!-- <version>1.0-beta-2</version>  -->
 			</extension>
 		</extensions>
 		<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<configuration>
-				<source>1.5</source>
-				<target>1.5</target>
-			</configuration>
-		</plugin>
-		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -132,11 +136,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>**/*.java</exclude> 
+						<!-- <exclude>**/*.java</exclude>   -->
 						<exclude>**/TestHelper.java</exclude>
-						<exclude>
-							**/AbstractLdapDSTestCase.java
-						</exclude>
+						<exclude>**/Abstract*TestCase.java</exclude>
 					</excludes>
 					<forkMode>once</forkMode>
 				</configuration>
@@ -154,8 +156,12 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<configLocation>
-						http://svn.codehaus.org/mule/trunk/mule/buildtools/src/main/resources/codecheck/checkstyle.xml
+						http://svn.codehaus.org/mule/branches/mule-2.0.x/buildtools/src/main/resources/codecheck/checkstyle.xml
 					</configLocation>
+
+					<headerLocation>
+						http://svn.codehaus.org/mule/branches/mule-2.0.x/buildtools/src/main/resources/codecheck/LicenseHeader.txt
+					</headerLocation>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -191,9 +197,17 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
+					<minmemory>128m</minmemory>
+					<maxmemory>512m</maxmemory>
+					<charset>ISO-8859-1</charset>
+					<encoding>ISO-8859-1</encoding>
+					<source>1.5</source>
 					<links>
 						<link>
-							http://java.sun.com/j2se/1.5.0/docs/api
+							http://java.sun.com/j2se/1.5.0/docs/api/
+						</link>
+						<link>
+							http://java.sun.com/j2ee/sdk_1.3/techdocs/api/
 						</link>
 						<link>
 							http://java.sun.com/javase/6/docs/api/
@@ -208,12 +222,41 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>1.2</version>
+				<!-- <version>1.2</version> -->
 				<configuration>
 					<threshold>Low</threshold>
 					<effort>Max</effort>
 				</configuration>
 			</plugin>
+
+			<!-- Module dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>
+					maven-project-info-reports-plugin
+				</artifactId>
+				<version>2.1</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>dependencies</report>
+							<report>index</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+
+			<!-- test exclusions report -->
+			<plugin>
+				<groupId>org.mule.tools</groupId>
+				<artifactId>
+					mule-test-exclusions-report-plugin
+				</artifactId>
+				<version>1.0</version>
+			</plugin>
+
+
+
 		</plugins>
 	</reporting>
 	<developers>
@@ -236,34 +279,13 @@
 			<artifactId>jldap</artifactId>
 			<version>${jldapVersion}</version>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.apache.directory.server</groupId>
-			<artifactId>apacheds-server-ssl</artifactId>
-			<version>${apacheDsVersion}</version>
-			<exclusions>
-				 <exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-filter-ssl</artifactId>
-					</exclusion>
-					<exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-core</artifactId>
-					</exclusion> 
-			</exclusions>
-		</dependency>-->
+
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-server-unit</artifactId>
 			<version>${apacheDsVersion}</version>
 			<exclusions>
-				<!-- <exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-filter-ssl</artifactId>
-					</exclusion>
-					<exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-core</artifactId>
-					</exclusion> -->
+
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -271,14 +293,7 @@
 			<artifactId>apacheds-core-unit</artifactId>
 			<version>${apacheDsVersion}</version>
 			<exclusions>
-				<!-- <exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-filter-ssl</artifactId>
-					</exclusion>
-					<exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-core</artifactId>
-					</exclusion> -->
+
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -286,14 +301,7 @@
 			<artifactId>apacheds-server-jndi</artifactId>
 			<version>${apacheDsVersion}</version>
 			<exclusions>
-				<!-- <exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-filter-ssl</artifactId>
-					</exclusion>
-					<exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-core</artifactId>
-					</exclusion> -->
+
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -301,14 +309,7 @@
 			<artifactId>apacheds-protocol-ldap</artifactId>
 			<version>${apacheDsVersion}</version>
 			<exclusions>
-				<!-- <exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-filter-ssl</artifactId>
-					</exclusion>
-					<exclusion>
-					<groupId>org.apache.mina</groupId>
-					<artifactId>mina-core</artifactId>
-					</exclusion> -->
+
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -341,16 +342,7 @@
 			<artifactId>activation</artifactId>
 			<version>1.0.2</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-filter-ssl</artifactId>
-			<version>1.0.4</version>
-			</dependency>
-			<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-core</artifactId>
-			<version>1.0.4</version>
-			</dependency> -->
+
 
 	</dependencies>
 </project>
