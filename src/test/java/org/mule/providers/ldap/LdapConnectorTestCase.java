@@ -6,66 +6,55 @@ import org.mule.transport.AbstractConnectorTestCase;
 
 import com.novell.ldap.LDAPDeleteRequest;
 
-public class LdapConnectorTestCase extends AbstractConnectorTestCase
-{
+public class LdapConnectorTestCase extends AbstractConnectorTestCase {
 
-    // running
+	// running
 
-    @Override
-    public Connector createConnector() throws Exception
-    {
-      //FIXME
-        return null;
-    }
+	@Override
+	public Connector createConnector() throws Exception {
+		LdapConnector c = new LdapConnector();
+		c.setLdapHost("localhost");
+		c.setLdapPort(10389);
+		c.setName("ldapTestConnector");
 
-    public Connector getConnector()
-    {
+		c.setLoginDN("uid=admin,ou=system");
+		c.setPassword("secret");
 
-        LdapConnector c = new LdapConnector();
-        c.setLdapHost("localhost");
-        c.setLdapPort(10389);
-        c.setName("ldapTestConnector");
+		c.setSearchBase("o=sevenSeas");
+		c.setStartUnsolicitedNotificationListener(true);
 
-        c.setLoginDN("uid=admin,ou=system");
-        c.setPassword("secret");
+		return c;
+	}
 
-        c.setSearchBase("o=sevenSeas");
-        c.setStartUnsolicitedNotificationListener(true);
-        
-        //FIXME
-        //c.initialise();
+	@Override
+	public String getTestEndpointURI() {
 
-        return c;
-    }
+		return "ldap://ldap.out";
+	}
 
-    public String getTestEndpointURI()
-    {
+	@Override
+	public Object getValidMessage() throws Exception {
 
-        return "ldap://ldap.out";
-    }
+		return new LDAPDeleteRequest("o=sevenSeas", null);
+	}
 
-    public Object getValidMessage() throws Exception
-    {
+	@Override
+	protected void doSetUp() throws Exception {
+		DSManager.getInstance().start();
+		super.doSetUp();
+		
 
-        return new LDAPDeleteRequest("o=sevenSeas", null);
-    }
+	}
 
-    protected void doSetUp() throws Exception
-    {
-        super.doSetUp();
-        // DSHelper.startDS();
-        DSManager.getInstance().start();
+	@Override
+	protected void doTearDown() throws Exception {
+		DSManager.getInstance().stop();
+		super.doTearDown();
 
-    }
+	}
 
-    protected void doTearDown() throws Exception
-    {
-        DSManager.getInstance().stop();
-        // DSHelper.stopDS();
-        super.doTearDown();
 
-    }
 
- 
+
 
 }

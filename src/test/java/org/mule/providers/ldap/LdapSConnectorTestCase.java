@@ -25,50 +25,22 @@ public class LdapSConnectorTestCase extends AbstractConnectorTestCase
         c.setStartUnsolicitedNotificationListener(true);
         c.setTrustAll(trustAll);
         c.setTrustStore(trustStore);
-        c.initialise();
+       
         return c;
     }
 
-    public Connector getConnector()
-    {
-        //FIXME
-        return null;//getConnector(true, null);
-    }
+    
 
-    public void testSSLConnectTrustAll() throws Exception
-    {
-        LdapSConnector c = (LdapSConnector) getConnector();
-        c.connect();
-        c.ensureConnected();
-        c.disconnect();
-        c.dispose();
-    }
+    @Override
+	public Connector createConnector() throws Exception {
+		// TODO Auto-generated method stub
+		//return getConnector(false, "src/test/resources/truststore.jks");
+		return getConnector(true, null);
+	}
 
-    public void testSSLConnectTrustNotAllWithoutTruststore() throws Exception
-    {
-        LdapSConnector c = null;
-        try
-        {
-            c = (LdapSConnector) getConnector(false, null);
-            fail();
-        }
-        catch (Exception e)
-        {
-            // expected
-        }
 
-        assertNull(c);
-    }
 
-    public void testSSLConnectTrustNotAll() throws Exception
-    {
-        LdapSConnector c = (LdapSConnector) getConnector(false,
-                "src/test/resources/truststore.jks");
-        c.connect();
-        c.ensureConnected();
-        c.disconnect();
-        c.dispose();
-    }
+	
 
     public String getTestEndpointURI()
     {
@@ -82,27 +54,28 @@ public class LdapSConnectorTestCase extends AbstractConnectorTestCase
         return new LDAPDeleteRequest("o=sevenSeas", null);
     }
 
-    protected void doSetUp() throws Exception
-    {
-        super.doSetUp();
-        // DSHelper.startDS();
-        DSManager.getInstance().start();
-
-    }
-
-    protected void doTearDown() throws Exception
-    {
-        DSManager.getInstance().stop();
-        // DSHelper.stopDS();
-        super.doTearDown();
-
-    }
-
     @Override
-    public Connector createConnector() throws Exception
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	protected void doSetUp() throws Exception {
+		DSManager.getInstance().start();
+		
+		
+		
+		super.doSetUp();
+		
+		
+		
+
+	}
+
+	@Override
+	protected void doTearDown() throws Exception {
+		super.doTearDown();
+		DSManager.getInstance().stop();
+		
+
+	}
+
+    
+   
 
 }

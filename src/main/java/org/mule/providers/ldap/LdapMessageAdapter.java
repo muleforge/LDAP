@@ -13,6 +13,7 @@ package org.mule.providers.ldap;
 // import org.mule.impl.ThreadSafeAccess;
 // import org.mule.impl.ThreadSafeAccess;
 import org.mule.api.MessagingException;
+import org.mule.api.config.MuleProperties;
 import org.mule.api.transport.MessageTypeNotSupportedException;
 
 import com.novell.ldap.LDAPMessage;
@@ -24,7 +25,7 @@ import com.novell.ldap.LDAPSearchResults;
 public class LdapMessageAdapter extends org.mule.transport.AbstractMessageAdapter
 {
 
-    private static final String CORRELATION_ID = "CORRELATION_ID";
+	private static final String CORRELATION_ID = MuleProperties.MULE_CORRELATION_ID_PROPERTY;
 
     static final long serialVersionUID = 1L;
 
@@ -124,7 +125,7 @@ public class LdapMessageAdapter extends org.mule.transport.AbstractMessageAdapte
     {
         if (ldapMessage != null)
         {
-            return super.getUniqueId() + "-ID-" + ldapMessage.getMessageID();
+            return super.getUniqueId() + "-UNIQUE-ID-" + ldapMessage.getMessageID();
         }
         else
         {

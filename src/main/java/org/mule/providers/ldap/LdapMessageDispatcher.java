@@ -13,7 +13,6 @@ package org.mule.providers.ldap;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
-import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.OutboundEndpoint;
 import org.mule.api.transport.MessageAdapter;
 import org.mule.providers.ldap.util.LDAPUtils;
@@ -97,6 +96,8 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
             String query = LDAPUtils.getSearchStringFromEndpoint(endpoint,
                     unknownMsg);
+            
+            logger.debug("query: "+query);
 
             LDAPSearchRequest request = LDAPUtils.createSearchRequest(
                     connector, query);

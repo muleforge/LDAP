@@ -12,8 +12,6 @@ package org.mule.providers.ldap.components;
 
 import java.util.Random;
 
-import javax.naming.event.EventContext;
-
 import org.mule.api.MuleEventContext;
 import org.mule.api.lifecycle.Callable;
 

@@ -1,37 +1,68 @@
 package org.mule.providers.ldap.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.dgc.VMID;
-import java.util.HashSet;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.Map;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.directory.server.configuration.MutableServerStartupConfiguration;
-import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
-import org.apache.directory.server.core.configuration.ShutdownConfiguration;
-import org.apache.directory.server.jndi.ServerContextFactory;
+import org.apache.directory.server.constants.ServerDNConstants;
+import org.apache.directory.server.core.CoreSession;
+import org.apache.directory.server.core.DefaultDirectoryService;
+import org.apache.directory.server.core.DirectoryService;
+import org.apache.directory.server.core.entry.DefaultServerEntry;
+import org.apache.directory.server.core.entry.ServerEntry;
+import org.apache.directory.server.core.interceptor.context.AddOperationContext;
+import org.apache.directory.server.core.jndi.CoreContextFactory;
+import org.apache.directory.server.core.partition.Partition;
+import org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition;
+import org.apache.directory.server.core.security.TlsKeyGenerator;
+import org.apache.directory.server.ldap.LdapService;
+import org.apache.directory.server.ldap.handlers.bind.MechanismHandler;
+import org.apache.directory.server.ldap.handlers.bind.cramMD5.CramMd5MechanismHandler;
+import org.apache.directory.server.ldap.handlers.bind.digestMD5.DigestMd5MechanismHandler;
+import org.apache.directory.server.ldap.handlers.bind.gssapi.GssapiMechanismHandler;
+import org.apache.directory.server.ldap.handlers.bind.ntlm.NtlmMechanismHandler;
+import org.apache.directory.server.ldap.handlers.bind.plain.PlainMechanismHandler;
+import org.apache.directory.server.ldap.handlers.extended.StartTlsHandler;
+import org.apache.directory.server.ldap.handlers.extended.StoredProcedureExtendedOperationHandler;
+import org.apache.directory.server.ldap.handlers.ssl.ServerX509TrustManager;
+import org.apache.directory.server.protocol.shared.SocketAcceptor;
+import org.apache.directory.shared.ldap.constants.SupportedSaslMechanisms;
+import org.apache.directory.shared.ldap.entry.EntryAttribute;
 import org.apache.directory.shared.ldap.exception.LdapConfigurationException;
-import org.apache.directory.shared.ldap.ldif.Entry;
+import org.apache.directory.shared.ldap.ldif.LdifEntry;
 import org.apache.directory.shared.ldap.ldif.LdifReader;
 import org.apache.directory.shared.ldap.name.LdapDN;
+import org.apache.mina.common.DefaultIoFilterChainBuilder;
+import org.apache.mina.common.IoFilterChainBuilder;
+import org.apache.mina.filter.SSLFilter;
+import org.mule.util.IOUtils;
+
+
 
 public final class DSManager
 {
@@ -58,21 +89,7 @@ public final class DSManager
      */
     protected static final Log logger = LogFactory.getLog(DSManager.class);
 
-    static
-    {
-
-        final String vmid = new VMID().toString();
-
-        logger.debug("DSManager loaded: VMID: " + vmid);
-
-        /*
-         * Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-         * 
-         * public void run() { logger.debug("JVM shutdown: "+vmid ); } }));
-         */
-
-    }
-
+   
     /**
      * A simple testcase for testing JNDI provider functionality.
      * 
@@ -82,21 +99,75 @@ public final class DSManager
      */
 
     private static final DSManager instance = new DSManager();
+    
+    //private static final String CTX_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
+
 
     /** the context root for the system partition */
     protected LdapContext sysRoot;
 
-    /** the context root for the rootDSE */
-    protected LdapContext rootDSE;
+    /** the context root for the system partition */
+    protected LdapContext exampleRoot;
+    
+    protected LdapContext root;
+    
+    /** The RootDSE is a standard attribute */
+    protected CoreSession rootDSE;
+    
+    protected LdapContext schemaRoot;
 
     /** flag whether to delete database files for each test or not */
     protected boolean doDelete = true;
 
-    protected MutableServerStartupConfiguration configuration = new MutableServerStartupConfiguration();
-
     protected int port = -1;
 
     protected volatile boolean running;
+    
+    protected DirectoryService directoryService;
+    protected SocketAcceptor socketAcceptor;
+    protected LdapService ldapService;
+    protected LdapService ldapSService;
+    
+   /* static{
+    	try {
+    		
+    		//new BouncyCastleProvider();
+    	   // TlsKeyGenerator.
+    	  
+    		System.setProperty ( "javax.net.ssl.trustStore","/home/hsaly/devel/projects/mule-transport-ldap/trunk/src/test/resources/ldaps-server-cert.jks" );
+      // System.setProperty ( "javax.net.ssl.keyStore","/home/hsaly/devel/projects/mule-transport-ldap/trunk/src/test/resources/ldaps-server-cert.jks" );
+      // System.setProperty ( "javax.net.ssl.keyStorePassword", "changeit" );
+			logger.debug(KeyStore.getDefaultType());
+			KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+			
+			logger.debug(new File(".").getAbsolutePath());
+			
+			ks.load(new FileInputStream( "/home/hsaly/devel/projects/mule-transport-ldap/trunk/src/test/resources/ldaps-server-cert.jks"), "changeit".toCharArray());
+			
+		 	logger.debug(ks.getCertificateChain("test").toString());
+			
+			//DSManager.init(ks);
+		} catch (KeyStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }    	
+*/
 
     public boolean isRunning()
     {
@@ -138,84 +209,264 @@ public final class DSManager
             }
             else
             {
-                throw new IllegalStateException("DS already running on port "
-                        + port);
+            	
+            	try {
+            		stop();
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+            	
+               // throw new IllegalStateException("DS already running on port "
+               //         + port);
             }
 
         }
 
         logger.debug("DS is starting ...");
-
-        configuration.setWorkingDirectory(new File(".mule-ldap-ds-tmp/"));
-
-        doDelete(configuration.getWorkingDirectory());
+        
         port = 10389;
         
-        //FIXME
-        //configuration.setLdapPort(port);
+        directoryService = new DefaultDirectoryService();
+        directoryService.setShutdownHookEnabled( false );
+        directoryService.getChangeLog().setEnabled( true );
+        directoryService.setAllowAnonymousAccess( allowAnon );
+
        
-        configuration.setAccessControlEnabled(false);
-        configuration.setShutdownHookEnabled(false);
-        configuration.setAllowAnonymousAccess(allowAnon);
+        
+        
+        socketAcceptor = new SocketAcceptor( null );
+        ldapService = new LdapService();
+        ldapService.setSocketAcceptor( socketAcceptor );
+        ldapService.setDirectoryService( directoryService );
+        ldapService.setIpPort(port);
+        //ldapService.setIpAddress("gkar.kerb.de");
 
-        //FIXME
-       /* configuration.setEnableLdaps(true);
-        configuration.setLdapsPort(10636);
-        configuration.setLdapsCertificateFile(new File(
-                "src/test/resources/ldaps-server-cert.jks"));
-*/
-        setUpPartition(configuration);
+        //ldapService.setAccessControlEnabled(false);
+        //ldapService.setShutdownHookEnabled(false);
+        ldapService.setAllowAnonymousAccess(allowAnon);
+        
+        
+        //ldapService.getLdapsConfiguration().setIpPort(10636);
+        //ldapService.getLdapsConfiguration().setEnabled(true);
+        //ldapService.getLdapsConfiguration().setLdapsCertificateFile(new File("src/test/resources/ldaps-server-cert.jks"));
+        //ldapService.getLdapsConfiguration().setIpPort(10636);
 
-        setContexts("uid=admin,ou=system", "secret");
+        setupSaslMechanisms( ldapService );
+        
+        
+        //S
+        ldapSService = new LdapService();
+        ldapSService.setSocketAcceptor( socketAcceptor );
+        ldapSService.setDirectoryService( directoryService );
+        ldapSService.setIpPort(10636);
+        ldapSService.setEnableLdaps(true);
+        
+        //ldapSService.setConfidentialityRequired(true);
+        ldapSService.setConfidentialityRequired(true);
+        //ldapService.setIpAddress("gkar.kerb.de");
 
+        //ldapService.setAccessControlEnabled(false);
+        //ldapService.setShutdownHookEnabled(false);
+        ldapSService.setAllowAnonymousAccess(allowAnon);
+        
+        
+        //ldapService.getLdapsConfiguration().setIpPort(10636);
+        //ldapService.getLdapsConfiguration().setEnabled(true);
+        //ldapService.getLdapsConfiguration().setLdapsCertificateFile(new File("src/test/resources/ldaps-server-cert.jks"));
+        //ldapService.getLdapsConfiguration().setIpPort(10636);
+
+        setupSaslMechanisms( ldapSService );
+        
+
+        doDelete( directoryService.getWorkingDirectory() );
+        
+       
+        directoryService.startup();
+
+        //java.security.cert.X509Certificate cert = TlsKeyGenerator.getCertificate(directoryService.getAdminSession().lookup(new LdapDN("uid=admin,ou=system")).getOriginalEntry());
+        
+        
+        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+       ks.load(new FileInputStream("src/test/resources/truststore_2.jks"), "changeit".toCharArray());
+       
+       
+        
+        // java.security.cert.X509Certificate testcert = (java.security.cert.X509Certificate) ks.getCertificate("test");
+       // logger.debug(testcert);
+        //directoryService.getAdminSession().lookup(new LdapDN("uid=admin,ou=system")).getOriginalEntry().put("userCertificate",testcert.getEncoded());
+         
+       //logger.debug("type: "+testcert.getType());
+        java.security.cert.X509Certificate cert = TlsKeyGenerator.getCertificate(directoryService.getAdminSession().lookup(new LdapDN("uid=admin,ou=system")).getOriginalEntry());
+       
+        ks.setCertificateEntry("apachedyn", cert);
+        ks.store(new FileOutputStream("src/test/resources/truststore_2.jks"), "changeit".toCharArray());
+        
+        logger.debug(cert);
+   
+
+        // TODO shouldn't this be before calling configureLdapServer() ???
+        ldapService.addExtendedOperationHandler( new StartTlsHandler() );
+        ldapService.addExtendedOperationHandler( new StoredProcedureExtendedOperationHandler() );
+
+        ldapService.start();
+        
+        
+        ldapSService.addExtendedOperationHandler( new StartTlsHandler() );
+       // ldapSService.add( new LdapsInitializer() );
+        ldapSService.addExtendedOperationHandler( new StoredProcedureExtendedOperationHandler() );
+
+        ldapSService.start();
+        
+        //dn: uid=admin,ou=system
+        setContexts( ServerDNConstants.ADMIN_SYSTEM_DN, "secret" );
+            
+        
+        setUpPartition();
+
+        
+         
+        
+        importLdif(IOUtils.getResourceAsStream("examplecom.ldif", this.getClass()));
+        
+        Attributes attrs = new BasicAttributes();
+        attrs.put(new BasicAttribute("userCertificate",""));
+        
+       //sysRoot.modifyAttributes("uid=admin",LdapContext.REPLACE_ATTRIBUTE,attrs);
+       logger.debug(rootDSE.getAuthenticatedPrincipal());
+       logger.debug(rootDSE.getAuthenticationLevel());
+       logger.debug(rootDSE.getEffectivePrincipal());
+       logger.debug(rootDSE.toString());
+       
+     
         running = true;
 
         logger.debug("DS now started!");
     }
+    
+   
+    
+    private void setupSaslMechanisms( LdapService server )
+    {
+        Map<String, MechanismHandler> mechanismHandlerMap = new HashMap<String,MechanismHandler>();
 
-    private void setUpPartition(MutableServerStartupConfiguration configuration)
-            throws NamingException
+        mechanismHandlerMap.put( SupportedSaslMechanisms.PLAIN, new PlainMechanismHandler() );
+
+        CramMd5MechanismHandler cramMd5MechanismHandler = new CramMd5MechanismHandler();
+        mechanismHandlerMap.put( SupportedSaslMechanisms.CRAM_MD5, cramMd5MechanismHandler );
+
+        DigestMd5MechanismHandler digestMd5MechanismHandler = new DigestMd5MechanismHandler();
+        mechanismHandlerMap.put( SupportedSaslMechanisms.DIGEST_MD5, digestMd5MechanismHandler );
+
+        GssapiMechanismHandler gssapiMechanismHandler = new GssapiMechanismHandler();
+        mechanismHandlerMap.put( SupportedSaslMechanisms.GSSAPI, gssapiMechanismHandler );
+
+        NtlmMechanismHandler ntlmMechanismHandler = new NtlmMechanismHandler();
+        // TODO - set some sort of default NtlmProvider implementation here
+        // ntlmMechanismHandler.setNtlmProvider( provider );
+        // TODO - or set FQCN of some sort of default NtlmProvider implementation here
+        // ntlmMechanismHandler.setNtlmProviderFqcn( "com.foo.BarNtlmProvider" );
+        mechanismHandlerMap.put( SupportedSaslMechanisms.NTLM, ntlmMechanismHandler );
+        mechanismHandlerMap.put( SupportedSaslMechanisms.GSS_SPNEGO, ntlmMechanismHandler );
+       
+        ldapService.setSaslMechanismHandlers( mechanismHandlerMap );
+        ldapService.setSaslHost("localhost");
+      
+        
+        //List<String> realms = new ArrayList<String>();
+        //realms.add("system");
+        //ldapService.setSaslRealms(realms);
+    }
+
+
+    private void setUpPartition()
+            throws Exception
     {
         // Add partition 'sevenSeas'
-        MutablePartitionConfiguration pcfg = new MutablePartitionConfiguration();
-        
-        //FIXME
-        //pcfg.setName("sevenSeas");
-        
+         
+    	Partition pcfg = new JdbmPartition();
+        // FIXME name
+        pcfg.setId("sevenSeas");
+        //dn o=sevenseas
         pcfg.setSuffix("o=sevenseas");
+        
+        directoryService.addPartition(pcfg);
+        
 
-        // Create some indices
-        java.util.Set indexedAttrs = new HashSet();
-        indexedAttrs.add("objectClass");
-        indexedAttrs.add("o");
-        pcfg.setIndexedAttributes(indexedAttrs);
 
-        // Create a first entry associated to the partition
-        Attributes attrs = new BasicAttributes(true);
+        logger.debug("suffix:" + pcfg.getSuffix());
+        
+        LdapDN suffixDn = new LdapDN( "o=sevenseas" );
+        suffixDn.normalize( directoryService.getRegistries().getAttributeTypeRegistry().getNormalizerMapping() );
+        logger.debug(suffixDn.toString());
+        ServerEntry ctxEntry = new DefaultServerEntry( directoryService.getRegistries(), suffixDn );
+        ctxEntry.put( "objectClass", "top" );
+        ctxEntry.get( "objectClass" ).add( "organizationalUnit" );
+        ctxEntry.put( "o", "sevenseas" );
 
-        // First, the objectClass attribute
-        Attribute attr = new BasicAttribute("objectClass");
-        attr.add("top");
-        attr.add("organization");
-        attrs.put(attr);
+        logger.debug(ctxEntry);
+        pcfg.add( new AddOperationContext( directoryService.getAdminSession(), ctxEntry ) );
+       
+        pcfg = new JdbmPartition();
+        // FIXME name
+        pcfg.setId("example");
+        //dn o=sevenseas
+        pcfg.setSuffix("dc=example,dc=com");
+        
+        directoryService.addPartition(pcfg);
+        
 
-        // The the 'Organization' attribute
-        attr = new BasicAttribute("o");
-        attr.add("sevenseas");
-        attrs.put(attr);
 
-        // Associate this entry to the partition
-        pcfg.setContextEntry(attrs);
+        logger.debug("suffix:" + pcfg.getSuffix());
+        
+        suffixDn = new LdapDN( "dc=example,dc=com" );
+        suffixDn.normalize( directoryService.getRegistries().getAttributeTypeRegistry().getNormalizerMapping() );
+        logger.debug(suffixDn.toString());
+        ctxEntry = new DefaultServerEntry( directoryService.getRegistries(), suffixDn );
+        ctxEntry.put( "dc", "example" );
+        ctxEntry.put( "objectClass", "top" );
+        ctxEntry.get( "objectClass" ).add( "domain" );
+        //ctxEntry.put( "ou", "users" );
+        //ctxEntry.put( "objectClass", "organizationalUntit" );
+        
+        logger.debug(ctxEntry);
+        pcfg.add( new AddOperationContext( directoryService.getAdminSession(), ctxEntry ) );}
+       
+        
+        /* Set<Partition> partitions = new HashSet<Partition>();
+        JdbmPartition partition = new JdbmPartition();
+        partition.setId( "example" );
+        partition.setSuffix( "dc=example,dc=com" );
 
-        // As we can create more than one partition, we must store
-        // each created partition in a Set before initialization
-        Set pcfgs = new HashSet();
-        pcfgs.add(pcfg);
+        Set<Index<?,ServerEntry>> indexedAttrs = new HashSet<Index<?,ServerEntry>>();
+        indexedAttrs.add( new JdbmIndex<String,ServerEntry>( "ou" ) );
+        indexedAttrs.add( new JdbmIndex<String,ServerEntry>( "dc" ) );
+        indexedAttrs.add( new JdbmIndex<String,ServerEntry>( "objectClass"
+) );
+        partition.setIndexedAttributes( indexedAttrs );
+        
+        
+        suffixDn = new LdapDN( "dc=example,dc=com" );
+        suffixDn.normalize( directoryService.getRegistries().getAttributeTypeRegistry().getNormalizerMapping() );
+        logger.debug(suffixDn.toString());
+        ctxEntry = new DefaultServerEntry( directoryService.getRegistries());
+        ctxEntry.put( "dc", "example" );
+        ctxEntry.put( "objectClass", "top" );
+        ctxEntry.get( "objectClass" ).add( "domain" );
+        //ctxEntry.put( "ou", "users" );
+        //ctxEntry.put( "objectClass", "organizationalUntit" );
+        
+        logger.debug(ctxEntry);
+       
+        
+        
 
-      //TODO not correct
-        //configuration.setContextPartitionConfigurations(pcfgs);
+        partitions.add( partition );
+        directoryService.setPartitions( partitions );
 
-      
+        partition.add( new AddOperationContext( directoryService.getAdminSession(), ctxEntry ) );
+        
+        *(
 
     }
 
@@ -237,49 +488,62 @@ public final class DSManager
         }
     }
 
-    /**
-     * Sets the contexts for this base class. Values of user and password used
-     * to set the respective JNDI properties. These values can be overriden by
-     * the overrides properties.
-     * 
-     * @param user
-     *            the username for authenticating as this user
-     * @param passwd
-     *            the password of the user
-     * @throws NamingException
-     *             if there is a failure of any kind
-     */
-    protected void setContexts(String user, String passwd)
-            throws NamingException
+    
+
+
+    protected void setContexts( Hashtable<String, Object> env ) throws Exception
     {
-        Hashtable env = new Hashtable(configuration.toJndiEnvironment());
-        env.put(Context.SECURITY_PRINCIPAL, user);
-        env.put(Context.SECURITY_CREDENTIALS, passwd);
-        env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.INITIAL_CONTEXT_FACTORY, ServerContextFactory.class
-                .getName());
-        setContexts(env);
-    }
+    	Hashtable<String, Object> envFinal = new Hashtable<String, Object>( env );
+        //envFinal.put( Context.PROVIDER_URL, "dc=example,dc=com" );
+        //exampleRoot = new InitialLdapContext( envFinal, null );
+    	
+    	
+    	//Hashtable<String, Object> envFinal = new Hashtable<String, Object>( env );
+        envFinal.put( Context.PROVIDER_URL, ServerDNConstants.SYSTEM_DN );
+        sysRoot = new InitialLdapContext( envFinal, null );
 
-    /**
-     * Sets the contexts of this class taking into account the extras and
-     * overrides properties.
-     * 
-     * @param env
-     *            an environment to use while setting up the system root.
-     * @throws NamingException
-     *             if there is a failure of any kind
-     */
-    protected void setContexts(Hashtable env) throws NamingException
+        
+        
+        envFinal.put( Context.PROVIDER_URL, "" );
+        rootDSE = directoryService.getAdminSession();
+        root= new InitialLdapContext( envFinal, null );
+
+        envFinal.put( Context.PROVIDER_URL, ServerDNConstants.OU_SCHEMA_DN );
+        schemaRoot = new InitialLdapContext( envFinal, null );
+    }
+    
+    protected void setContexts( String user, String passwd ) throws Exception
     {
-        Hashtable envFinal = new Hashtable(env);
-        envFinal.put(Context.PROVIDER_URL, "ou=system");
-        sysRoot = new InitialLdapContext(envFinal, null);
-
-        envFinal.put(Context.PROVIDER_URL, "");
-        rootDSE = new InitialLdapContext(envFinal, null);
+        Hashtable<String, Object> env = new Hashtable<String, Object>();
+        env.put( DirectoryService.JNDI_KEY, directoryService );
+        env.put( Context.SECURITY_PRINCIPAL, user );
+        env.put( Context.SECURITY_CREDENTIALS, passwd );
+        env.put( Context.SECURITY_AUTHENTICATION, "none" );
+        env.put( Context.INITIAL_CONTEXT_FACTORY, CoreContextFactory.class.getName() );
+        setContexts( env );
     }
-
+    
+   /* protected LdapContext getWiredContext( String bindPrincipalDn, String password ) throws Exception
+    {
+//        if ( ! apacheDS.isStarted() )
+//        {
+//            throw new ConfigurationException( "The server is not online! Cannot connect to it." );
+//        }
+        
+        Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put( Context.INITIAL_CONTEXT_FACTORY, CTX_FACTORY );
+        env.put( Context.PROVIDER_URL, "ldap://localhost:" + port );
+        env.put( Context.SECURITY_PRINCIPAL, bindPrincipalDn );
+        env.put( Context.SECURITY_CREDENTIALS, password );
+        env.put( Context.SECURITY_AUTHENTICATION, "simple" );
+        return new InitialLdapContext( env, null );
+    }
+    
+    protected LdapContext getWiredContext() throws Exception
+    {
+        return getWiredContext( ServerDNConstants.ADMIN_SYSTEM_DN, "secret" );
+    }
+   */
     /**
      * Sets the system context root to null.
      * 
@@ -303,28 +567,20 @@ public final class DSManager
             }
         }
 
-        // super.tearDown();
-        Hashtable env = new Hashtable();
-        env.put(Context.PROVIDER_URL, "ou=system");
-        env.put(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.directory.server.jndi.ServerContextFactory");
-        env.putAll(new ShutdownConfiguration().toJndiEnvironment());
-        env.put(Context.SECURITY_PRINCIPAL, "uid=admin,ou=system");
-        env.put(Context.SECURITY_CREDENTIALS, "secret");
-
+        ldapService.stop();
+        ldapSService.stop();
         try
         {
-            new InitialContext(env);
+            directoryService.shutdown();
+            
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
-            // ignored
-            // dont remove try catch block!!
         }
 
+        doDelete( directoryService.getWorkingDirectory() );
+        
         sysRoot = null;
-        doDelete(configuration.getWorkingDirectory());
-        configuration = new MutableServerStartupConfiguration();
 
         logger.debug("DS waiting for socket release ...");
 
@@ -361,17 +617,40 @@ public final class DSManager
      */
     protected void importLdif(InputStream in) throws NamingException
     {
+    	if(in == null) throw new NullPointerException("in must not be null");
+    	
+    	
         try
         {
-            Iterator iterator = new LdifReader(in);
+            Iterator<LdifEntry> iterator = new LdifReader(in).iterator();
 
             while (iterator.hasNext())
             {
-                Entry entry = (Entry) iterator.next();
+                LdifEntry entry =  iterator.next();
 
                 LdapDN dn = new LdapDN(entry.getDn());
+               //dn.remove(0);
+               //dn.remove(0);
+                
+                
+                Attributes attr = new BasicAttributes();
+                
+                Iterator<EntryAttribute> iea = entry.getEntry().iterator();
+                
+                for (; iea
+						.hasNext();) {
+					 EntryAttribute ea = iea.next();
+				
+					 attr.put(ea.getId(),ea.get().get());
 
-                rootDSE.createSubcontext(dn, entry.getAttributes());
+					 System.out.println("id "+ea.getId()+"//"+ea.get().get());
+					 System.out.println("size:" + ea.size());
+				}
+                
+                
+                System.out.println(" for dn:" +dn);
+                
+               root.createSubcontext(dn, attr);
             }
         }
         catch (Exception e)
@@ -427,7 +706,7 @@ public final class DSManager
     public static void main(String[] args) throws Exception
     {
         DSManager m = DSManager.getInstance();
-        m.start();
+        m.start(true);
 
         System.out.println("Enter s and Enter to stop: ");
 
@@ -443,6 +722,37 @@ public final class DSManager
     public int getPort()
     {
         return port;
+    }
+    
+    public static IoFilterChainBuilder init( KeyStore ks ) throws NamingException
+    {
+        SSLContext sslCtx;
+        try
+        {
+            // Set up key manager factory to use our key store
+            String algorithm = Security.getProperty( "ssl.KeyManagerFactory.algorithm" );
+            if ( algorithm == null )
+            {
+                algorithm = "SunX509";
+            }
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance( algorithm );
+            kmf.init( ks,"changeit".toCharArray());
+
+            // Initialize the SSLContext to work with our key managers.
+            sslCtx = SSLContext.getInstance( "TLS" );
+            sslCtx.init( kmf.getKeyManagers(), new TrustManager[]
+                { new ServerX509TrustManager() }, new SecureRandom() );
+            
+            logger.debug("ssl set");
+        }
+        catch ( Exception e )
+        {
+            throw ( NamingException ) new NamingException( "Failed to create a SSL context." ).initCause( e );
+        }
+
+        DefaultIoFilterChainBuilder chain = new DefaultIoFilterChainBuilder();
+        chain.addLast( "sslFilter", new SSLFilter( sslCtx ) );
+        return chain;
     }
 
 }

@@ -1,0 +1,15 @@
+version: 1
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+
+dn: uid=hsaly,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: hsaly
+sn: hsaly
+uid: hsaly
+userpassword:: c2VjcmV0MQ==
+

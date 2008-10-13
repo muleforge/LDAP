@@ -1,17 +1,16 @@
 package org.mule.providers.ldap;
 
-import junit.framework.TestCase;
-
 import org.mule.providers.ldap.util.DSManager;
+import org.mule.tck.AbstractMuleTestCase;
 
-public class AnonymousBindTestCase extends TestCase
+public class AnonymousBindTestCase extends AbstractMuleTestCase
 {
 
     // OK
 
     public void testAnonymousBindAllowed()
     {
-
+    	
         try
         {
             anonymousBind(true);
@@ -21,6 +20,8 @@ public class AnonymousBindTestCase extends TestCase
             e.printStackTrace();
             fail(e.toString());
         }
+        
+        
     }
 
     public void testAnonymousBindNotAllowed()
@@ -54,7 +55,14 @@ public class AnonymousBindTestCase extends TestCase
 
         try
         {
-            c.initialise();
+          
+            
+            c.setMuleContext(muleContext);
+            muleContext.getRegistry().registerConnector(c);
+            
+            //instead of 
+            //c.initialise();
+            
             c.connect();
             c.ensureConnected();
 

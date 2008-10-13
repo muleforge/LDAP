@@ -86,7 +86,8 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
 
                 if (message instanceof LDAPSearchResultReference)
                 {
-
+                	logger.debug("LDAPSearchResultReference:");
+                	
                     String urls[] =
 
                     ((LDAPSearchResultReference) message).getReferrals();
@@ -103,10 +104,12 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                 else if (message instanceof LDAPSearchResult)
                 {
 
+                	logger.debug("LDAPSearchResult:");
+                	
                     LDAPEntry entry = ((LDAPSearchResult) message).getEntry();
 
-                    logger.debug("\n" + entry.getDN());
-
+                    logger.debug("DN" + entry.getDN());
+                    logger.debug("entry" + entry);
                     logger.debug("\tAttributes: ");
 
                     LDAPAttributeSet attributeSet = entry.getAttributeSet();
@@ -152,6 +155,8 @@ class LDAPQueueReceiver implements javax.resource.spi.work.Work
                 {
 
                     LDAPResponse response = (LDAPResponse) message;
+                    
+                    logger.debug("LDAPResponse:");
 
                     int status = response.getResultCode();
 

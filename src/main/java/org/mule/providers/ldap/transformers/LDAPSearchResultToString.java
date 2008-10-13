@@ -49,7 +49,7 @@ public class LDAPSearchResultToString extends AbstractTransformer
         {
             throw new TransformerException(this, new IllegalArgumentException(
                     "wrong type " + src.getClass()
-                            + ", LDAPMessage or LDAPSearchResults excpeted"));
+                            + ", List<LDAPMessage> or LDAPSearchResults excpeted"));
         }
 
         // List msg = (List) src;

@@ -13,7 +13,6 @@ package org.mule.providers.ldap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +47,7 @@ public class LdapConnector extends AbstractConnector
     private static final int ldapVersion = LDAPConnection.LDAP_V3;
     private static final int DEFAULT_STRINGBUFFER_SIZE = 200;
     
-    public static final String PROPERTY_START_UNSOLICITED_NOTIFICATION_LISTENER = "startUnsolicitedNotificationListener";
+    //public static final String PROPERTY_START_UNSOLICITED_NOTIFICATION_LISTENER = "startUnsolicitedNotificationListener";
     private static final Pattern STATEMENT_ARGS = Pattern.compile("\\$\\{[^\\}]*\\}");
 
    
@@ -88,9 +87,9 @@ public class LdapConnector extends AbstractConnector
 
     private Map queries = null;
 
-    private Set propertyExtractors = null;
+   // private Set propertyExtractors = null;
 
-    private Set queryValueExtractors = null;
+//    private Set queryValueExtractors = null;
 
   
     @Override
@@ -107,6 +106,10 @@ public class LdapConnector extends AbstractConnector
         {
             return;
         }
+        
+        logger.debug(ldapConnection.isConnected());
+        logger.debug(ldapConnection.isConnectionAlive());
+        
 
         if (ldapConnection == null || !ldapConnection.isConnected()
                 || !ldapConnection.isConnectionAlive())
@@ -136,6 +139,14 @@ public class LdapConnector extends AbstractConnector
 
     public final void doConnect() throws Exception
     {
+    	
+    	//  if (dynamicNotification)
+    	
+    	//this.setDynamicNotification(dynamic);
+    	
+    	
+    	
+//    	this.updateCachedNotificationHandler();
 
         logger.debug("try connect to " + ldapHost + ":" + ldapPort + " ...");
 
@@ -257,7 +268,7 @@ public class LdapConnector extends AbstractConnector
         return "ldap";
     }
 
-    protected synchronized void doAsyncRequest(LDAPMessage request)
+    protected final synchronized void doAsyncRequest(LDAPMessage request)
             throws LDAPException
     {
 
@@ -401,6 +412,9 @@ public class LdapConnector extends AbstractConnector
 
     public String getQuery(ImmutableEndpoint endpoint, String stmt)
     {
+    	logger.debug("stmt: "+stmt);
+    	logger.debug("this.queries "+this.queries);
+    	
         Object query = null;
 
         if (endpoint != null && endpoint.getProperties() != null)
@@ -431,7 +445,10 @@ public class LdapConnector extends AbstractConnector
      * @return
      */
 
-    public String parseQuery(String query, Object[] values)
+    
+      
+      @Deprecated
+     public String parseQuery(String query, Object[] values)
     {
 
         logger.debug(query);
@@ -455,6 +472,7 @@ public class LdapConnector extends AbstractConnector
         return sb.toString();
     }
 
+    @Deprecated
     public Object[] getParams(ImmutableEndpoint endpoint, List paramNames, Object message, String query)
     throws Exception
 {
@@ -499,7 +517,7 @@ public class LdapConnector extends AbstractConnector
 
 
 
-    protected LDAPMessage pollQueue() throws LDAPException
+    protected final synchronized LDAPMessage pollQueue() throws LDAPException
     {
 
         LDAPMessage message = null;
@@ -523,12 +541,16 @@ public class LdapConnector extends AbstractConnector
                 logger.debug("no message quequed");
             }
         }
+        else
+        {
+        	logger.warn("message queue not initalised");
+        }
 
         return message;
 
     }
 
-    protected int getOutstandingMessageCount()
+    public final synchronized int getOutstandingMessageCount()
     {
         if (messageQueue != null)
         {
@@ -599,6 +621,7 @@ public class LdapConnector extends AbstractConnector
         this.typesOnly = typesOnly;
     }
 
+    @Deprecated
     public String parseStatement(String stmt, List params)
     {
         if (stmt == null)
@@ -640,4 +663,6 @@ public class LdapConnector extends AbstractConnector
         // TODO Auto-generated method stub
         
     }
+
+	
 }

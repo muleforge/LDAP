@@ -20,96 +20,94 @@ import org.mule.api.MuleMessage;
 import org.mule.api.routing.RoutingException;
 import org.mule.api.transformer.TransformerException;
 import org.mule.providers.ldap.util.LDAPUtils;
+import org.mule.routing.EventCorrelatorCallback;
 import org.mule.routing.inbound.EventGroup;
 import org.mule.routing.response.ResponseCorrelationAggregator;
+import org.mule.routing.response.ResponseCorrelationAggregator.DefaultEventCorrelatorCallback;
 
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPResponse;
 
 public class LdapResponseCorrelationAggregator extends
-        ResponseCorrelationAggregator
-{
+		ResponseCorrelationAggregator {
 
-    // @Override
-    protected boolean shouldAggregateEvents(EventGroup events)
-    {
+	@Override
+	protected EventCorrelatorCallback getCorrelatorCallback() {
+		// TODO Auto-generated method stub
+		return  new LdapResponseEventCorrelatorCallback();
+	}
 
-        synchronized (events)
-        {
+	public class LdapResponseEventCorrelatorCallback extends
+			DefaultEventCorrelatorCallback {
 
-            Iterator it = events.iterator();
-            while (it.hasNext())
-            {
-                MuleEvent event = (MuleEvent) it.next();
+		@Override
+		public boolean shouldAggregateEvents(EventGroup events) {
 
-                try
-                {
-                    logger.debug(">--- aggregator should ---> "
-                            + LDAPUtils.dumpLDAPMessage(event
-                                    .transformMessage()));
+			synchronized (events) {
 
-                    if (event.transformMessage() instanceof LDAPResponse)
-                    {
-                        // last message is a LDapResponse
-                        logger
-                                .debug(">--- aggregator should ---> shouldAggregateEvents return true");
-                        return true;
-                    }
-                }
-                catch (TransformerException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
+				Iterator it = events.iterator();
+				while (it.hasNext()) {
+					MuleEvent event = (MuleEvent) it.next();
 
-            return false;
-        }
-    }
+					try {
+						logger.debug(">--- aggregator should ---> "
+								+ LDAPUtils.dumpLDAPMessage(event
+										.transformMessage()));
 
-    // @Override
-    protected MuleMessage aggregateEvents(EventGroup events)
-            throws RoutingException
-    {
+						if (event.transformMessage() instanceof LDAPResponse) {
+							// last message is a LDapResponse
+							logger
+									.debug(">--- aggregator should ---> shouldAggregateEvents return true");
+							return true;
+						}
+					} catch (TransformerException e) {
+						throw new RuntimeException(e);
+					}
+				}
 
-        logger.debug(">--- aggregator enter aggregateEvents ---> ");
+				return false;
+			}
+		}
 
-        LDAPMessage msg = null;
-        MuleEvent event = null;
-        List results = new ArrayList();
+		@Override
+		public MuleMessage aggregateEvents(EventGroup events)
+				throws RoutingException {
 
-        try
-        {
-            for (Iterator iterator = events.iterator(); iterator.hasNext();)
-            {
-                event = (MuleEvent) iterator.next();
-                msg = (LDAPMessage) event.transformMessage();
+			logger.debug(">--- aggregator enter aggregateEvents ---> ");
 
-                results.add(msg);
+			LDAPMessage msg = null;
+			MuleEvent event = null;
+			List results = new ArrayList();
 
-            }
-        }
-        catch (TransformerException e)
-        {
-            logger.error(e);
+			try {
+				for (Iterator iterator = events.iterator(); iterator.hasNext();) {
+					event = (MuleEvent) iterator.next();
+					msg = (LDAPMessage) event.transformMessage();
 
-            if (event != null)
-            {
-                throw new RoutingException(event.getMessage(), event
-                        .getEndpoint());
-            }
+					results.add(msg);
 
-            throw new RuntimeException(e);
-        }
+				}
+			} catch (TransformerException e) {
+				logger.error(e);
 
-        if (event != null)
-        {
+				if (event != null) {
+					throw new RoutingException(event.getMessage(), event
+							.getEndpoint());
+				}
 
-            logger.debug(">--- aggregator leave  aggregateEvents with "
-                    + results.size() + " msgs ---> ");
-            return new DefaultMuleMessage(results, event.getMessage());
-        }
+				throw new RuntimeException(e);
+			}
 
-        throw new RuntimeException("event is null");
-    }
+			if (event != null) {
+
+				logger.debug(">--- aggregator leave  aggregateEvents with "
+						+ results.size() + " msgs ---> ");
+				return new DefaultMuleMessage(results, event.getMessage());
+			}
+
+			throw new RuntimeException("event is null");
+		}
+
+	}
 
 }

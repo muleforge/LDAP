@@ -64,6 +64,7 @@ public final class LDAPUtils
         );
     }
 
+    @Deprecated
     public static String getSearchStringFromEndpoint(
             ImmutableEndpoint endpoint, Object transformedMessage)
             throws Exception
@@ -82,6 +83,9 @@ public final class LDAPUtils
         LdapConnector ldapConnector = (LdapConnector) endpoint.getConnector();
 
         final String str = ldapConnector.getQuery(endpoint, searchStr);
+        
+        logger.debug(".getQuery: "+str);
+        
         if (str != null)
         {
             searchStr = str;
@@ -110,15 +114,22 @@ public final class LDAPUtils
 
         // logger.debug("transformed msg: " + transformedMessage);
 
+        logger.debug("searchStr1:"+searchStr);
+        logger.debug("paramNames1:"+paramNames);
+        
         ldapConnector.parseStatement(searchStr, paramNames);
+        
+        
+        logger.debug("paramNames2:"+paramNames);
+        
 
         //TODO "" query not ok
         Object[] paramValues = ldapConnector.getParams(endpoint, paramNames,
                 new DefaultMuleMessage(transformedMessage),"");
 
-        // logger.debug("paramValues: " +
-        // Arrays.asList(paramValues).toString());
-        // logger.debug("searchStr before parsing: " + searchStr);
+        logger.debug("paramValues: " +
+        java.util.Arrays.asList(paramValues).toString());
+        logger.debug("searchStr before parsing: " + searchStr);
 
         searchStr = ldapConnector.parseQuery(searchStr, paramValues);
 
