@@ -9,14 +9,15 @@
 		Provides support for connecting directory services via ldap
 	</description>
 	<packaging>jar</packaging>
-	<version>2.0.2.0-SNAPSHOT</version>
 	<properties>
+	<connectorVersion>0</connectorVersion>
 		<muleVersion>2.0.2</muleVersion>
 		<shortId>LDAP</shortId>
 		<domainName>mule-transport-ldap</domainName>
 		<jldapVersion>4.3</jldapVersion>
 		<apacheDsVersion>1.5.4</apacheDsVersion>
 	</properties>
+	<version>${muleVersion}.${connectorVersion}-SNAPSHOT</version>
 	<issueManagement>
 		<system>Jira</system>
 		<url>http://mule.mulesource.org/jira/browse/${shortId}</url>
@@ -68,22 +69,119 @@
 		</site>
 	</distributionManagement>
 	<repositories>
-		<repository>
-			<id>ch-dep</id>
-			<name>Codehaus Dependencies</name>
-			<url>http://dist.codehaus.org/mule/dependencies/maven2</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
+		<!-- <repository>
 			<id>day</id>
 			<name>Day Repository</name>
 			<layout>legacy</layout>
-			<url>http://www.day.com/maven</url>
+			<url>http://www.day.com/maven/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
+		</repository>  -->
+		
+		<repository>
+            <id>codehaus</id>
+            <name>Codehaus Maven 2.x Release Repository</name>
+            <url>http://repository.codehaus.org</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>codehaus-snapshots</id>
+            <name>Codehaus Maven 2.x Snapshots Repository</name>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>apache-snapshots</id>
+            <name>Apache Snapshots</name>
+            <url>http://people.apache.org/maven-snapshot-repository</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <!-- for activemq -->
+        <repository>
+            <id>apache.incubating.releases</id>
+            <name>Apache Incubating Release Distribution Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <name>JBoss Repository</name>
+            <url>http://repository.jboss.com/maven2</url>
+        </repository>
+        <repository>
+            <id>mule-deps</id>
+            <name>Mule Dependencies</name>
+            <url>http://dist.codehaus.org/mule/dependencies/maven2</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+		
+		
 	</repositories>
+	
+	<pluginRepositories>
+        <pluginRepository>
+            <!--
+                This is the same as apache-snapshots, but for plugins now.
+                Technically it could've been a different repo, but they
+                put all snapshots in one location at Apache.
+             -->
+            <id>apache-plugin-snapshots</id>
+            <name>Apache Maven Plugins Snapshot Repository</name>
+            <url>http://people.apache.org/maven-snapshot-repository</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>apache-m2-incubator</id>
+            <name>Apache m2 Incubator</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+
+        <pluginRepository>
+            <id>mule-deps</id>
+            <name>Mule Dependencies</name>
+            <url>http://dist.codehaus.org/mule/dependencies/maven2</url>
+        </pluginRepository>
+        <!-- this is needed to download dependencies of plugins from our custom repo -->
+        <pluginRepository>
+            <id>mule-plugins-deps</id>
+            <name>Mule Plugin Dependencies</name>
+            <url>http://dist.codehaus.org/mule/dependencies/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
+	
 	<build>
 		<extensions>
 			<extension>
