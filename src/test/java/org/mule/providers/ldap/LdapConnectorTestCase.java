@@ -11,9 +11,8 @@ public class LdapConnectorTestCase extends AbstractConnectorTestCase
 
     // running
 
-    public UMOConnector getConnector() throws Exception
+    public UMOConnector createConnector() throws Exception
     {
-
         LdapConnector c = new LdapConnector();
         c.setLdapHost("localhost");
         c.setLdapPort(10389);

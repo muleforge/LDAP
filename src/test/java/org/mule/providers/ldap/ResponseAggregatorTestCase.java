@@ -34,7 +34,7 @@ public class ResponseAggregatorTestCase extends FunctionalTestCase {
 
 		assertNotNull(msg);
 				
-		//logger.debug(msg.getPayload().getClass().toString());
+		logger.debug("payload content:'" +msg.getPayload().toString()+"'");
 		
 		assertTrue(msg.getPayload().getClass().toString(),msg.getPayload() instanceof List);
 

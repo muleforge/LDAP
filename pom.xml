@@ -7,9 +7,9 @@
 		Provides support for connecting directory services via ldap
 	</description>
 	<packaging>jar</packaging>
-	<version>1.4.3.0</version>
+	<version>1.4.4.0</version>
 	<properties>
-		<muleVersion>1.4.3</muleVersion>
+		<muleVersion>1.4.4</muleVersion>
 		<jldapVersion>4.3</jldapVersion>
 		<apacheDsVersion>1.0.2</apacheDsVersion>
 	</properties>
@@ -18,9 +18,9 @@
 		<url>http://mule.mulesource.org/jira/browse/LDAP</url>
 	</issueManagement>
 	<scm>
-		<connection>scm:svn:http://svn.muleforge.org/mule-transport-ldap/tags/mule-transport-ldap-1.4.3.0</connection>
-		<developerConnection>scm:svn:https://svn.muleforge.org/mule-transport-ldap/tags/mule-transport-ldap-1.4.3.0</developerConnection>
-		<url>http://svn.mule-transport-ldap.muleforge.org/tags/mule-transport-ldap-1.4.3.0</url>
+		<connection>scm:svn:http://svn.muleforge.org/mule-transport-ldap/tags/mule-transport-ldap-1.4.4.0</connection>
+		<developerConnection>scm:svn:https://svn.muleforge.org/mule-transport-ldap/tags/mule-transport-ldap-1.4.4.0</developerConnection>
+		<url>http://svn.mule-transport-ldap.muleforge.org/tags/mule-transport-ldap-1.4.4.0</url>
 	</scm>
 	<ciManagement>
 		<system>Bamboo</system>
@@ -118,7 +118,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-					 <exclude>**/*.java</exclude>
 						<exclude>**/TestHelper.java</exclude>
 						<exclude>
 							**/AbstractLdapDSTestCase.java
@@ -140,7 +139,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<configLocation>
-						http://svn.codehaus.org/mule/trunk/mule/buildtools/src/main/resources/codecheck/checkstyle.xml
+						http://svn.codehaus.org/mule/branches/mule-1.4.x/buildtools/src/main/resources/codecheck/checkstyle.xml
 					</configLocation>
 				</configuration>
 			</plugin>
@@ -226,6 +225,7 @@
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-server-ssl</artifactId>
 			<version>${apacheDsVersion}</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.mina</groupId>
@@ -241,6 +241,7 @@
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-server-unit</artifactId>
 			<version>${apacheDsVersion}</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.mina</groupId>
@@ -256,6 +257,7 @@
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-core-unit</artifactId>
 			<version>${apacheDsVersion}</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.mina</groupId>
@@ -271,6 +273,7 @@
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-server-jndi</artifactId>
 			<version>${apacheDsVersion}</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.mina</groupId>
@@ -286,6 +289,7 @@
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-protocol-ldap</artifactId>
 			<version>${apacheDsVersion}</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.mina</groupId>
@@ -301,21 +305,31 @@
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-module-client</artifactId>
 			<version>${muleVersion}</version>
+
 		</dependency>
 		<dependency>
 			<groupId>org.mule.transports</groupId>
 			<artifactId>mule-transport-vm</artifactId>
 			<version>${muleVersion}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.transports</groupId>
 			<artifactId>mule-transport-file</artifactId>
 			<version>${muleVersion}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-tcp</artifactId>
+			<version>${muleVersion}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.tests</groupId>
 			<artifactId>mule-tests-functional</artifactId>
 			<version>${muleVersion}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -326,16 +340,26 @@
 			<groupId>org.apache.mina</groupId>
 			<artifactId>mina-filter-ssl</artifactId>
 			<version>1.0.4</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.mina</groupId>
 			<artifactId>mina-core</artifactId>
 			<version>1.0.4</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.activation</groupId>
 			<artifactId>activation</artifactId>
 			<version>1.0.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xerces</artifactId>
+			<version>2.4.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 </project>
