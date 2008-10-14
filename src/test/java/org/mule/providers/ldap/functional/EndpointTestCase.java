@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.mule.RegistryContext;
 import org.mule.api.endpoint.EndpointException;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
@@ -11,8 +12,10 @@ import org.mule.api.transport.Connector;
 import org.mule.endpoint.DefaultOutboundEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
 import org.mule.providers.ldap.LdapConnector;
+import org.mule.providers.ldap.util.EndpointURIExpressionEvaluator;
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.tck.AbstractMuleTestCase;
+import org.mule.util.expression.ExpressionEvaluatorManager;
 
 public class EndpointTestCase extends AbstractMuleTestCase
 {
@@ -281,12 +284,21 @@ public class EndpointTestCase extends AbstractMuleTestCase
     {
         EndpointURI url = new MuleEndpointURI(
                 "ldap://ldap.out/payload.cn?cnprop=testprop");
+     
+        
                 url.initialise();
         Connector connector = getConnector();
+        
+        if(!ExpressionEvaluatorManager.isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME))
+		{
+			ExpressionEvaluatorManager.registerEvaluator(new EndpointURIExpressionEvaluator());
+		}
+        
+		//System.out.println("isEvaluatorRegistered: "+ExpressionEvaluatorManager.isEvaluatorRegistered("endpointuri"));
 
         Map map = new HashMap();
         Map inner = new HashMap();
-        inner.put("payload.cn", "(sn=${name}, cn=${cnprop})");
+        inner.put("payload.cn", "(sn=${bean:name}, cn=${endpointuri:testendpoint.params:cnprop})");
         map.put("queries", inner);
 
         ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,url,null,null,"testendpoint",map,
@@ -301,7 +313,13 @@ public class EndpointTestCase extends AbstractMuleTestCase
                 null,
                 muleContext,
                 null);
-     	   
+     	
+        //EndpointURIEndpointBuilder b = new EndpointURIEndpointBuilder(endpoint,muleContext);
+        
+        RegistryContext.getRegistry().registerEndpoint(endpoint);
+        //RegistryContext.getRegistry().registerEndpointBuilder("teb", b);
+        
+        //EndpointInfoExpressionEvaluator
 
         String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
                 new User("john"));
@@ -329,7 +347,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
         c.setQueries(map);
 
-        //c.initialise();
+        RegistryContext.getRegistry().registerConnector(c);
 
         return c;
     }

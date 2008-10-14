@@ -23,7 +23,6 @@ import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.routing.EventCorrelatorCallback;
 import org.mule.routing.inbound.EventGroup;
 import org.mule.routing.response.ResponseCorrelationAggregator;
-import org.mule.routing.response.ResponseCorrelationAggregator.DefaultEventCorrelatorCallback;
 
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPResponse;

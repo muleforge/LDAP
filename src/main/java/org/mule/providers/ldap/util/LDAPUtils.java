@@ -133,7 +133,7 @@ public final class LDAPUtils
 
         searchStr = ldapConnector.parseQuery(searchStr, paramValues);
 
-        logger.debug("searchStr: " + searchStr);
+        logger.debug("searchStr after parsing: " + searchStr);
 
         return searchStr;
 

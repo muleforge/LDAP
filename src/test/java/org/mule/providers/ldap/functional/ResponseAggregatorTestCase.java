@@ -2,7 +2,6 @@ package org.mule.providers.ldap.functional;
 
 import java.util.List;
 
-import org.apache.directory.server.core.interceptor.context.AddContextPartitionOperationContext;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
