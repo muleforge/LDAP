@@ -21,13 +21,13 @@
 	</issueManagement>
 	<scm>
 		<connection>
-			scm:svn:http://svn.muleforge.org/mule-transport-ldap/tags/mule-transport-ldap-1.4.3.0
+			scm:svn:http://svn.muleforge.org/mule-transport-ldap/
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.muleforge.org/mule-transport-ldap/tags/mule-transport-ldap-1.4.3.0
+			scm:svn:https://svn.muleforge.org/mule-transport-ldap/
 		</developerConnection>
 		<url>
-			http://svn.mule-transport-ldap.muleforge.org/tags/mule-transport-ldap-1.4.3.0
+			http://svn.mule-transport-ldap.muleforge.org/
 		</url>
 	</scm>
 	<ciManagement>
@@ -147,7 +147,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<configLocation>
-						http://svn.codehaus.org/mule/trunk/mule/buildtools/src/main/resources/codecheck/checkstyle.xml
+						http://svn.codehaus.org/mule/branches/mule-1.4.x/buildtools/src/main/resources/codecheck/checkstyle.xml
 					</configLocation>
 				</configuration>
 			</plugin>
