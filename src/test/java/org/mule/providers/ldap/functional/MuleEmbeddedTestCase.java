@@ -489,7 +489,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements Eve
     {
         final MuleClient client = new MuleClient();
 
-        final int count = 10000;
+        final int count = 500;
 
         Runnable rec = new Runnable()
         {

@@ -3,6 +3,7 @@ package org.mule.providers.ldap.functional;
 import java.util.List;
 
 import org.mule.DefaultMuleMessage;
+import org.mule.MuleServer;
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.providers.ldap.util.DSManager;
@@ -55,10 +56,12 @@ public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase {
 
 		assertEquals(list.size(), addCount + 1);
 
-		client.dispose();
-		// MuleManager.getInstance().stop();
-		// MuleManager.getInstance().dispose();
-
+		
+		//Thread.sleep(5 * 1000);
+		
+		MuleServer.getMuleContext().stop();
+		//client.dispose();
+		
 		try {
 			DSManager.getInstance().stop();
 		} catch (Exception e) {

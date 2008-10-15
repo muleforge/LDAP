@@ -209,6 +209,7 @@ public final class DSManager
             }
             else
             {
+            	logger.debug("DS is already running, stop it, then start it.");
             	
             	try {
             		stop();
@@ -288,7 +289,7 @@ public final class DSManager
         
         
         KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-       ks.load(new FileInputStream("src/test/resources/truststore_2.jks"), "changeit".toCharArray());
+        ks.load(new FileInputStream("src/test/resources/truststore_2.jks"), "changeit".toCharArray());
        
        
         
@@ -299,9 +300,22 @@ public final class DSManager
        //logger.debug("type: "+testcert.getType());
         java.security.cert.X509Certificate cert = TlsKeyGenerator.getCertificate(directoryService.getAdminSession().lookup(new LdapDN("uid=admin,ou=system")).getOriginalEntry());
        
-        ks.setCertificateEntry("apachedyn", cert);
-        ks.store(new FileOutputStream("src/test/resources/truststore_2.jks"), "changeit".toCharArray());
+        ks.setCertificateEntry("apachetmp", cert);
         
+        File tmpKs = new File("target/truststore_tmp.jks");
+        if(tmpKs.exists())
+        {
+        	boolean del = tmpKs.delete();
+        	
+        	if(!del)
+        	{
+        		logger.error("Unable to delete "+tmpKs.getAbsolutePath());
+        		//throw new Exception("Unable to delete "+tmpKs.getAbsolutePath());
+        	}
+        }
+        
+        ks.store(new FileOutputStream("target/truststore_tmp.jks"), "changeit".toCharArray());
+     
         logger.debug(cert);
    
 
@@ -569,18 +583,16 @@ public final class DSManager
 
         ldapService.stop();
         ldapSService.stop();
-        try
-        {
-            directoryService.shutdown();
+       
+        directoryService.shutdown();
             
-        }
-        catch ( Exception e )
-        {
-        }
+       
 
         doDelete( directoryService.getWorkingDirectory() );
         
         sysRoot = null;
+        this.rootDSE = null;
+        
 
         logger.debug("DS waiting for socket release ...");
 
@@ -643,12 +655,12 @@ public final class DSManager
 				
 					 attr.put(ea.getId(),ea.get().get());
 
-					 System.out.println("id "+ea.getId()+"//"+ea.get().get());
-					 System.out.println("size:" + ea.size());
+					 logger.debug("id "+ea.getId()+"//"+ea.get().get());
+					 logger.debug("size:" + ea.size());
 				}
                 
                 
-                System.out.println(" for dn:" +dn);
+                logger.debug(" for dn:" +dn);
                 
                root.createSubcontext(dn, attr);
             }

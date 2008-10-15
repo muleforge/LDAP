@@ -1,5 +1,7 @@
 package org.mule.providers.ldap;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -18,14 +20,20 @@ public class SSLTest extends TestCase {
 
 	public void testSSLBind() throws Exception {
 
-		Debug.setTraceStream(System.out);
+		//Debug.setTraceStream(System.out);
 
+		
+		File trustStore = new File("target/truststore_tmp.jks");
+		
+		assertTrue(trustStore.exists());
+		assertTrue(trustStore.canRead());
+		
 		System
 		.setProperty(
 				"javax.net.ssl.trustStore",
-				"/home/hsaly/devel/projects/mule-transport-ldap/trunk/src/test/resources/truststore_2.jks");
+				trustStore.getAbsolutePath());
 
-
+		
 		Hashtable<String, String> env = new Hashtable<String, String>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY,
 				"com.sun.jndi.ldap.LdapCtxFactory");

@@ -17,8 +17,9 @@ public class AnonymousBindTestCase extends AbstractMuleTestCase
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+           
             fail(e.toString());
+            e.printStackTrace();
         }
         
         

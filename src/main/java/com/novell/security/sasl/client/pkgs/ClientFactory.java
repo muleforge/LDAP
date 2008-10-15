@@ -5,14 +5,20 @@ import java.util.Map;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.Sasl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.novell.security.sasl.SaslClient;
 import com.novell.security.sasl.SaslException;
 
 public class ClientFactory implements com.novell.security.sasl.SaslClientFactory {
 
+    protected final Log logger = LogFactory.getLog(getClass());
+
+	
 	public ClientFactory() {
 		super();
-		System.out.println(this.getClass()+" inst.");
+		//System.out.println(this.getClass()+" inst.");
 	}
 
 	public SaslClient createSaslClient(
@@ -22,7 +28,7 @@ public class ClientFactory implements com.novell.security.sasl.SaslClientFactory
 			Map props, CallbackHandler cbh)
 			throws SaslException {
 		
-		System.out.println("try to get sun sasl client to wrap:"+authorizationID);
+		logger.debug("try to get sun sasl client to wrap:"+authorizationID);
 
 		try {
 			
@@ -34,7 +40,7 @@ public class ClientFactory implements com.novell.security.sasl.SaslClientFactory
 							protocol, serverName,
 							props, cbh);
 			
-			System.out.println("sun sasl client to wrap:"+sc);
+			logger.debug("sun sasl client to wrap:"+sc);
 
 			return new SaslClient() {
 
@@ -120,9 +126,8 @@ public class ClientFactory implements com.novell.security.sasl.SaslClientFactory
 	}
 
 	public String[] getMechanismNames(Map props) {
-		// TODO Auto-generated method stub
-		System.out.println("try to get sun sasl client to wrap getMechanismName");
-		return new String[]{"CRAM-MD5"};
+		// TODO further mechanisms
+		return new String[]{"CRAM-MD5","EXTERNAL","GSSAPI","DIGEST-MD5","PLAIN"};
 	}
 
 }
