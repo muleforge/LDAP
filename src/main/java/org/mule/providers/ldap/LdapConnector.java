@@ -86,12 +86,10 @@ public class LdapConnector extends AbstractConnector {
 
 	private Map queries = null;
 
-	// private Set propertyExtractors = null;
 
-	// private Set queryValueExtractors = null;
-	
-	static{
-		
+	public LdapConnector() {
+		super();
+
 		if(!ExpressionEvaluatorManager.isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME))
 		{
 			ExpressionEvaluatorManager.registerEvaluator(new EndpointURIExpressionEvaluator());
@@ -393,7 +391,8 @@ public class LdapConnector extends AbstractConnector {
 	
 	public Object[] getParams(ImmutableEndpoint endpoint, List paramNames,
 			Object message, String query) throws Exception {
-
+		
+	
 		Object[] params = new Object[paramNames.size()];
 		for (int i = 0; i < paramNames.size(); i++) {
 			String param = (String) paramNames.get(i);

@@ -22,8 +22,6 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mule.api.lifecycle.InitialisationException;
 
 import com.novell.ldap.LDAPConnection;
@@ -157,7 +155,7 @@ public class LdapSASLConnector extends LdapSConnector {
 
 	
 	private class BindCallbackHandler implements CallbackHandler {
-		private final Log logger = LogFactory.getLog(getClass());
+		//private final Log logger = LogFactory.getLog(getClass());
 		private char[] passwordChars;
 
 		BindCallbackHandler(String password) {

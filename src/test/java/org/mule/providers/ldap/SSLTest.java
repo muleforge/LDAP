@@ -1,7 +1,6 @@
 package org.mule.providers.ldap;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -13,8 +12,6 @@ import javax.net.ssl.SSLSocketFactory;
 import junit.framework.TestCase;
 
 import org.mule.providers.ldap.util.DSManager;
-
-import com.novell.ldap.client.Debug;
 
 public class SSLTest extends TestCase {
 

@@ -85,7 +85,7 @@ public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
             
         	//resovles dynamically to getXXX Method
              try {
-   				return uri.getClass().getMethod("get"+StringUtils.capitalize(property.toLowerCase()),null).invoke(uri, null);
+   				return uri.getClass().getMethod("get"+StringUtils.capitalize(property.toLowerCase()),new Class[0]).invoke(uri,(Object[]) null);
 			} catch (Exception e) {
 				logger.error(e.toString(),e);
 			} 

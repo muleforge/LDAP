@@ -12,10 +12,8 @@ import org.mule.api.transport.Connector;
 import org.mule.endpoint.DefaultOutboundEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
 import org.mule.providers.ldap.LdapConnector;
-import org.mule.providers.ldap.util.EndpointURIExpressionEvaluator;
 import org.mule.providers.ldap.util.LDAPUtils;
 import org.mule.tck.AbstractMuleTestCase;
-import org.mule.util.expression.ExpressionEvaluatorManager;
 
 public class EndpointTestCase extends AbstractMuleTestCase
 {
@@ -289,10 +287,10 @@ public class EndpointTestCase extends AbstractMuleTestCase
                 url.initialise();
         Connector connector = getConnector();
         
-        if(!ExpressionEvaluatorManager.isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME))
+        /*if(!ExpressionEvaluatorManager.isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME))
 		{
 			ExpressionEvaluatorManager.registerEvaluator(new EndpointURIExpressionEvaluator());
-		}
+		}*/
         
 		//System.out.println("isEvaluatorRegistered: "+ExpressionEvaluatorManager.isEvaluatorRegistered("endpointuri"));
 
