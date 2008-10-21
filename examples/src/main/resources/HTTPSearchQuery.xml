@@ -5,7 +5,7 @@
 	<!--  serverUrl="" disables tcp port-->
 	<mule-environment-properties serverUrl="" synchronous="true">
 	</mule-environment-properties>
-	<connector name="ldapConnector" className="org.mule.providers.ldap.LdapConnector">
+	<connector name="ldapConnector" className="org.mule.transport.ldap.LdapConnector">
 		<properties>
 			<property name="ldapHost" value="localhost"/>
 			<property name="ldapPort" value="10389"/>
@@ -35,31 +35,31 @@
 		<transformer name="FileToString" className="org.mule.providers.file.transformers.FileToString">
 
 		</transformer>
-		<transformer name="StringToSearchRequest" className="org.mule.providers.ldap.transformers.StringToSearchRequest">
+		<transformer name="StringToSearchRequest" className="org.mule.transport.ldap.transformers.StringToSearchRequest">
 
 		</transformer>
-		<transformer name="StringToDeleteRequest" className="org.mule.providers.ldap.transformers.StringToDeleteRequest">
+		<transformer name="StringToDeleteRequest" className="org.mule.transport.ldap.transformers.StringToDeleteRequest">
 
 		</transformer>
-		<transformer name="LDAPEntryToAddRequest" className="org.mule.providers.ldap.transformers.LDAPEntryToAddRequest">
+		<transformer name="LDAPEntryToAddRequest" className="org.mule.transport.ldap.transformers.LDAPEntryToAddRequest">
 
 		</transformer>
-		<transformer name="LDAPMessageToString" className="org.mule.providers.ldap.transformers.LDAPMessageToString">
+		<transformer name="LDAPMessageToString" className="org.mule.transport.ldap.transformers.LDAPMessageToString">
 			<properties>
 				<property name="format" value="DSML"/>
 			</properties>
 		</transformer>
-		<transformer name="StringToLDAPMessage" className="org.mule.providers.ldap.transformers.StringToLDAPMessage">
+		<transformer name="StringToLDAPMessage" className="org.mule.transport.ldap.transformers.StringToLDAPMessage">
 			<properties>
 				<property name="format" value="LDIF"/>
 			</properties>
 		</transformer>
-		<transformer name="LDAPSearchResultToString" className="org.mule.providers.ldap.transformers.LDAPSearchResultToString">
+		<transformer name="LDAPSearchResultToString" className="org.mule.transport.ldap.transformers.LDAPSearchResultToString">
 			<properties>
 				<property name="format" value="DSML"/>
 			</properties>
 		</transformer>
-		<transformer name="HttpRequestToString" className="org.mule.providers.ldap.transformers.HttpRequestToString"/>
+		<transformer name="HttpRequestToString" className="org.mule.transport.ldap.transformers.HttpRequestToString"/>
 	</transformers>
 	<model name="SysinToSearchTest">
 		<mule-descriptor name="sysinSearch" implementation="org.mule.components.simple.EchoComponent">

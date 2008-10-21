@@ -254,11 +254,11 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<configLocation>
-						http://svn.codehaus.org/mule/branches/mule-2.0.x/buildtools/src/main/resources/codecheck/checkstyle.xml
+						http://svn.codehaus.org/mule/tags/mule-2.0.2/buildtools/src/main/resources/codecheck/checkstyle.xml
 					</configLocation>
 
 					<headerLocation>
-						http://svn.codehaus.org/mule/branches/mule-2.0.x/buildtools/src/main/resources/codecheck/LicenseHeader.txt
+						http://svn.codehaus.org/mule/tags/mule-2.0.2/buildtools/src/main/resources/codecheck/LicenseHeader.txt
 					</headerLocation>
 				</configuration>
 			</plugin>
@@ -313,10 +313,10 @@
 					</links>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jdepend-maven-plugin</artifactId>
-			</plugin>
+			</plugin>  -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
@@ -328,7 +328,7 @@
 			</plugin>
 
 			<!-- Module dependencies -->
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>
 					maven-project-info-reports-plugin
@@ -342,7 +342,7 @@
 						</reports>
 					</reportSet>
 				</reportSets>
-			</plugin>
+			</plugin>  -->
 
 			<!-- test exclusions report -->
 			<plugin>

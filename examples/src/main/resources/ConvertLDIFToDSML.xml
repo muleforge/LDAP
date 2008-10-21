@@ -24,23 +24,23 @@
 		</transformer>
 
 		<transformer name="StringToSearchRequest"
-			className="org.mule.providers.ldap.transformers.StringToSearchRequest">
+			className="org.mule.transport.ldap.transformers.StringToSearchRequest">
 
 		</transformer>
 
 		<transformer name="StringToDeleteRequest"
-			className="org.mule.providers.ldap.transformers.StringToDeleteRequest">
+			className="org.mule.transport.ldap.transformers.StringToDeleteRequest">
 
 		</transformer>
 
 		<transformer name="LDAPEntryToAddRequest"
-			className="org.mule.providers.ldap.transformers.LDAPEntryToAddRequest">
+			className="org.mule.transport.ldap.transformers.LDAPEntryToAddRequest">
 
 		</transformer>
 
 
 		<transformer name="LDAPMessageToString"
-			className="org.mule.providers.ldap.transformers.LDAPMessageToString">
+			className="org.mule.transport.ldap.transformers.LDAPMessageToString">
 			<properties>
 				<property name="format" value="DSML" />
 			</properties>
@@ -48,7 +48,7 @@
 		</transformer>
 
 		<transformer name="StringToLDAPMessage"
-			className="org.mule.providers.ldap.transformers.StringToLDAPMessage">
+			className="org.mule.transport.ldap.transformers.StringToLDAPMessage">
 
 
 			<properties>
@@ -58,7 +58,7 @@
 		</transformer>
 		
 		<transformer name="LDAPMessageToStringL"
-			className="org.mule.providers.ldap.transformers.LDAPMessageToString">
+			className="org.mule.transport.ldap.transformers.LDAPMessageToString">
 			<properties>
 				<property name="format" value="LDIF" />
 			</properties>
@@ -66,7 +66,7 @@
 		</transformer>
 
 		<transformer name="StringToLDAPMessageD"
-			className="org.mule.providers.ldap.transformers.StringToLDAPMessage">
+			className="org.mule.transport.ldap.transformers.StringToLDAPMessage">
 
 
 			<properties>
@@ -76,7 +76,7 @@
 		</transformer>
 
 		<transformer name="LDAPSearchResultToString"
-			className="org.mule.providers.ldap.transformers.LDAPSearchResultToString">
+			className="org.mule.transport.ldap.transformers.LDAPSearchResultToString">
 
 			<properties>
 				<property name="format" value="DSML" />

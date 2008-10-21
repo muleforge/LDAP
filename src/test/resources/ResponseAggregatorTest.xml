@@ -34,7 +34,7 @@
 			<async-reply failOnTimeout="true" timeout="15000">
 				<inbound-endpoint address="ldap://ldap.in"></inbound-endpoint>
 				<custom-async-reply-router
-					class="org.mule.providers.ldap.routers.LdapResponseCorrelationAggregator" />
+					class="org.mule.transport.ldap.routers.LdapResponseCorrelationAggregator" />
 			</async-reply>
 
 

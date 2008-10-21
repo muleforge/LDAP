@@ -16,13 +16,13 @@
 
 
 	<custom-transformer name="LDAPSearchResultToString"
-		class="org.mule.providers.ldap.transformers.LDAPSearchResultToString" />
+		class="org.mule.transport.ldap.transformers.LDAPSearchResultToString" />
 	<custom-transformer name="JavaBeanToModifyRequest"
-		class="org.mule.providers.ldap.transformers.JavaBeanToModifyRequest" />
+		class="org.mule.transport.ldap.transformers.JavaBeanToModifyRequest" />
 
 
 	<custom-transformer name="StringToSearchRequest"
-		class="org.mule.providers.ldap.transformers.StringToSearchRequest">
+		class="org.mule.transport.ldap.transformers.StringToSearchRequest">
 
 	</custom-transformer>
 	

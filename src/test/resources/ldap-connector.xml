@@ -8,7 +8,7 @@
 
 
 
-    <custom-connector name="ldapConnector" class="org.mule.providers.ldap.LdapConnector">
+    <custom-connector name="ldapConnector" class="org.mule.transport.ldap.LdapConnector">
     
     <spring:property name="ldapHost" value="localhost" />
 			<spring:property name="ldapPort" value="10389" />
