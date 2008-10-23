@@ -6,12 +6,14 @@ public class JavaBeanToModifiyRequestTransformerUniqueFieldFailTestCase extends
         JavaBeanToModifiyRequestTransformerUniqueFieldTestCase
 {
 
+    @Override
     protected String getUniqueField()
     {
 
         return "";
     }
 
+    @Override
     public void testTransform() throws Exception
     {
 
@@ -20,7 +22,7 @@ public class JavaBeanToModifiyRequestTransformerUniqueFieldFailTestCase extends
             super.testTransform();
             fail();
         }
-        catch (TransformerException e)
+        catch (final TransformerException e)
         {
             // expected
         }

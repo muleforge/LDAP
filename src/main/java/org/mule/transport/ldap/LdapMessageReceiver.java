@@ -10,27 +10,28 @@
 
 package org.mule.transport.ldap;
 
+import java.util.Map;
+
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MessagingException;
 import org.mule.api.MuleException;
-import org.mule.api.MuleMessage;
-import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.CreateException;
 import org.mule.api.service.Service;
 import org.mule.api.transport.Connector;
 import org.mule.api.transport.MessageAdapter;
+import org.mule.transport.AbstractPollingMessageReceiver;
 import org.mule.transport.ConnectException;
 
 import com.novell.ldap.LDAPExtendedResponse;
+import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPUnsolicitedNotificationListener;
 
 /**
  * <code>LdapMessageReceiver</code> TODO document
  */
-public class LdapMessageReceiver extends
-        org.mule.transport.AbstractPollingMessageReceiver implements
-        LDAPUnsolicitedNotificationListener, LDAPQueueListener
+public class LdapMessageReceiver extends AbstractPollingMessageReceiver
+        implements LDAPUnsolicitedNotificationListener
 {
 
     /*
@@ -38,98 +39,106 @@ public class LdapMessageReceiver extends
      * http://mule.mulesource.org/display/MULE/Writing+Transports
      */
 
-    private LDAPQueueReceiver queueReceiver;
-
-    public LdapMessageReceiver(Connector connector, Service service,
-            InboundEndpoint endpoint) throws CreateException
+    // private LDAPQueueReceiver queueReceiver;
+    public LdapMessageReceiver(final Connector connector,
+            final Service service, final InboundEndpoint endpoint)
+            throws CreateException
     {
 
         super(connector, service, endpoint);
-
+        this.setFrequency(500);
     }
 
-    public void messageReceived(LDAPExtendedResponse msg)
+    // unsolicited notification, impl. of LDAPUnsolicitedNotificationListener
+    public void messageReceived(final LDAPExtendedResponse msg)
     {
         logger.debug("Received notification of unsolicited notification");
-
-        // Print the OID
-
         logger.debug("The OID in the notification was ==>" + msg.getID());
 
-        // byte[] data = msg.getValue();
-
         try
         {
-            MessageAdapter adapter = connector.getMessageAdapter(msg);
-            routeMessage(new DefaultMuleMessage(adapter), endpoint
+            final MessageAdapter adapter = connector.getMessageAdapter(msg);
+            routeMessage(new DefaultMuleMessage(adapter, (Map) null), endpoint
                     .isSynchronous());
+
         }
-        catch (MessagingException e)
+        catch (final MessagingException e)
         {
             throw new RuntimeException(e);
         }
-        catch (MuleException e)
+        catch (final MuleException e)
         {
-
             throw new RuntimeException(e);
         }
 
     }
 
-    public void onMessage(MuleMessage message, ImmutableEndpoint endpoint)
-            throws MuleException
-    {
-        routeMessage(message, endpoint.isSynchronous());
+    // impl. of LDAPQueueListener
+    /*
+     * public void onMessage(final MuleMessage message, final ImmutableEndpoint
+     * endpoint) throws MuleException { logger.debug("Received async. incoming
+     * ldap message (onMessage())"); routeMessage(message,
+     * endpoint.isSynchronous()); }
+     */
 
-    }
+    /*
+     * @Override public void poll() throws Exception {
+     * 
+     * final LdapConnector connector = (LdapConnector) this.connector;
+     * 
+     * try { connector.ensureConnected(); } catch (final
+     * org.mule.transport.ConnectException e) {
+     * 
+     * handleException(e); } getWorkManager().doWork(queueReceiver); //
+     * getWorkManager().scheduleWork(queueReceiver); }
+     */
 
-    public void poll() throws Exception
-    {
-
-        LdapConnector connector = (LdapConnector) this.connector;
-
-        try
-        {
-            connector.ensureConnected();
-        }
-        catch (org.mule.transport.ConnectException e)
-        {
-
-            handleException(e);
-        }
-        getWorkManager().doWork(queueReceiver);
-        // getWorkManager().scheduleWork(queueReceiver);
-
-    }
-
+    @Override
     protected void doConnect() throws ConnectException
     {
         ((LdapConnector) this.connector).ensureConnected();
-        queueReceiver = new LDAPQueueReceiver(((LdapConnector) this.connector),
-                endpoint, this);
+        // queueReceiver = new LDAPQueueReceiver(((LdapConnector)
+        // this.connector),
+        // endpoint, this);
 
     }
 
+    @Override
     protected void doDisconnect() throws ConnectException
     {
 
     }
 
+    @Override
     protected void doDispose()
     {
 
     }
 
-    // @Override
+    @Override
     protected void doStart() throws MuleException
     {
 
         ((LdapConnector) this.connector).ensureConnected();
-
+        ((LdapConnector) this.connector)
+                .addLDAPUnsolicitedNotificationListener(this);
         super.doStart();
 
-        ((LdapConnector) connector).addLDAPListener(this);
+    }
 
+    @Override
+    public void poll() throws Exception
+    {
+        final LDAPMessage msg = ((LdapConnector) this.connector).pollQueue();
+
+        if (msg == null)
+        {
+            return;
+        }
+
+        final MessageAdapter adapter = connector.getMessageAdapter(msg);
+        routeMessage(new DefaultMuleMessage(adapter, (Map) null), endpoint
+                .isSynchronous());
     }
 
 }

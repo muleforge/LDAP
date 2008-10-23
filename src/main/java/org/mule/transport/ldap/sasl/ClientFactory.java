@@ -10,10 +10,10 @@
 
 package org.mule.transport.ldap.sasl;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.sasl.Sasl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,26 +33,29 @@ public class ClientFactory implements
         // System.out.println(this.getClass()+" inst.");
     }
 
-    public SaslClient createSaslClient(String[] mechanisms,
-            String authorizationID, String protocol, String serverName,
-            Map props, CallbackHandler cbh) throws SaslException
+    public SaslClient createSaslClient(final String[] mechanisms,
+            final String authorizationID, final String protocol,
+            final String serverName, final Map props, final CallbackHandler cbh)
+            throws SaslException
     {
 
-        logger.debug("try to get sun sasl client to wrap:" + authorizationID);
+        logger.debug("try to get sun sasl client to wrap:" + authorizationID
+                + "/" + Arrays.toString(mechanisms) + "/" + protocol + "/"
+                + serverName + "/" + props + "/" + cbh);
 
         try
         {
 
-            final javax.security.sasl.SaslClient sc = Sasl.createSaslClient(
-                    mechanisms, authorizationID, protocol, serverName, props,
-                    cbh);
+            final javax.security.sasl.SaslClient sc = javax.security.sasl.Sasl
+                    .createSaslClient(mechanisms, authorizationID, protocol,
+                            serverName, props, cbh);
 
             logger.debug("sun sasl client to wrap:" + sc);
 
             return new SaslClient0(sc);
 
         }
-        catch (javax.security.sasl.SaslException e)
+        catch (final javax.security.sasl.SaslException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -61,9 +64,10 @@ public class ClientFactory implements
         return null;
     }
 
-    public String[] getMechanismNames(Map props)
+    public String[] getMechanismNames(final Map props)
     {
         // TODO further mechanisms
+
         return new String[]
         {"CRAM-MD5", "EXTERNAL", "GSSAPI", "DIGEST-MD5", "PLAIN"};
     }
@@ -71,8 +75,9 @@ public class ClientFactory implements
     private static final class SaslClient0 implements SaslClient
     {
         private final javax.security.sasl.SaslClient sc;
+        protected final Log logger = LogFactory.getLog(getClass());
 
-        private SaslClient0(javax.security.sasl.SaslClient sc)
+        private SaslClient0(final javax.security.sasl.SaslClient sc)
         {
             this.sc = sc;
         }
@@ -81,21 +86,24 @@ public class ClientFactory implements
         {
             try
             {
+                logger.debug("dispose");
                 sc.dispose();
             }
-            catch (javax.security.sasl.SaslException e)
+            catch (final javax.security.sasl.SaslException e)
             {
                 throw new SaslException(e.toString());
             }
         }
 
-        public byte[] evaluateChallenge(byte[] challenge) throws SaslException
+        public byte[] evaluateChallenge(final byte[] challenge)
+                throws SaslException
         {
             try
             {
+                logger.debug("evaluateChallenge");
                 return sc.evaluateChallenge(challenge);
             }
-            catch (javax.security.sasl.SaslException e)
+            catch (final javax.security.sasl.SaslException e)
             {
                 // TODO Auto-generated catch
                 // block
@@ -105,32 +113,38 @@ public class ClientFactory implements
 
         public String getMechanismName()
         {
+            logger.debug("sc.getMechanismName(): " + sc.getMechanismName());
             return sc.getMechanismName();
         }
 
-        public Object getNegotiatedProperty(String propName)
+        public Object getNegotiatedProperty(final String propName)
         {
+            logger.debug("sc.getNegotiatedProperty(propName): "
+                    + sc.getNegotiatedProperty(propName));
             return sc.getNegotiatedProperty(propName);
         }
 
         public boolean hasInitialResponse()
         {
+            logger.debug("sc.hasInitialResponse(): " + sc.hasInitialResponse());
             return sc.hasInitialResponse();
         }
 
         public boolean isComplete()
         {
+            logger.debug("sc.isComplete(): " + sc.isComplete());
             return sc.isComplete();
         }
 
-        public byte[] unwrap(byte[] incoming, int offset, int len)
-                throws SaslException
+        public byte[] unwrap(final byte[] incoming, final int offset,
+                final int len) throws SaslException
         {
             try
             {
+                logger.debug("unwrap");
                 return sc.unwrap(incoming, offset, len);
             }
-            catch (javax.security.sasl.SaslException e)
+            catch (final javax.security.sasl.SaslException e)
             {
                 // TODO Auto-generated catch
                 // block
@@ -138,14 +152,15 @@ public class ClientFactory implements
             }
         }
 
-        public byte[] wrap(byte[] outgoing, int offset, int len)
-                throws SaslException
+        public byte[] wrap(final byte[] outgoing, final int offset,
+                final int len) throws SaslException
         {
             try
             {
+                logger.debug("wrap");
                 return sc.wrap(outgoing, offset, len);
             }
-            catch (javax.security.sasl.SaslException e)
+            catch (final javax.security.sasl.SaslException e)
             {
                 // TODO Auto-generated catch
                 // block

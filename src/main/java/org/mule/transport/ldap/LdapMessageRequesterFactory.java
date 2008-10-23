@@ -20,7 +20,7 @@ public class LdapMessageRequesterFactory extends
 {
 
     @Override
-    public MessageRequester create(InboundEndpoint endpoint)
+    public MessageRequester create(final InboundEndpoint endpoint)
             throws MuleException
     {
         // TODO Auto-generated method stub

@@ -22,7 +22,8 @@ public class StringToSearchRequest extends AbstractTransformer
 {
 
     // @Override
-    protected Object doTransform(Object src, String encoding)
+    @Override
+    protected Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -32,18 +33,18 @@ public class StringToSearchRequest extends AbstractTransformer
                     "src must not be null"));
         }
 
-        LdapConnector ldapConnector = (LdapConnector) this.endpoint
+        final LdapConnector ldapConnector = (LdapConnector) this.endpoint
                 .getConnector();
 
         try
         {
 
-            LDAPSearchRequest request = LDAPUtils.createSearchRequest(
+            final LDAPSearchRequest request = LDAPUtils.createSearchRequest(
                     ldapConnector, src.toString());
 
             return request;
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new TransformerException(this, e);
         }

@@ -21,13 +21,13 @@ public class LdapSASLConnectorTestCase extends AbstractConnectorTestCase
         return defineConnector(password, "example.com", mechanism, 10389);
     }
 
-    public Connector defineConnector(String password, String realm,
-            String mechanism, int port) throws Exception
+    public Connector defineConnector(final String password, final String realm,
+            final String mechanism, final int port) throws Exception
     {
 
         logger.debug("defineConnector (" + password + "||" + mechanism + ")");
 
-        LdapSASLConnector c = new LdapSASLConnector();
+        final LdapSASLConnector c = new LdapSASLConnector();
         c.setLdapHost("localhost");
         c.setLdapPort(port);
         c.setName("ldapSASLTestConnector");
@@ -43,12 +43,14 @@ public class LdapSASLConnectorTestCase extends AbstractConnectorTestCase
         return c;
     }
 
+    @Override
     public String getTestEndpointURI()
     {
 
         return "ldap://ldap.in";
     }
 
+    @Override
     public Object getValidMessage() throws Exception
     {
 

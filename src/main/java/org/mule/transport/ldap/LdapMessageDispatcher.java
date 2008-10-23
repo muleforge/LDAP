@@ -10,6 +10,8 @@
 
 package org.mule.transport.ldap;
 
+import java.util.Map;
+
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
@@ -35,28 +37,31 @@ import com.novell.ldap.util.DN;
 public class LdapMessageDispatcher extends AbstractMessageDispatcher
 {
 
-    private static final int DEFAULT_MINIMAL_TIMEOUT = 2000;
-    private LdapConnector connector;
+    // private static final int DEFAULT_MINIMAL_TIMEOUT = 2000;
+    private final LdapConnector connector;
 
-    public LdapMessageDispatcher(OutboundEndpoint endpoint)
+    public LdapMessageDispatcher(final OutboundEndpoint endpoint)
     {
         super(endpoint);
 
         connector = (LdapConnector) endpoint.getConnector();
     }
 
+    @Override
     public void doConnect() throws Exception
     {
 
         this.connector.ensureConnected();
     }
 
+    @Override
     public void doDisconnect() throws Exception
     {
 
     }
 
-    public void doDispatch(MuleEvent event) throws Exception
+    @Override
+    public void doDispatch(final MuleEvent event) throws Exception
     {
 
         if (logger.isDebugEnabled())
@@ -64,11 +69,11 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
             logger.debug("doDispatch(MuleEvent event)");
         }
 
-        Object transformed = event.transformMessage();
+        final Object transformed = event.transformMessage();
 
         if (transformed instanceof LDAPMessage)
         {
-            LDAPMessage tranformed = (LDAPMessage) transformed;
+            final LDAPMessage tranformed = (LDAPMessage) transformed;
 
             if (event.getMessage().getCorrelationId() != null)
             {
@@ -81,7 +86,7 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
         else
         // not an instance of LDAPMessage
         {
-            Object unknownMsg = event.transformMessage();
+            final Object unknownMsg = event.transformMessage();
 
             if (unknownMsg == null)
             {
@@ -90,12 +95,12 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
             logger.debug("unknown is of type: " + unknownMsg.getClass());
 
-            String query = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                    unknownMsg);
+            final String query = LDAPUtils.getSearchStringFromEndpoint(
+                    endpoint, unknownMsg);
 
             logger.debug("query: " + query);
 
-            LDAPSearchRequest request = LDAPUtils.createSearchRequest(
+            final LDAPSearchRequest request = LDAPUtils.createSearchRequest(
                     connector, query);
 
             if (event.getMessage().getCorrelationId() != null)
@@ -110,7 +115,7 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
     }
 
     @Override
-    protected MuleMessage doSend(MuleEvent event) throws Exception
+    protected MuleMessage doSend(final MuleEvent event) throws Exception
     {
 
         if (logger.isDebugEnabled())
@@ -118,12 +123,12 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
             logger.debug("entering doSend(MuleEvent event)");
         }
 
-        LDAPConnection lc = connector.getLdapConnection();
-        Object transformed = event.transformMessage();
+        final LDAPConnection lc = connector.getLdapConnection();
+        final Object transformed = event.transformMessage();
 
         if (transformed instanceof LDAPMessage)
         {
-            LDAPMessage tranformed = (LDAPMessage) transformed;
+            final LDAPMessage tranformed = (LDAPMessage) transformed;
 
             if (event.getMessage().getCorrelationId() != null)
             {
@@ -146,15 +151,15 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
             else if (tranformed instanceof LDAPSearchRequest)
             {
 
-                LDAPSearchRequest sr = ((LDAPSearchRequest) tranformed);
+                final LDAPSearchRequest sr = ((LDAPSearchRequest) tranformed);
 
-                LDAPSearchResults res = lc.search(sr.getDN(), sr.getScope(), sr
-                        .getStringFilter(), sr.getAttributes(), sr
-                        .isTypesOnly(), (LDAPSearchConstraints) null);
+                final LDAPSearchResults res = lc.search(sr.getDN(), sr
+                        .getScope(), sr.getStringFilter(), sr.getAttributes(),
+                        sr.isTypesOnly(), (LDAPSearchConstraints) null);
 
-                MessageAdapter adapter = connector.getMessageAdapter(res);
+                final MessageAdapter adapter = connector.getMessageAdapter(res);
 
-                return new DefaultMuleMessage(adapter);
+                return new DefaultMuleMessage(adapter, (Map) null);
             }
             else
             {
@@ -168,18 +173,18 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
         else if (transformed instanceof DN)
         {
 
-            DN dn = (DN) transformed;
-            LDAPEntry entry = lc.read(dn.toString());
+            final DN dn = (DN) transformed;
+            final LDAPEntry entry = lc.read(dn.toString());
 
             // TODO
             // UMOMessageAdapter adapter = connector.getMessageAdapter(entry);
 
-            return new DefaultMuleMessage(entry);
+            return new DefaultMuleMessage(entry, (Map) null);
         }
         else
         // not an instance of LDAPMessage
         {
-            Object unknownMsg = event.transformMessage();
+            final Object unknownMsg = event.transformMessage();
 
             if (unknownMsg == null)
             {
@@ -188,77 +193,57 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
             logger.debug("unknown is of type: " + unknownMsg.getClass());
 
-            String query = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                    unknownMsg);
+            final String query = LDAPUtils.getSearchStringFromEndpoint(
+                    endpoint, unknownMsg);
 
-            LDAPSearchRequest sr = LDAPUtils.createSearchRequest(connector,
-                    query);
+            final LDAPSearchRequest sr = LDAPUtils.createSearchRequest(
+                    connector, query);
 
             if (event.getMessage().getCorrelationId() != null)
             {
                 sr.setTag(event.getMessage().getCorrelationId());
             }
 
-            LDAPSearchResults res = lc.search(sr.getDN(), sr.getScope(), sr
-                    .getStringFilter(), sr.getAttributes(), sr.isTypesOnly(),
+            final LDAPSearchResults res = lc.search(sr.getDN(), sr.getScope(),
+                    sr.getStringFilter(), sr.getAttributes(), sr.isTypesOnly(),
                     (LDAPSearchConstraints) null);
 
-            MessageAdapter adapter = connector.getMessageAdapter(res);
+            final MessageAdapter adapter = connector.getMessageAdapter(res);
 
-            return new DefaultMuleMessage(adapter);
+            return new DefaultMuleMessage(adapter, (Map) null);
 
         }
 
-        // doDispatch(event);
+        logger.warn("Returning just message itself!");
         return event.getMessage();
     }
 
-    public MuleMessage doReceive(long timeout) throws Exception
-    {
-        logger.debug("entering doReceive(long timeout)");
-
-        LDAPQueueReceiver receiver = new LDAPQueueReceiver(connector, endpoint,
-                null);
-
-        long t0 = System.currentTimeMillis();
-        if (timeout < 0)
-        {
-            timeout = Long.MAX_VALUE;
-        }
-
-        do
-        {
-            // logger.debug("try to poll");
-            MuleMessage msg = receiver.pollOnce();
-
-            if (msg != null)
-            {
-                return msg;
-            }
-
-            long sleep = Math.min(DEFAULT_MINIMAL_TIMEOUT, timeout
-                    - (System.currentTimeMillis() - t0));
-
-            if (sleep > 0)
-            {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("No results, sleeping for " + sleep);
-                }
-                Thread.sleep(sleep);
-            }
-            else
-            {
-
-                logger.debug("Timeout");
-                return null;
-            }
-
-        }
-        while (true);
-
-    } // end method
-
+    /*
+     * public MuleMessage doReceive(long timeout) throws Exception {
+     * logger.debug("entering doReceive(long timeout)");
+     * 
+     * LDAPQueueReceiver receiver = new LDAPQueueReceiver(connector, endpoint,
+     * null);
+     * 
+     * long t0 = System.currentTimeMillis(); if (timeout < 0) { timeout =
+     * Long.MAX_VALUE; }
+     * 
+     * do { // logger.debug("try to poll"); MuleMessage msg =
+     * receiver.pollOnce();
+     * 
+     * if (msg != null) { return msg; }
+     * 
+     * long sleep = Math.min(DEFAULT_MINIMAL_TIMEOUT, timeout -
+     * (System.currentTimeMillis() - t0));
+     * 
+     * if (sleep > 0) { if (logger.isDebugEnabled()) { logger.debug("No results,
+     * sleeping for " + sleep); } Thread.sleep(sleep); } else {
+     * 
+     * logger.debug("Timeout"); return null; } } while (true); } // end method
+     * 
+     * 
+     */
+    @Override
     public void doDispose()
     {
 

@@ -60,6 +60,7 @@ public class LdapSASLConnector extends LdapSConnector
     }
 
     // @Override
+    @Override
     protected void doInitialise() throws InitialisationException
     {
 
@@ -77,11 +78,11 @@ public class LdapSASLConnector extends LdapSConnector
             {
                 try
                 {
-                    Provider p = (Provider) Class.forName(
+                    final Provider p = (Provider) Class.forName(
                             alternativeSaslProvider).newInstance();
                     Security.addProvider(p);
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
                     throw new InitialisationException(e, this);
                 }
@@ -101,7 +102,7 @@ public class LdapSASLConnector extends LdapSConnector
 
                 this.jdkSaslSupported = true;
             }
-            catch (ClassNotFoundException e1)
+            catch (final ClassNotFoundException e1)
             {
                 logger
                         .debug("No SunSASL implementation (JDK >= 1.5 detected. Fall back to JDK 1.4 mode");
@@ -114,11 +115,11 @@ public class LdapSASLConnector extends LdapSConnector
                 {
                     try
                     {
-                        Provider p = (Provider) Class.forName(
+                        final Provider p = (Provider) Class.forName(
                                 alternativeSaslProvider).newInstance();
                         Security.addProvider(p);
                     }
-                    catch (Exception e)
+                    catch (final Exception e)
                     {
                         throw new InitialisationException(e, this);
                     }
@@ -129,10 +130,10 @@ public class LdapSASLConnector extends LdapSConnector
         if (logger.isDebugEnabled())
         {
 
-            Provider[] ps = Security.getProviders();
+            final Provider[] ps = Security.getProviders();
             for (int i = 0; i < ps.length; i++)
             {
-                Provider provider = ps[i];
+                final Provider provider = ps[i];
                 logger.debug(provider.getClass() + "/" + provider.getName()
                         + "/" + provider.getVersion() + "/"
                         + provider.getInfo());
@@ -144,11 +145,12 @@ public class LdapSASLConnector extends LdapSConnector
     }
 
     // @Override
+    @Override
     protected void doBind() throws Exception
     {
         logger.debug("bind with mechanism " + mechanism);
 
-        Map m = new HashMap();
+        final Map m = new HashMap();
         m.put("com.novell.security.sasl.client.pkgs",
                 "org.mule.transport.ldap.sasl");
 
@@ -157,12 +159,14 @@ public class LdapSASLConnector extends LdapSConnector
 
     }
 
+    @Override
     public String getProtocol()
     {
         return "ldap";
     }
 
     // @Override
+    @Override
     protected boolean isAnonymousBindSupported()
     {
 
@@ -174,7 +178,7 @@ public class LdapSASLConnector extends LdapSConnector
         return mechanism;
     }
 
-    public void setMechanism(String mechanism)
+    public void setMechanism(final String mechanism)
     {
         this.mechanism = mechanism;
     }
@@ -182,16 +186,16 @@ public class LdapSASLConnector extends LdapSConnector
     private class BindCallbackHandler implements CallbackHandler
     {
         // private final Log logger = LogFactory.getLog(getClass());
-        private char[] passwordChars;
+        private final char[] passwordChars;
 
-        BindCallbackHandler(String password)
+        BindCallbackHandler(final String password)
         {
 
             passwordChars = new char[password.length()];
             password.getChars(0, password.length(), passwordChars, 0);
         }
 
-        public void handle(Callback[] callbacks) throws IOException,
+        public void handle(final Callback[] callbacks) throws IOException,
                 UnsupportedCallbackException
         {
 
@@ -220,7 +224,7 @@ public class LdapSASLConnector extends LdapSConnector
 
                 }
                 else if (jdkSaslSupported
-                        && callbacks[i] instanceof RealmCallback)
+                        && (callbacks[i] instanceof RealmCallback))
                 {
 
                     String result = ((RealmCallback) callbacks[i])
@@ -254,7 +258,7 @@ public class LdapSASLConnector extends LdapSConnector
 
                 }
                 else if (jdkSaslSupported
-                        && callbacks[i] instanceof RealmChoiceCallback)
+                        && (callbacks[i] instanceof RealmChoiceCallback))
                 {
 
                     ((RealmChoiceCallback) callbacks[i]).setSelectedIndex(0);
@@ -283,7 +287,7 @@ public class LdapSASLConnector extends LdapSConnector
         return useSSL;
     }
 
-    public void setUseSSL(boolean useSSL)
+    public void setUseSSL(final boolean useSSL)
     {
         this.useSSL = useSSL;
     }
@@ -293,12 +297,12 @@ public class LdapSASLConnector extends LdapSConnector
         return alternativeSaslProvider;
     }
 
-    public void setAlternativeSaslProvider(String alternativeSaslProvider)
+    public void setAlternativeSaslProvider(final String alternativeSaslProvider)
     {
         this.alternativeSaslProvider = alternativeSaslProvider;
     }
 
-    public void setForceJDK14(boolean forceJDK14)
+    public void setForceJDK14(final boolean forceJDK14)
     {
         this.forceJDK14 = forceJDK14;
     }
@@ -308,7 +312,7 @@ public class LdapSASLConnector extends LdapSConnector
         return realm;
     }
 
-    public void setRealm(String realm)
+    public void setRealm(final String realm)
     {
         this.realm = realm;
     }

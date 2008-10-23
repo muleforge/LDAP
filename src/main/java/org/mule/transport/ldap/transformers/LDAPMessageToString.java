@@ -35,7 +35,8 @@ public class LDAPMessageToString extends AbstractTransformer
     // DSML(default), LDIF, toString
 
     // @Override
-    protected Object doTransform(Object src, String encoding)
+    @Override
+    protected Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -85,29 +86,30 @@ public class LDAPMessageToString extends AbstractTransformer
 
     }
 
-    private String getOut(boolean dsml, List msgList)
+    private String getOut(final boolean dsml, final List msgList)
             throws TransformerException
     {
         try
         {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            LDAPWriter writer = dsml ? (LDAPWriter) new DSMLWriter(out)
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            final LDAPWriter writer = dsml ? (LDAPWriter) new DSMLWriter(out)
                     : (LDAPWriter) new LDIFWriter(out);
 
-            for (Iterator iterator = msgList.iterator(); iterator.hasNext();)
+            for (final Iterator iterator = msgList.iterator(); iterator
+                    .hasNext();)
             {
-                LDAPMessage ldapMsg = (LDAPMessage) iterator.next();
+                final LDAPMessage ldapMsg = (LDAPMessage) iterator.next();
 
                 try
                 {
                     writer.writeMessage(ldapMsg);
 
                 }
-                catch (IOException e)
+                catch (final IOException e)
                 {
                     throw new TransformerException(this, e);
                 }
-                catch (LDAPException e)
+                catch (final LDAPException e)
                 {
                     throw new TransformerException(this, e);
                 }
@@ -118,7 +120,7 @@ public class LDAPMessageToString extends AbstractTransformer
             out.close();
             return out.toString();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new TransformerException(this, e);
         }
@@ -130,7 +132,7 @@ public class LDAPMessageToString extends AbstractTransformer
         return format;
     }
 
-    public void setFormat(String format)
+    public void setFormat(final String format)
     {
         this.format = format;
     }

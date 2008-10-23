@@ -23,7 +23,8 @@ public class LDAPEntryToAddRequest extends AbstractTransformer
 {
 
     // @Override
-    protected Object doTransform(Object src, String encoding)
+    @Override
+    protected Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -35,7 +36,7 @@ public class LDAPEntryToAddRequest extends AbstractTransformer
 
         logger.debug(LDAPUtils.dumpLDAPMessage(src));
 
-        if (!(src instanceof LDAPEntry || src instanceof LDAPSearchResult))
+        if (!((src instanceof LDAPEntry) || (src instanceof LDAPSearchResult)))
         {
             throw new TransformerException(this, new IllegalArgumentException(
                     "wrong type " + src.getClass()
@@ -50,7 +51,7 @@ public class LDAPEntryToAddRequest extends AbstractTransformer
             if (src instanceof LDAPSearchResult)
             {
 
-                LDAPSearchResult sr = (LDAPSearchResult) src;
+                final LDAPSearchResult sr = (LDAPSearchResult) src;
                 entry = sr.getEntry();
 
             }
@@ -60,13 +61,13 @@ public class LDAPEntryToAddRequest extends AbstractTransformer
             }
 
             // TODO LDAPCOntrols
-            LDAPAddRequest request = new LDAPAddRequest(entry, null);
+            final LDAPAddRequest request = new LDAPAddRequest(entry, null);
 
             // logger.debug("tranf: id: " + request.getMessageID());
 
             return request;
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new TransformerException(this, e);
         }

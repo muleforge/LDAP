@@ -24,7 +24,7 @@ public class LdapMessageDispatcherFactory extends
 
     @Override
     public org.mule.api.transport.MessageDispatcher create(
-            OutboundEndpoint endpoint) throws MuleException
+            final OutboundEndpoint endpoint) throws MuleException
     {
 
         return new LdapMessageDispatcher(endpoint);

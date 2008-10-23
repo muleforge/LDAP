@@ -9,13 +9,14 @@ public class AbstractLdapDSTestCase extends TestCase
 
     protected boolean allowAnonymousBind;
 
-    protected AbstractLdapDSTestCase(boolean allowAnonymousBind)
+    protected AbstractLdapDSTestCase(final boolean allowAnonymousBind)
     {
 
         super();
         this.allowAnonymousBind = allowAnonymousBind;
     }
 
+    @Override
     protected void setUp() throws Exception
     {
 
@@ -23,6 +24,7 @@ public class AbstractLdapDSTestCase extends TestCase
         DSManager.getInstance().start(allowAnonymousBind);
     }
 
+    @Override
     protected void tearDown() throws Exception
     {
 

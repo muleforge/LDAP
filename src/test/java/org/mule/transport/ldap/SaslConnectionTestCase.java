@@ -13,11 +13,12 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
 
     }
 
-    public LdapSASLConnector getConnector(String password, String realm,
-            String mechanism, int port) throws Exception
+    public LdapSASLConnector getConnector(final String password,
+            final String realm, final String mechanism, final int port)
+            throws Exception
     {
 
-        LdapSASLConnector c = new LdapSASLConnector();
+        final LdapSASLConnector c = new LdapSASLConnector();
 
         c.setMuleContext(muleContext);
 
@@ -45,8 +46,8 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
     public void testSASLDIGESTMD5Connect() throws Exception
     {
 
-        LdapSASLConnector c = (LdapSASLConnector) getConnector("secret1",
-                "example.com", "DIGEST-MD5", 10389);
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "DIGEST-MD5", 10389);
 
         c.initialise();
         c.connect();
@@ -55,37 +56,15 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
         c.dispose();
     }
 
-    public void rtestSASLEXTERNALConnect() throws Exception
+    public void nottestSASLCRAMMD5Connect() throws Exception
     {
-        LdapSASLConnector c = (LdapSASLConnector) getConnector("secret1",
-                "example.com", "EXTERNAL", 10389);
+        final LdapSASLConnector c = getConnector("secret1", null, "CRAM-MD5",
+                10389);
         c.initialise();
         c.connect();
         c.ensureConnected();
         c.disconnect();
-        c.dispose();
-    }
-
-    public void rtestSASLPLAINConnect() throws Exception
-    {
-        LdapSASLConnector c = (LdapSASLConnector) getConnector("secret1",
-                "example.com", "PLAIN", 10389);
-        c.initialise();
-        c.connect();
-        c.ensureConnected();
-        c.disconnect();
-        c.dispose();
-    }
-
-    public void etestSASLCRAMConnect() throws Exception
-    {
-        LdapSASLConnector c = (LdapSASLConnector) getConnector("secret1",
-                "example.com", "CRAM-MD5", 10389);
-        c.initialise();
-        c.connect();
-        c.ensureConnected();
-        c.disconnect();
-        c.dispose();
+        // c.dispose();
     }
 
     public void testSASLBadPassword() throws Exception
@@ -94,7 +73,7 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
         try
         {
 
-            LdapSASLConnector c = getConnector("xxx", "example.com",
+            final LdapSASLConnector c = getConnector("xxx", "example.com",
                     "DIGEST-MD5", 10389);
 
             c.connect();
@@ -107,7 +86,7 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
             c.dispose();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             // excpected
 
@@ -120,7 +99,7 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
         try
         {
 
-            LdapSASLConnector c = getConnector("secret1", "example.com",
+            final LdapSASLConnector c = getConnector("secret1", "example.com",
                     "unkjj", 10389);
 
             c.connect();
@@ -134,7 +113,7 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
             fail();
 
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             // excpected
         }

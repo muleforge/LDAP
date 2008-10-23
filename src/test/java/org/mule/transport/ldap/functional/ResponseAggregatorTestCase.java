@@ -1,6 +1,7 @@
 package org.mule.transport.ldap.functional;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mule.DefaultMuleMessage;
 import org.mule.MuleServer;
@@ -14,6 +15,7 @@ import com.novell.ldap.LDAPAddRequest;
 public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase
 {
 
+    @Override
     protected String getConfigResources()
     {
 
@@ -22,18 +24,18 @@ public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase
 
     public void testAsyncResponse() throws Exception
     {
-        MuleClient client = new MuleClient(muleContext);
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
 
         for (int i = 0; i < addCount; i++)
         {
-            MuleMessage ret = client.send("ldap://ldap.out", TestHelper
+            final MuleMessage ret = client.send("ldap://ldap.out", TestHelper
                     .getRandomEntryAddRequest(), null);
             assertNotNull(ret);
             assertTrue(ret.getPayload().getClass().toString(),
                     ret.getPayload() instanceof LDAPAddRequest);
-            LDAPAddRequest lar = ((LDAPAddRequest) ret.getPayload());
+            final LDAPAddRequest lar = ((LDAPAddRequest) ret.getPayload());
             logger.debug(i + ": " + ret + "//" + lar.getTag() + "//"
                     + lar.getEntry());
             // correlationId=null, correlationGroup=-1, correlationSeq=-1
@@ -44,8 +46,8 @@ public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase
 
         Thread.sleep(5 * 1000);
 
-        MuleMessage msg = client.send("vm://test_in", new DefaultMuleMessage(
-                "dummy_for_static_search"));
+        final MuleMessage msg = client.send("vm://test_in",
+                new DefaultMuleMessage("dummy_for_static_search", (Map) null));
 
         assertNotNull(msg);
 
@@ -54,7 +56,7 @@ public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase
         assertTrue(msg.getPayload().getClass().toString(),
                 msg.getPayload() instanceof List);
 
-        List list = (List) msg.getPayload();
+        final List list = (List) msg.getPayload();
 
         logger.debug(list);
 
@@ -69,7 +71,7 @@ public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase
         {
             DSManager.getInstance().stop();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
         }

@@ -8,6 +8,7 @@ public abstract class AbstractLdapFunctionalTestCase extends FunctionalTestCase
 
     // protected LdapConnector ldapConnector = null;
 
+    @Override
     protected String getConfigResources()
     {
 
@@ -15,7 +16,7 @@ public abstract class AbstractLdapFunctionalTestCase extends FunctionalTestCase
         {
             DSManager.getInstance().stop();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
         }
@@ -27,7 +28,7 @@ public abstract class AbstractLdapFunctionalTestCase extends FunctionalTestCase
             // muleContext.getRegistry().lookupConnector("ldapConnector");
 
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();

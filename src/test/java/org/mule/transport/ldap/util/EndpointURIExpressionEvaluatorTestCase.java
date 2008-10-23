@@ -1,4 +1,4 @@
-package org.mule.transport.ldap;
+package org.mule.transport.ldap.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,7 @@ import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.endpoint.DefaultOutboundEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
+import org.mule.retry.policies.NoRetryPolicyTemplate;
 import org.mule.tck.AbstractMuleTestCase;
 import org.mule.transport.ldap.util.EndpointURIExpressionEvaluator;
 import org.mule.util.expression.ExpressionEvaluatorManager;
@@ -31,23 +32,29 @@ public class EndpointURIExpressionEvaluatorTestCase extends
 
     public void testValid()
     {
+
+        final boolean reg = ExpressionEvaluatorManager
+                .isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME);
+
+        assertTrue(reg);
+
         boolean validExpression = ExpressionEvaluatorManager
-                .isValidExpression("endpointuri:test");
+                .isValidExpression("#[endpointuri:test]");
 
         assertTrue(validExpression);
 
         validExpression = ExpressionEvaluatorManager
-                .isValidExpression("endpointuri");
+                .isValidExpression("#[endpointuri:]");
 
         assertTrue(validExpression);
 
         validExpression = ExpressionEvaluatorManager
-                .isValidExpression("endpointuri:xxx.xxx:xxx");
+                .isValidExpression("#[endpointuri:xxx.xxx:xxx]");
 
         assertTrue(validExpression);
 
         validExpression = ExpressionEvaluatorManager
-                .isValidExpression("endpointuri:xxx.xxx");
+                .isValidExpression("#[endpointuri:xxx.xxx]");
 
         assertTrue(validExpression);
     }
@@ -55,33 +62,41 @@ public class EndpointURIExpressionEvaluatorTestCase extends
     public void testInValid()
     {
         boolean validExpression = ExpressionEvaluatorManager
-                .isValidExpression("endpointurxxx");
+                .isValidExpression("#[endpointurxxx121q]");
 
         assertFalse(validExpression);
 
+        validExpression = ExpressionEvaluatorManager
+                .isValidExpression("#[endpointuri]");
+
+        assertFalse(validExpression);
     }
 
     public void testNullEval() throws Exception
     {
-        Object o = ExpressionEvaluatorManager.evaluate("endpointuri:xxx.yyy",
-                new DefaultMuleMessage(""));
+        final Object o = ExpressionEvaluatorManager.evaluate(
+                "#[endpointuri:xxx.yyy]",
+                new DefaultMuleMessage("", (Map) null));
         assertNull(o);
 
     }
 
     public void testEval() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/payload.cn");
+        final EndpointURI url = new MuleEndpointURI(
+                "ldap://ldap.out/payload.cn");
         url.initialise();
 
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(null, url,
-                null, null, "testendpoint", new Properties(), null, null, true,
-                null, false, false, 0, null, null, muleContext, null);
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(null,
+                url, null, null, "testendpoint", new Properties(), null, null,
+                true, null, false, false, 0, null, null, null, muleContext,
+                new NoRetryPolicyTemplate());
 
         muleContext.getRegistry().registerEndpoint(endpoint);
 
-        Object o = ExpressionEvaluatorManager.evaluate(
-                "endpointuri:testendpoint.host", new DefaultMuleMessage(""));
+        final Object o = ExpressionEvaluatorManager.evaluate(
+                "#[endpointuri:testendpoint.host]", new DefaultMuleMessage("",
+                        (Map) null));
         assertNotNull(o);
         assertTrue(o instanceof String);
         assertTrue(o.toString().equals("ldap.out"));
@@ -90,20 +105,21 @@ public class EndpointURIExpressionEvaluatorTestCase extends
 
     public void testEval2() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/?a=b");
+        final EndpointURI url = new MuleEndpointURI("ldap://ldap.out/?a=b");
         url.initialise();
 
-        Map map = new HashMap();
+        final Map map = new HashMap();
 
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(null, url,
-                null, null, "testendpoint", map, null, null, true, null, false,
-                false, 0, null, null, muleContext, null);
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(null,
+                url, null, null, "testendpoint", map, null, null, true, null,
+                false, false, 0, null, null, null, muleContext,
+                new NoRetryPolicyTemplate());
 
         muleContext.getRegistry().registerEndpoint(endpoint);
 
-        Object o = ExpressionEvaluatorManager
-                .evaluate("endpointuri:testendpoint.params:a",
-                        new DefaultMuleMessage(""));
+        final Object o = ExpressionEvaluatorManager.evaluate(
+                "#[endpointuri:testendpoint.params:a]", new DefaultMuleMessage(
+                        "", (Map) null));
         assertNotNull(o);
         logger.debug(o);
         assertTrue(o instanceof String);

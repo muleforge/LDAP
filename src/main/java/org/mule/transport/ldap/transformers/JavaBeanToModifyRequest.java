@@ -18,7 +18,6 @@ import java.util.List;
 import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractTransformer;
 import org.mule.transport.ldap.LdapConnector;
-import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
@@ -33,7 +32,8 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
 
     private String uniqueField;
 
-    protected Object doTransform(Object src, String encoding)
+    @Override
+    protected Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -45,17 +45,17 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
                     "src must not be null"));
         }
 
-        Object bean = src;
+        final Object bean = src;
 
         try
         {
-            Method[] fields = bean.getClass().getMethods();
-            List mods = new ArrayList(50);
+            final Method[] fields = bean.getClass().getMethods();
+            final List mods = new ArrayList(50);
             Object uniqueFieldValue = null;
             for (int i = 0; i < fields.length; i++)
             {
-                Method method = fields[i];
-                String name = method.getName();
+                final Method method = fields[i];
+                final String name = method.getName();
 
                 // logger.debug("found method '"+name+"'");
 
@@ -66,13 +66,15 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
                 }
 
                 String attributeName = name.substring(3);
-                attributeName = StringUtils.uncapitalize(attributeName);
+                attributeName = org.apache.commons.lang.StringUtils
+                        .uncapitalize(attributeName);
 
                 logger.debug("going to invoke method '" + name + "'");
 
-                Object result = method.invoke(bean, null);
+                final Object result = method.invoke(bean, null);
 
-                if (!StringUtils.isEmpty(getUniqueField())
+                if (!org.apache.commons.lang.StringUtils
+                        .isEmpty(getUniqueField())
                         && getUniqueField().equals(attributeName))
                 {
                     uniqueFieldValue = result;
@@ -82,9 +84,9 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
                         + (result == null ? null : result.getClass())
                         + "' (attribute is '" + attributeName + "')");
 
-                LDAPAttribute attr = new LDAPAttribute(attributeName,
+                final LDAPAttribute attr = new LDAPAttribute(attributeName,
                         result == null ? null : result.toString());
-                LDAPModification modification = new LDAPModification(
+                final LDAPModification modification = new LDAPModification(
                         LDAPModification.REPLACE, attr);
                 mods.add(modification);
             }
@@ -97,18 +99,18 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
             }
             else
             {
-                LdapConnector connector = (LdapConnector) endpoint
+                final LdapConnector connector = (LdapConnector) endpoint
                         .getConnector();
 
-                LDAPConnection lc = connector.getLdapConnection();
-                LDAPSearchConstraints cons = new LDAPSearchConstraints();
+                final LDAPConnection lc = connector.getLdapConnection();
+                final LDAPSearchConstraints cons = new LDAPSearchConstraints();
                 cons.setBatchSize(0);
-                LDAPSearchResults res = lc.search(connector.getSearchBase(),
-                        connector.getSearchScope(), "(" + getUniqueField()
-                                + "=" + uniqueFieldValue + ")", null, false,
-                        cons);
+                final LDAPSearchResults res = lc.search(connector
+                        .getSearchBase(), connector.getSearchScope(), "("
+                        + getUniqueField() + "=" + uniqueFieldValue + ")",
+                        null, false, cons);
 
-                if (res.hasMore() && res.getCount() > 0)
+                if (res.hasMore() && (res.getCount() > 0))
                 {
                     if (res.getCount() > 1)
                     {
@@ -127,36 +129,36 @@ public class JavaBeanToModifyRequest extends AbstractTransformer
 
             logger.debug("dn is '" + dn + "'");
 
-            LDAPModification[] modifications = (LDAPModification[]) mods
+            final LDAPModification[] modifications = (LDAPModification[]) mods
                     .toArray(new LDAPModification[mods.size()]);
 
             // TODO LDAPCOntrols
-            LDAPModifyRequest request = new LDAPModifyRequest(dn,
+            final LDAPModifyRequest request = new LDAPModifyRequest(dn,
                     modifications, null);
 
             return request;
         }
-        catch (SecurityException e)
+        catch (final SecurityException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (IllegalArgumentException e)
+        catch (final IllegalArgumentException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (IllegalAccessException e)
+        catch (final IllegalAccessException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (InvocationTargetException e)
+        catch (final InvocationTargetException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (NoSuchMethodException e)
+        catch (final NoSuchMethodException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new TransformerException(this, e);
         }

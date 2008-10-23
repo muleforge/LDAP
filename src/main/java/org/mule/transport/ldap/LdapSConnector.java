@@ -18,7 +18,6 @@ import javax.net.ssl.SSLContext;
 
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.transport.ldap.util.TrustAllCertsManager;
-import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
@@ -40,7 +39,7 @@ public class LdapSConnector extends LdapConnector
         return trustStore;
     }
 
-    public void setTrustStore(String trustStore)
+    public void setTrustStore(final String trustStore)
     {
         this.trustStore = trustStore;
     }
@@ -52,6 +51,7 @@ public class LdapSConnector extends LdapConnector
 
     }
 
+    @Override
     public String getProtocol()
     {
         return "ldaps";
@@ -65,7 +65,7 @@ public class LdapSConnector extends LdapConnector
             logger.debug("trustStore: " + trustStore);
             if (trustAll)
             {
-                SSLContext context = SSLContext.getInstance("TLS");
+                final SSLContext context = SSLContext.getInstance("TLS");
                 context.init(null, trustAll ? TrustAllCertsManager
                         .getTrustAllCertsManager() : null, null);
 
@@ -85,7 +85,7 @@ public class LdapSConnector extends LdapConnector
             }
             else
             {
-                if (StringUtils.isEmpty(trustStore))
+                if (org.apache.commons.lang.StringUtils.isEmpty(trustStore))
                 {
                     throw new InitialisationException(
                             new IllegalArgumentException(
@@ -93,7 +93,7 @@ public class LdapSConnector extends LdapConnector
                             this);
                 }
 
-                File trustStoreFile = new File(trustStore);
+                final File trustStoreFile = new File(trustStore);
 
                 if (!trustStoreFile.exists() || !trustStoreFile.canRead())
                 {
@@ -123,11 +123,11 @@ public class LdapSConnector extends LdapConnector
             }
 
         }
-        catch (KeyManagementException e)
+        catch (final KeyManagementException e)
         {
             throw new InitialisationException(e, this);
         }
-        catch (NoSuchAlgorithmException e)
+        catch (final NoSuchAlgorithmException e)
         {
             throw new InitialisationException(e, this);
         }
@@ -141,6 +141,7 @@ public class LdapSConnector extends LdapConnector
     }
 
     // @Override
+    @Override
     protected void doInitialise() throws InitialisationException
     {
 
@@ -157,12 +158,13 @@ public class LdapSConnector extends LdapConnector
         return trustAll;
     }
 
-    public void setTrustAll(boolean trustAll)
+    public void setTrustAll(final boolean trustAll)
     {
         this.trustAll = trustAll;
     }
 
     // @Override
+    @Override
     protected boolean isAnonymousBindSupported()
     {
 
@@ -170,6 +172,7 @@ public class LdapSConnector extends LdapConnector
     }
 
     // @Override
+    @Override
     protected void setLDAPConnection()
     {
         LDAPConnection c = null;
@@ -184,7 +187,7 @@ public class LdapSConnector extends LdapConnector
                 {
                     c.startTLS();
                 }
-                catch (LDAPException e)
+                catch (final LDAPException e)
                 {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -204,7 +207,7 @@ public class LdapSConnector extends LdapConnector
         return startTLS;
     }
 
-    public void setStartTLS(boolean startTLS)
+    public void setStartTLS(final boolean startTLS)
     {
         this.startTLS = startTLS;
     }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.mule.api.transformer.Transformer;
 import org.mule.transformer.AbstractTransformerTestCase;
 
@@ -20,43 +21,47 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
         AbstractTransformerTestCase
 {
 
+    @Override
     public Object getResultData()
     {
 
         try
         {
-            String file = org.mule.util.FileUtils.readFileToString(new File(
+            final String file = FileUtils.readFileToString(new File(
                     "src/test/resources/LDAPMultipleRequest.dsml"));
             logger.debug(file);
             return file;
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public Transformer getRoundTripTransformer() throws Exception
     {
 
         return new StringToLDAPMessage();
     }
 
+    @Override
     public Object getTestData()
     {
 
         try
         {
-            String cn = "hsaly";
-            String sn = "sntest";
-            LDAPAttributeSet attr = new LDAPAttributeSet();
+            final String cn = "hsaly";
+            final String sn = "sntest";
+            final LDAPAttributeSet attr = new LDAPAttributeSet();
             attr.add(new LDAPAttribute("cn", cn));
             attr.add(new LDAPAttribute("sn", sn));
             attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
 
-            LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas", attr);
+            final LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas",
+                    attr);
 
-            List list = new ArrayList();
+            final List list = new ArrayList();
 
             LDAPMessage msg = new LDAPDeleteRequest("dn=test,o=toporga", null);
             msg.setTag("1");
@@ -77,45 +82,56 @@ public class LdapMessageToStringTransformerMultipleTestCase extends
 
             return list;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public Transformer getTransformer() throws Exception
     {
 
         return new LDAPMessageToString();
     }
 
-    public boolean compareRoundtripResults(Object expected, Object result)
+    @Override
+    public boolean compareRoundtripResults(final Object expected,
+            final Object result)
     {
         // logger.debug(LDAPUtils.dumpLDAPMessage(expected));
         // logger.debug("resu"+ LDAPUtils.dumpLDAPMessage(result));
 
         if (!(expected instanceof List) || !(result instanceof List))
+        {
             return false;
+        }
 
-        List ex = (List) expected;
-        List res = (List) result;
+        final List ex = (List) expected;
+        final List res = (List) result;
 
         if (ex.size() != res.size())
+        {
             return false;
+        }
 
         int i = 0;
-        for (Iterator it = res.iterator(); it.hasNext();)
+        for (final Iterator it = res.iterator(); it.hasNext();)
         {
-            LDAPMessage m1 = (LDAPMessage) it.next();
-            LDAPMessage m2 = (LDAPMessage) ex.get(i);
+            final LDAPMessage m1 = (LDAPMessage) it.next();
+            final LDAPMessage m2 = (LDAPMessage) ex.get(i);
 
             // logger.debug(m1.getType()+"//"+m2.getType());
 
             if (m1.getType() != m2.getType())
+            {
                 return false;
+            }
 
             if (!m1.getTag().equals(m2.getTag()))
+            {
                 return false;
+            }
 
             i++;
         }

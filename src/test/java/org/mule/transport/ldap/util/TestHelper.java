@@ -22,14 +22,14 @@ public class TestHelper
     public static LDAPEntry getRandomEntry()
     {
 
-        String cn = "test-cn-" + (inc++);
-        String sn = "test-sn-" + (inc++);
-        LDAPAttributeSet attr = new LDAPAttributeSet();
+        final String cn = "test-cn-" + (inc++);
+        final String sn = "test-sn-" + (inc++);
+        final LDAPAttributeSet attr = new LDAPAttributeSet();
         attr.add(new LDAPAttribute("cn", cn));
         attr.add(new LDAPAttribute("sn", sn));
         attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
 
-        LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas", attr);
+        final LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas", attr);
 
         return entry;
 

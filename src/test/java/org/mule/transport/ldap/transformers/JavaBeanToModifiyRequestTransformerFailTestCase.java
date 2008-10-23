@@ -9,15 +9,16 @@ public class JavaBeanToModifiyRequestTransformerFailTestCase extends
         JavaBeanToModifyRequestTransformerTestCase
 {
 
+    @Override
     public Object getResultData()
     {
 
-        JavaBeanClass bean = new JavaBeanClass();
+        final JavaBeanClass bean = new JavaBeanClass();
 
         try
         {
 
-            LDAPModification[] mods = new LDAPModification[2];
+            final LDAPModification[] mods = new LDAPModification[2];
             LDAPModification mod = new LDAPModification(
                     LDAPModification.REPLACE, new LDAPAttribute("mail", bean
                             .getMail()));
@@ -30,7 +31,7 @@ public class JavaBeanToModifiyRequestTransformerFailTestCase extends
 
             return new LDAPModifyRequest(bean.getDn(), mods, null);
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -38,12 +39,13 @@ public class JavaBeanToModifiyRequestTransformerFailTestCase extends
         }
     }
 
+    @Override
     public void testTransform() throws Exception
     {
-        Object result = this.getTransformer().transform(getTestData());
+        final Object result = this.getTransformer().transform(getTestData());
         assertNotNull(result);
 
-        Object expectedResult = this.getResultData();
+        final Object expectedResult = this.getResultData();
         assertNotNull(expectedResult);
 
         assertFalse(this.compareResults(expectedResult, result));

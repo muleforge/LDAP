@@ -13,11 +13,12 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
 
     }
 
-    public LdapSConnector getConnector(boolean trustAll, String trustStore,
-            String password, int port) throws Exception
+    public LdapSConnector getConnector(final boolean trustAll,
+            final String trustStore, final String password, final int port)
+            throws Exception
     {
 
-        LdapSConnector c = new LdapSConnector();
+        final LdapSConnector c = new LdapSConnector();
         c.setMuleContext(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(port);
@@ -39,7 +40,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
 
         DSManager.getInstance().start();
 
-        LdapSConnector c = this.getConnector(true, null, "secret", 10636);
+        final LdapSConnector c = this.getConnector(true, null, "secret", 10636);
         c.initialise();
         c.connect();
         c.ensureConnected();
@@ -63,7 +64,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
             c.dispose();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             logger.debug(e.toString());
             assertFalse(c.isStarted());
@@ -76,7 +77,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
                 {
                     c.dispose();
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
 
                 }
@@ -101,7 +102,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
             c.dispose();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             logger.debug(e.toString());
             assertFalse(c.isStarted());
@@ -114,7 +115,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
                 {
                     c.dispose();
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
 
                 }
@@ -139,7 +140,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
             c.dispose();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             assertFalse(c.isStarted());
         }
@@ -151,7 +152,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
                 {
                     c.dispose();
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
 
                 }
@@ -176,7 +177,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
             c.dispose();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             assertFalse(c.isStarted());
         }
@@ -188,7 +189,7 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
                 {
                     c.dispose();
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
 
                 }

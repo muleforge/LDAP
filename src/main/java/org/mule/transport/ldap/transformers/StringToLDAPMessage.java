@@ -18,7 +18,6 @@ import java.util.List;
 import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractTransformer;
 import org.mule.transport.ldap.util.LDAPUtils;
-import org.mule.util.IOUtils;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
@@ -36,7 +35,8 @@ public class StringToLDAPMessage extends AbstractTransformer
     // DSML(default), LDIF
 
     // @Override
-    protected Object doTransform(Object src, String encoding)
+    @Override
+    protected Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -53,12 +53,12 @@ public class StringToLDAPMessage extends AbstractTransformer
                             + ", java.lang.String excpeted"));
         }
 
-        String msg = ((String) src);
+        final String msg = ((String) src);
 
         // TODO ldifcheck
         if ("ldif".equalsIgnoreCase(format))
         {
-            List res = getOut(false, msg);
+            final List res = getOut(false, msg);
             if (res.size() == 1)
             {
                 return res.get(0);
@@ -67,7 +67,7 @@ public class StringToLDAPMessage extends AbstractTransformer
             return res;
         }
 
-        List res = getOut(true, msg);
+        final List res = getOut(true, msg);
         if (res.size() == 1)
         {
             return res.get(0);
@@ -77,17 +77,18 @@ public class StringToLDAPMessage extends AbstractTransformer
 
     }
 
-    private List getOut(boolean dsml, String msg) throws TransformerException
+    private List getOut(final boolean dsml, final String msg)
+            throws TransformerException
     {
-        InputStream in = IOUtils.toInputStream(msg);
+        final InputStream in = org.apache.commons.io.IOUtils.toInputStream(msg);
 
         try
         {
-            LDAPReader reader = dsml ? (LDAPReader) new DSMLReader(in)
+            final LDAPReader reader = dsml ? (LDAPReader) new DSMLReader(in)
                     : (LDAPReader) new LDIFReader(in);
 
             LDAPMessage result = null;
-            List res = new ArrayList();
+            final List res = new ArrayList();
 
             while ((result = reader.readMessage()) != null)
             {
@@ -97,11 +98,11 @@ public class StringToLDAPMessage extends AbstractTransformer
             return res;
 
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new TransformerException(this, e);
         }
@@ -113,7 +114,7 @@ public class StringToLDAPMessage extends AbstractTransformer
         return format;
     }
 
-    public void setFormat(String format)
+    public void setFormat(final String format)
     {
         this.format = format;
     }

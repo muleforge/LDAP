@@ -11,11 +11,11 @@ public class LdapSConnectorTestCase extends AbstractConnectorTestCase
 
     // running
 
-    public Connector getConnector(boolean trustAll, String trustStore)
-            throws Exception
+    public Connector getConnector(final boolean trustAll,
+            final String trustStore) throws Exception
     {
 
-        LdapSConnector c = new LdapSConnector();
+        final LdapSConnector c = new LdapSConnector();
         c.setLdapHost("localhost");
         c.setLdapPort(10636);
         c.setName("ldapSTestConnector");
@@ -37,12 +37,14 @@ public class LdapSConnectorTestCase extends AbstractConnectorTestCase
         return getConnector(true, null);
     }
 
+    @Override
     public String getTestEndpointURI()
     {
 
         return "ldaps://ldap.out";
     }
 
+    @Override
     public Object getValidMessage() throws Exception
     {
 

@@ -34,16 +34,16 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
     public void testQueue() throws Exception
     {
 
-        LDAPConnection lc = new LDAPConnection();
+        final LDAPConnection lc = new LDAPConnection();
         lc.connect("localhost", 10389);
 
-        LDAPMessage msg = TestHelper.getRandomEntryAddRequest();
+        final LDAPMessage msg = TestHelper.getRandomEntryAddRequest();
         final int id = msg.getMessageID();
         msg.setTag("test_tag");
 
-        LDAPMessageQueue queue = lc.sendRequest(msg, null);
+        final LDAPMessageQueue queue = lc.sendRequest(msg, null);
 
-        LDAPMessage res = queue.getResponse();
+        final LDAPMessage res = queue.getResponse();
 
         assertNotNull(res);
         assertEquals(res.getType(), LDAPMessage.ADD_RESPONSE);
@@ -65,7 +65,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
 
             LDAPMessageQueue queue = null;
 
-            public QueueListener(LDAPMessageQueue queue)
+            public QueueListener(final LDAPMessageQueue queue)
             {
                 super();
                 this.queue = queue;
@@ -85,7 +85,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                         {
                             logger.debug("resp: " + queue.isResponseReceived());
                         }
-                        catch (RuntimeException e1)
+                        catch (final RuntimeException e1)
                         {
                             logger.debug("error response received");
 
@@ -99,11 +99,13 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                             msg = queue.getResponse();
 
                             if (msg == null)
+                            {
                                 continue;
+                            }
 
                             if (msg instanceof LDAPResponse)
                             {
-                                LDAPResponse response = (LDAPResponse) msg;
+                                final LDAPResponse response = (LDAPResponse) msg;
                                 logger.debug(msg.getClass().getName()
                                         + "//Type: "
                                         + LDAPUtils
@@ -114,7 +116,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                             }
                             else if (msg instanceof LDAPSearchResult)
                             {
-                                LDAPSearchResult response = (LDAPSearchResult) msg;
+                                final LDAPSearchResult response = (LDAPSearchResult) msg;
                                 logger.debug(" --> "
                                         + msg.getClass().getName()
                                         + "//Type: "
@@ -133,7 +135,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                             i++;
 
                         }
-                        catch (Exception e)
+                        catch (final Exception e)
                         {
                             e.printStackTrace();
                             fail(e.toString());
@@ -141,7 +143,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
                         }
                     }// end while
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
                     e.printStackTrace();
                     fail(e.toString());
@@ -156,7 +158,7 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
 
         }// end-class
 
-        LDAPConnection lc = new LDAPConnection();
+        final LDAPConnection lc = new LDAPConnection();
         lc.connect("localhost", 10389);
 
         LDAPAddRequest msg = null;
@@ -186,12 +188,14 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
             }
 
             if (i % 5 == 0)
+            {
                 Thread.yield();
+            }
 
             if (i % 2 == 0)
             {
-                LDAPDeleteRequest delreq = new LDAPDeleteRequest(msg.getEntry()
-                        .getDN(), null);
+                final LDAPDeleteRequest delreq = new LDAPDeleteRequest(msg
+                        .getEntry().getDN(), null);
                 delreq.setTag("delete " + i);
                 queue = lc.sendRequest(delreq, queue);
                 // logger.debug("send "+delreq.getMessageID());
@@ -199,8 +203,8 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
 
             Thread.sleep(300);
 
-            LDAPSearchRequest sreq = new LDAPSearchRequest("o=sevenseas", 2,
-                    "(cn=*)", null, LDAPSearchConstraints.DEREF_NEVER,
+            final LDAPSearchRequest sreq = new LDAPSearchRequest("o=sevenseas",
+                    2, "(cn=*)", null, LDAPSearchConstraints.DEREF_NEVER,
                     Integer.MAX_VALUE, 0, false, null);
             sreq.setTag("search while " + i);
             queue = lc.sendRequest(sreq, queue);

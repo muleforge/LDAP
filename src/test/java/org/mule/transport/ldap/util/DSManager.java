@@ -184,7 +184,7 @@ public final class DSManager
         start(false);
     }
 
-    public synchronized void start(boolean allowAnon) throws Exception
+    public synchronized void start(final boolean allowAnon) throws Exception
     {
         if (running)
         {
@@ -204,7 +204,7 @@ public final class DSManager
                     stop();
 
                 }
-                catch (Exception e)
+                catch (final Exception e)
                 {
                     // TODO: handle exception
                 }
@@ -274,7 +274,7 @@ public final class DSManager
         // TlsKeyGenerator.getCertificate(directoryService.getAdminSession().lookup(new
         // LdapDN("uid=admin,ou=system")).getOriginalEntry());
 
-        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
         ks.load(new FileInputStream("src/test/resources/truststore_2.jks"),
                 "changeit".toCharArray());
 
@@ -285,13 +285,13 @@ public final class DSManager
         // LdapDN("uid=admin,ou=system")).getOriginalEntry().put("userCertificate",testcert.getEncoded());
 
         // logger.debug("type: "+testcert.getType());
-        java.security.cert.X509Certificate cert = TlsKeyGenerator
+        final java.security.cert.X509Certificate cert = TlsKeyGenerator
                 .getCertificate(directoryService.getAdminSession().lookup(
                         new LdapDN("uid=admin,ou=system")).getOriginalEntry());
 
         ks.setCertificateEntry("apachetmp", cert);
 
-        File tmpKs = new File("target/truststore_tmp.jks");
+        final File tmpKs = new File("target/truststore_tmp.jks");
         if (tmpKs.exists())
         {
             boolean del = tmpKs.delete();
@@ -331,7 +331,7 @@ public final class DSManager
         importLdif(IOUtils.getResourceAsStream("examplecom.ldif", this
                 .getClass()));
 
-        Attributes attrs = new BasicAttributes();
+        final Attributes attrs = new BasicAttributes();
         attrs.put(new BasicAttribute("userCertificate", ""));
 
         // sysRoot.modifyAttributes("uid=admin",LdapContext.REPLACE_ATTRIBUTE,attrs);
@@ -345,26 +345,26 @@ public final class DSManager
         logger.debug("DS now started!");
     }
 
-    private void setupSaslMechanisms(LdapService server)
+    private void setupSaslMechanisms(final LdapService server)
     {
-        Map<String, MechanismHandler> mechanismHandlerMap = new HashMap<String, MechanismHandler>();
+        final Map<String, MechanismHandler> mechanismHandlerMap = new HashMap<String, MechanismHandler>();
 
         mechanismHandlerMap.put(SupportedSaslMechanisms.PLAIN,
                 new PlainMechanismHandler());
 
-        CramMd5MechanismHandler cramMd5MechanismHandler = new CramMd5MechanismHandler();
+        final CramMd5MechanismHandler cramMd5MechanismHandler = new CramMd5MechanismHandler();
         mechanismHandlerMap.put(SupportedSaslMechanisms.CRAM_MD5,
                 cramMd5MechanismHandler);
 
-        DigestMd5MechanismHandler digestMd5MechanismHandler = new DigestMd5MechanismHandler();
+        final DigestMd5MechanismHandler digestMd5MechanismHandler = new DigestMd5MechanismHandler();
         mechanismHandlerMap.put(SupportedSaslMechanisms.DIGEST_MD5,
                 digestMd5MechanismHandler);
 
-        GssapiMechanismHandler gssapiMechanismHandler = new GssapiMechanismHandler();
+        final GssapiMechanismHandler gssapiMechanismHandler = new GssapiMechanismHandler();
         mechanismHandlerMap.put(SupportedSaslMechanisms.GSSAPI,
                 gssapiMechanismHandler);
 
-        NtlmMechanismHandler ntlmMechanismHandler = new NtlmMechanismHandler();
+        final NtlmMechanismHandler ntlmMechanismHandler = new NtlmMechanismHandler();
         // TODO - set some sort of default NtlmProvider implementation here
         // ntlmMechanismHandler.setNtlmProvider( provider );
         // TODO - or set FQCN of some sort of default NtlmProvider
@@ -471,7 +471,7 @@ public final class DSManager
      * 
      * /** Deletes the Eve working directory.
      */
-    protected void doDelete(File wkdir) throws IOException
+    protected void doDelete(final File wkdir) throws IOException
     {
         if (doDelete)
         {
@@ -486,9 +486,11 @@ public final class DSManager
         }
     }
 
-    protected void setContexts(Hashtable<String, Object> env) throws Exception
+    protected void setContexts(final Hashtable<String, Object> env)
+            throws Exception
     {
-        Hashtable<String, Object> envFinal = new Hashtable<String, Object>(env);
+        final Hashtable<String, Object> envFinal = new Hashtable<String, Object>(
+                env);
         // envFinal.put( Context.PROVIDER_URL, "dc=example,dc=com" );
         // exampleRoot = new InitialLdapContext( envFinal, null );
 
@@ -505,9 +507,10 @@ public final class DSManager
         schemaRoot = new InitialLdapContext(envFinal, null);
     }
 
-    protected void setContexts(String user, String passwd) throws Exception
+    protected void setContexts(final String user, final String passwd)
+            throws Exception
     {
-        Hashtable<String, Object> env = new Hashtable<String, Object>();
+        final Hashtable<String, Object> env = new Hashtable<String, Object>();
         env.put(DirectoryService.JNDI_KEY, directoryService);
         env.put(Context.SECURITY_PRINCIPAL, user);
         env.put(Context.SECURITY_CREDENTIALS, passwd);
@@ -572,7 +575,7 @@ public final class DSManager
         // wait for shutdown
         int i = 0;
 
-        while (i < 20 && !checkSocketNotConnected())
+        while ((i < 20) && !checkSocketNotConnected())
         {
             Thread.sleep(2000);
             i++;
@@ -600,30 +603,33 @@ public final class DSManager
      *             if there are problems reading the ldif file and adding those
      *             entries to the system partition
      */
-    protected void importLdif(InputStream in) throws NamingException
+    protected void importLdif(final InputStream in) throws NamingException
     {
         if (in == null)
+        {
             throw new NullPointerException("in must not be null");
+        }
 
         try
         {
-            Iterator<LdifEntry> iterator = new LdifReader(in).iterator();
+            final Iterator<LdifEntry> iterator = new LdifReader(in).iterator();
 
             while (iterator.hasNext())
             {
-                LdifEntry entry = iterator.next();
+                final LdifEntry entry = iterator.next();
 
-                LdapDN dn = new LdapDN(entry.getDn());
+                final LdapDN dn = new LdapDN(entry.getDn());
                 // dn.remove(0);
                 // dn.remove(0);
 
-                Attributes attr = new BasicAttributes();
+                final Attributes attr = new BasicAttributes();
 
-                Iterator<EntryAttribute> iea = entry.getEntry().iterator();
+                final Iterator<EntryAttribute> iea = entry.getEntry()
+                        .iterator();
 
                 for (; iea.hasNext();)
                 {
-                    EntryAttribute ea = iea.next();
+                    final EntryAttribute ea = iea.next();
 
                     attr.put(ea.getId(), ea.get().get());
 
@@ -636,10 +642,10 @@ public final class DSManager
                 root.createSubcontext(dn, attr);
             }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
-            String msg = "failed while trying to parse system ldif file";
-            NamingException ne = new LdapConfigurationException(msg);
+            final String msg = "failed while trying to parse system ldif file";
+            final NamingException ne = new LdapConfigurationException(msg);
             ne.setRootCause(e);
             throw ne;
         }
@@ -650,7 +656,7 @@ public final class DSManager
 
         try
         {
-            Socket s = new Socket("localhost", 10389);
+            final Socket s = new Socket("localhost", 10389);
 
             if (s.isConnected())
             {
@@ -660,7 +666,7 @@ public final class DSManager
             s.close();
             return false;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
             logger.debug("client Socket not connected " + e.toString());
@@ -669,7 +675,7 @@ public final class DSManager
 
         try
         {
-            ServerSocket s = new ServerSocket(10389);
+            final ServerSocket s = new ServerSocket(10389);
             if (s.isBound())
             {
                 logger.debug("server socket is bound (=was therefore free)");
@@ -677,7 +683,7 @@ public final class DSManager
             s.close();
             return true;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             logger.debug("Server socket already bound " + e.toString());
             // e.printStackTrace();
@@ -686,16 +692,18 @@ public final class DSManager
 
     }
 
-    public static void main(String[] args) throws Exception
+    public static void main(final String[] args) throws Exception
     {
-        DSManager m = DSManager.getInstance();
+        final DSManager m = DSManager.getInstance();
         m.start(true);
 
         System.out.println("Enter s and Enter to stop: ");
 
         while (System.in.read() != 115)
+        {
             ;
-        // logger.debug.println(i);
+            // logger.debug.println(i);
+        }
 
         m.stop();
 
@@ -707,7 +715,8 @@ public final class DSManager
         return port;
     }
 
-    public static IoFilterChainBuilder init(KeyStore ks) throws NamingException
+    public static IoFilterChainBuilder init(final KeyStore ks)
+            throws NamingException
     {
         SSLContext sslCtx;
         try
@@ -719,7 +728,8 @@ public final class DSManager
             {
                 algorithm = "SunX509";
             }
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
+            final KeyManagerFactory kmf = KeyManagerFactory
+                    .getInstance(algorithm);
             kmf.init(ks, "changeit".toCharArray());
 
             // Initialize the SSLContext to work with our key managers.
@@ -729,13 +739,13 @@ public final class DSManager
 
             logger.debug("ssl set");
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             throw (NamingException) new NamingException(
                     "Failed to create a SSL context.").initCause(e);
         }
 
-        DefaultIoFilterChainBuilder chain = new DefaultIoFilterChainBuilder();
+        final DefaultIoFilterChainBuilder chain = new DefaultIoFilterChainBuilder();
         chain.addLast("sslFilter", new SSLFilter(sslCtx));
         return chain;
     }

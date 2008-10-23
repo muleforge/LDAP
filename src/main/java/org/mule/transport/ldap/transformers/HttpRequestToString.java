@@ -26,7 +26,8 @@ public class HttpRequestToString extends AbstractTransformer
         this.registerSourceType(byte[].class);
     }
 
-    public Object doTransform(Object src, String encoding)
+    @Override
+    public Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -43,7 +44,7 @@ public class HttpRequestToString extends AbstractTransformer
                 {
                     param = new String((byte[]) src, encoding);
                 }
-                catch (UnsupportedEncodingException ex)
+                catch (final UnsupportedEncodingException ex)
                 {
                     param = new String((byte[]) src);
                 }
@@ -58,7 +59,7 @@ public class HttpRequestToString extends AbstractTransformer
             param = src.toString();
         }
 
-        int equals = param.indexOf('=');
+        final int equals = param.indexOf('=');
         if (equals > -1)
         {
             return param.substring(equals + 1);

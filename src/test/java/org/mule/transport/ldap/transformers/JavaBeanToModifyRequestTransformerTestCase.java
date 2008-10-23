@@ -19,15 +19,16 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
 
     protected final Log logger = LogFactory.getLog(getClass());
 
+    @Override
     public Object getResultData()
     {
 
-        JavaBeanClass bean = new JavaBeanClass();
+        final JavaBeanClass bean = new JavaBeanClass();
 
         try
         {
 
-            LDAPModification[] mods = new LDAPModification[3];
+            final LDAPModification[] mods = new LDAPModification[3];
             LDAPModification mod = new LDAPModification(
                     LDAPModification.REPLACE, new LDAPAttribute("mail", bean
                             .getMail()));
@@ -43,7 +44,7 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
 
             return new LDAPModifyRequest(bean.getDn(), mods, null);
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -51,6 +52,7 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
         }
     }
 
+    @Override
     public Object getTestData()
     {
 
@@ -58,12 +60,14 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
 
     }
 
+    @Override
     public Transformer getTransformer() throws Exception
     {
 
         return new JavaBeanToModifyRequest();
     }
 
+    @Override
     public Transformer getRoundTripTransformer() throws Exception
     {
 
@@ -82,7 +86,7 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
             return dn;
         }
 
-        public void setDn(String dn)
+        public void setDn(final String dn)
         {
             this.dn = dn;
         }
@@ -92,7 +96,7 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
             return mail;
         }
 
-        public void setMail(String mail)
+        public void setMail(final String mail)
         {
             this.mail = mail;
         }
@@ -102,7 +106,7 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
             return age;
         }
 
-        public void setAge(int age)
+        public void setAge(final int age)
         {
             this.age = age;
         }
@@ -112,39 +116,40 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
             return field12;
         }
 
-        public void setField12(String field12)
+        public void setField12(final String field12)
         {
             this.field12 = field12;
         }
 
     }
 
-    public boolean compareResults(Object expected, Object result)
+    @Override
+    public boolean compareResults(final Object expected, final Object result)
     {
 
-        LDAPModifyRequest expectedReq = ((LDAPModifyRequest) expected);
-        LDAPModifyRequest resultReq = ((LDAPModifyRequest) result);
+        final LDAPModifyRequest expectedReq = ((LDAPModifyRequest) expected);
+        final LDAPModifyRequest resultReq = ((LDAPModifyRequest) result);
 
         if (!expectedReq.getDN().equals(resultReq.getDN()))
         {
             return false;
         }
 
-        LDAPModification[] expectedMods = expectedReq.getModifications();
+        final LDAPModification[] expectedMods = expectedReq.getModifications();
 
-        LDAPModification[] resultMods = resultReq.getModifications();
+        final LDAPModification[] resultMods = resultReq.getModifications();
 
-        if (expectedMods == null && resultMods == null)
+        if ((expectedMods == null) && (resultMods == null))
         {
             return true;
         }
 
-        if (expectedMods == null && resultMods != null)
+        if ((expectedMods == null) && (resultMods != null))
         {
             return false;
         }
 
-        if (expectedMods != null && resultMods == null)
+        if ((expectedMods != null) && (resultMods == null))
         {
             return false;
         }
@@ -153,15 +158,15 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
         {
             return false;
         }
-        Comparator comp = new LDAPModificationComparator();
+        final Comparator comp = new LDAPModificationComparator();
 
         Arrays.sort(expectedMods, comp);
         Arrays.sort(resultMods, comp);
 
         for (int i = 0; i < resultMods.length; i++)
         {
-            LDAPModification modificationR = resultMods[i];
-            LDAPModification modificationE = expectedMods[i];
+            final LDAPModification modificationR = resultMods[i];
+            final LDAPModification modificationE = expectedMods[i];
 
             if (!modificationE.getAttribute().getName().equals(
                     modificationR.getAttribute().getName()))
@@ -203,10 +208,10 @@ public class JavaBeanToModifyRequestTransformerTestCase extends
     private static class LDAPModificationComparator implements Comparator
     {
 
-        public int compare(Object o1, Object o2)
+        public int compare(final Object o1, final Object o2)
         {
-            LDAPModification expectedMods = (LDAPModification) o1;
-            LDAPModification resultMods = (LDAPModification) o2;
+            final LDAPModification expectedMods = (LDAPModification) o1;
+            final LDAPModification resultMods = (LDAPModification) o2;
 
             return expectedMods.getAttribute().getName().compareTo(
                     resultMods.getAttribute().getName());

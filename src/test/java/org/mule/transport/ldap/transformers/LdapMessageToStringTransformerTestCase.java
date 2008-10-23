@@ -3,6 +3,7 @@ package org.mule.transport.ldap.transformers;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.mule.api.transformer.Transformer;
 import org.mule.transformer.AbstractTransformerTestCase;
 import org.mule.transport.ldap.util.LDAPUtils;
@@ -14,28 +15,31 @@ public class LdapMessageToStringTransformerTestCase extends
         AbstractTransformerTestCase
 {
 
+    @Override
     public Object getResultData()
     {
 
         try
         {
-            String file = org.mule.util.FileUtils.readFileToString(new File(
+            final String file = FileUtils.readFileToString(new File(
                     "src/test/resources/LDAPDeleteRequest.dsml"));
             logger.debug(file);
             return file;
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public Transformer getRoundTripTransformer() throws Exception
     {
 
         return new StringToLDAPMessage();
     }
 
+    @Override
     public Object getTestData()
     {
 
@@ -43,61 +47,75 @@ public class LdapMessageToStringTransformerTestCase extends
         {
             return new LDAPDeleteRequest("dn=test,o=toporga", null);
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public Transformer getTransformer() throws Exception
     {
 
         return new LDAPMessageToString();
     }
 
-    public boolean compareRoundtripResults(Object expected, Object result)
+    @Override
+    public boolean compareRoundtripResults(final Object expected,
+            final Object result)
     {
         logger.debug(LDAPUtils.dumpLDAPMessage(expected));
         logger.debug("resu" + LDAPUtils.dumpLDAPMessage(result));
 
         if (!(expected instanceof LDAPDeleteRequest)
                 || !(result instanceof LDAPDeleteRequest))
+        {
             return false;
+        }
 
-        LDAPDeleteRequest ex = (LDAPDeleteRequest) expected;
-        LDAPDeleteRequest res = (LDAPDeleteRequest) result;
+        final LDAPDeleteRequest ex = (LDAPDeleteRequest) expected;
+        final LDAPDeleteRequest res = (LDAPDeleteRequest) result;
 
-        if (ex.getDN().equals(res.getDN()) && ex.getType() == res.getType()
-                && ex.isRequest() == res.isRequest())
+        if (ex.getDN().equals(res.getDN()) && (ex.getType() == res.getType())
+                && (ex.isRequest() == res.isRequest()))
+        {
             return true;
+        }
 
         return false;
 
     }
 
     // @Override
-    public boolean compareResults(Object expected, Object result)
+    @Override
+    public boolean compareResults(final Object expected, final Object result)
     {
         logger.debug("compareResults");
         logger.debug(expected);
         logger.debug(result);
 
-        if (expected == null || result == null)
+        if ((expected == null) || (result == null))
+        {
             return false;
+        }
 
-        int index = expected.toString().indexOf("requestID");
+        final int index = expected.toString().indexOf("requestID");
 
         if (index == -1)
+        {
             return false;
+        }
 
         if (index != result.toString().indexOf("requestID"))
         {
             return false;
         }
 
-        if (result.toString().indexOf("dn=test,o=toporga") != -1
-                && expected.toString().indexOf("dn=test,o=toporga") != -1)
+        if ((result.toString().indexOf("dn=test,o=toporga") != -1)
+                && (expected.toString().indexOf("dn=test,o=toporga") != -1))
+        {
             return true;
+        }
 
         return false;
 

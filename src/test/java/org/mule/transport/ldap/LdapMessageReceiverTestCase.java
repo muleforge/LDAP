@@ -22,17 +22,17 @@ public class LdapMessageReceiverTestCase extends
     @Override
     public InboundEndpoint getEndpoint() throws Exception
     {
-        MuleEndpointURI url = new MuleEndpointURI("ldap://ldap.in");
-        Connector con = getConnector();
+        final MuleEndpointURI url = new MuleEndpointURI("ldap://ldap.in");
+        final Connector con = getConnector();
         return new DefaultInboundEndpoint(con, url, null, null, "testendpoint",
                 new Properties(), null, null, true, null, false, false, 0,
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     @Override
     public MessageReceiver getMessageReceiver() throws Exception
     {
-        Mock mockComponent = new Mock(Service.class);
+        final Mock mockComponent = new Mock(Service.class);
         mockComponent.expectAndReturn("getResponseRouter", null);
         // Mock mockDescriptor = new Mock(UMODescriptor.class);
         // mockComponent.expectAndReturn("getDescriptor",
@@ -46,7 +46,7 @@ public class LdapMessageReceiverTestCase extends
     public Connector getConnector() throws Exception
     {
 
-        LdapConnector c = new LdapConnector();
+        final LdapConnector c = new LdapConnector();
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
         c.setName("ldapTestConnector");
@@ -56,7 +56,7 @@ public class LdapMessageReceiverTestCase extends
 
         c.setSearchBase("o=sevenSeas");
 
-        Map map = new HashMap();
+        final Map map = new HashMap();
         map.put("payload.cn", "(cn=${payload})");
 
         c.setQueries(map);

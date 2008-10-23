@@ -15,7 +15,7 @@ public class AnonymousBindTestCase extends AbstractMuleTestCase
         {
             anonymousBind(true);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
             fail(e.toString());
@@ -32,7 +32,7 @@ public class AnonymousBindTestCase extends AbstractMuleTestCase
             anonymousBind(false);
             fail("exception expected");
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             // expected
 
@@ -40,13 +40,13 @@ public class AnonymousBindTestCase extends AbstractMuleTestCase
 
     }
 
-    public void anonymousBind(boolean allow) throws Exception
+    public void anonymousBind(final boolean allow) throws Exception
     {
 
         // DSHelper.startDS(allow);
         DSManager.getInstance().start(allow);
 
-        LdapConnector c = new LdapConnector();
+        final LdapConnector c = new LdapConnector();
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
         c.setName("ldapTestConnector");

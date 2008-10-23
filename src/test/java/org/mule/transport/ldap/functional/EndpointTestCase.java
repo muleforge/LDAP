@@ -11,6 +11,7 @@ import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.transport.Connector;
 import org.mule.endpoint.DefaultOutboundEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
+import org.mule.retry.policies.NoRetryPolicyTemplate;
 import org.mule.tck.AbstractMuleTestCase;
 import org.mule.transport.ldap.LdapConnector;
 import org.mule.transport.ldap.util.LDAPUtils;
@@ -22,7 +23,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testInboundUrl() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.in");
+        final EndpointURI url = new MuleEndpointURI("ldap://ldap.in");
         url.initialise();
 
         assertEquals("ldap", url.getScheme());
@@ -38,7 +39,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
             new MuleEndpointURI("ldap://ldap.i").initialise();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
             assertTrue(true);
@@ -54,7 +55,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
             new MuleEndpointURI("ldap://ldap.in/xxx").initialise();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
             assertTrue(true);
@@ -70,7 +71,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
             new MuleEndpointURI("ldap://ldapout").initialise();
             fail();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
             assertTrue(true);
@@ -86,7 +87,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
             new MuleEndpointURI("ldap://ldap.out/(cn=${payload})");
             fail();
         }
-        catch (EndpointException e)
+        catch (final EndpointException e)
         {
 
             assertTrue(true);
@@ -94,9 +95,42 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     }
 
+    public void testBadParamatersWithDollarSign2() throws Exception
+    {
+
+        try
+        {
+            new MuleEndpointURI("ldap://ldap.out/(cn=$[payload])");
+            fail();
+        }
+        catch (final EndpointException e)
+        {
+
+            assertTrue(true);
+        }
+
+    }
+
+    public void testValidParamatersWithHashSign() throws Exception
+    {
+
+        try
+        {
+            // FIXME
+            new MuleEndpointURI("ldap://ldap.out/(cn=#[payload])");
+
+        }
+        catch (final EndpointException e)
+        {
+            fail();
+
+        }
+
+    }
+
     public void testOutboundUrl() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out");
+        final EndpointURI url = new MuleEndpointURI("ldap://ldap.out");
         url.initialise();
         assertEquals("ldap", url.getScheme());
         assertEquals("ldap.out", url.getAddress());
@@ -105,7 +139,8 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testOutboundUrlWithQuery() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/payload.dc");
+        final EndpointURI url = new MuleEndpointURI(
+                "ldap://ldap.out/payload.dc");
         url.initialise();
         assertEquals("ldap", url.getScheme());
         assertEquals("ldap.out/payload.dc", url.getAddress());
@@ -115,15 +150,16 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testSearchStringFromEndpoint1() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/(cn=*)");
+        final EndpointURI url = new MuleEndpointURI("ldap://ldap.out/(cn=*)");
         url.initialise();
-        Connector connector = getConnector();
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", new Properties(), null, null,
-                true, null, false, false, 0, null, null, null, null);
+        final Connector connector = getConnector();
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
+                connector, url, null, null, "testendpoint", new Properties(),
+                null, null, true, null, false, false, 0, null, null, null,
+                null, new NoRetryPolicyTemplate());
 
-        String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                "test");
+        final String searchStr = LDAPUtils.getSearchStringFromEndpoint(
+                endpoint, "test");
 
         assertEquals("(cn=*)", searchStr);
 
@@ -131,15 +167,17 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testSearchStringFromEndpoint2() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/payload.cn");
+        final EndpointURI url = new MuleEndpointURI(
+                "ldap://ldap.out/payload.cn");
         url.initialise();
-        Connector connector = getConnector();
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", new Properties(), null, null,
-                true, null, false, false, 0, null, null, null, null);
+        final Connector connector = getConnector();
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
+                connector, url, null, null, "testendpoint", new Properties(),
+                null, null, true, null, false, false, 0, null, null, null,
+                null, new NoRetryPolicyTemplate());
 
-        String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                "test");
+        final String searchStr = LDAPUtils.getSearchStringFromEndpoint(
+                endpoint, "test");
 
         assertEquals("(cn=test)", searchStr);
 
@@ -147,15 +185,16 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testSearchStringFromEndpoint3() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/");
+        final EndpointURI url = new MuleEndpointURI("ldap://ldap.out/");
         url.initialise();
-        Connector connector = getConnector();
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", new Properties(), null, null,
-                true, null, false, false, 0, null, null, null, null);
+        final Connector connector = getConnector();
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
+                connector, url, null, null, "testendpoint", new Properties(),
+                null, null, true, null, false, false, 0, null, null, null,
+                null, new NoRetryPolicyTemplate());
 
-        String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                "test");
+        final String searchStr = LDAPUtils.getSearchStringFromEndpoint(
+                endpoint, "test");
 
         assertEquals("test", searchStr);
 
@@ -163,15 +202,16 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testSearchStringFromEndpoint4() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out");
+        final EndpointURI url = new MuleEndpointURI("ldap://ldap.out");
         url.initialise();
-        Connector connector = getConnector();
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", new Properties(), null, null,
-                true, null, false, false, 0, null, null, null, null);
+        final Connector connector = getConnector();
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
+                connector, url, null, null, "testendpoint", new Properties(),
+                null, null, true, null, false, false, 0, null, null, null,
+                null, new NoRetryPolicyTemplate());
 
-        String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                "test");
+        final String searchStr = LDAPUtils.getSearchStringFromEndpoint(
+                endpoint, "test");
 
         assertEquals("test", searchStr);
 
@@ -179,15 +219,17 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testSearchStringFromEndpoint5() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/payload.noquery");
+        final EndpointURI url = new MuleEndpointURI(
+                "ldap://ldap.out/payload.noquery");
         url.initialise();
-        Connector connector = getConnector();
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", new Properties(), null, null,
-                true, null, false, false, 0, null, null, null, null);
+        final Connector connector = getConnector();
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
+                connector, url, null, null, "testendpoint", new Properties(),
+                null, null, true, null, false, false, 0, null, null, null,
+                null, new NoRetryPolicyTemplate());
 
-        String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                "test");
+        final String searchStr = LDAPUtils.getSearchStringFromEndpoint(
+                endpoint, "test");
 
         assertEquals("payload.noquery", searchStr);
 
@@ -195,21 +237,23 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testSearchStringFromEndpointOverrideProps() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI("ldap://ldap.out/payload.cn");
+        final EndpointURI url = new MuleEndpointURI(
+                "ldap://ldap.out/payload.cn");
         url.initialise();
-        Connector connector = getConnector();
+        final Connector connector = getConnector();
 
-        Map map = new HashMap();
-        Map inner = new HashMap();
-        inner.put("payload.cn", "(objectclass=${payload})");
+        final Map map = new HashMap();
+        final Map inner = new HashMap();
+        inner.put("payload.cn", "(objectclass=#[payload])");
         map.put("queries", inner);
 
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", map, null, null, true, null,
-                false, false, 0, null, null, null, null);
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
+                connector, url, null, null, "testendpoint", map, null, null,
+                true, null, false, false, 0, null, null, null, null,
+                new NoRetryPolicyTemplate());
 
-        String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                "test");
+        final String searchStr = LDAPUtils.getSearchStringFromEndpoint(
+                endpoint, "test");
 
         assertEquals("(objectclass=test)", searchStr);
 
@@ -217,11 +261,11 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
     public void testSearchStringFromEndpointOverrideProps2() throws Exception
     {
-        EndpointURI url = new MuleEndpointURI(
+        final EndpointURI url = new MuleEndpointURI(
                 "ldap://ldap.out/payload.cn?cnprop=testprop");
 
         url.initialise();
-        Connector connector = getConnector();
+        final Connector connector = getConnector();
 
         /*
          * if(!ExpressionEvaluatorManager.isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME)) {
@@ -231,27 +275,29 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
         // System.out.println("isEvaluatorRegistered:
         // "+ExpressionEvaluatorManager.isEvaluatorRegistered("endpointuri"));
-        Map map = new HashMap();
-        Map inner = new HashMap();
+        final Map map = new HashMap();
+        final Map inner = new HashMap();
         inner
                 .put("payload.cn",
-                        "(sn=${bean:name}, cn=${endpointuri:testendpoint.params:cnprop})");
+                        "(sn=#[bean:name], cn=#[endpointuri:testendpoint.params:cnprop])");
         map.put("queries", inner);
 
-        ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", map, null, null, true, null,
-                false, false, 0, null, null, muleContext, null);
+        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
+                connector, url, null, null, "testendpoint", map, null, null,
+                true, null, false, false, 0, null, null, null, muleContext,
+                new NoRetryPolicyTemplate());
 
         // EndpointURIEndpointBuilder b = new
         // EndpointURIEndpointBuilder(endpoint,muleContext);
 
         RegistryContext.getRegistry().registerEndpoint(endpoint);
+        RegistryContext.getRegistry().registerObject("testendpoint", endpoint);
         // RegistryContext.getRegistry().registerEndpointBuilder("teb", b);
 
         // EndpointInfoExpressionEvaluator
 
-        String searchStr = LDAPUtils.getSearchStringFromEndpoint(endpoint,
-                new User("john"));
+        final String searchStr = LDAPUtils.getSearchStringFromEndpoint(
+                endpoint, new User("john"));
 
         assertEquals("(sn=john, cn=testprop)", searchStr);
 
@@ -260,7 +306,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
     public Connector getConnector() throws Exception
     {
 
-        LdapConnector c = new LdapConnector();
+        final LdapConnector c = new LdapConnector();
         c.setMuleContext(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
@@ -271,8 +317,8 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
         c.setSearchBase("o=sevenSeas");
 
-        Map map = new HashMap();
-        map.put("payload.cn", "(cn=${payload})");
+        final Map map = new HashMap();
+        map.put("payload.cn", "(cn=#[payload])");
 
         c.setQueries(map);
 
@@ -285,7 +331,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
     {
         private String name = "default";
 
-        public User(String name)
+        public User(final String name)
         {
             setName(name);
         }
@@ -295,7 +341,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
             return name;
         }
 
-        public void setName(String name)
+        public void setName(final String name)
         {
             this.name = name;
         }

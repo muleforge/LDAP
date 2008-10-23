@@ -23,19 +23,19 @@ import com.novell.ldap.LDAPEntry;
 public class RandomEntryComponent implements Callable
 {
 
-    private Random rand = new Random(System.currentTimeMillis());
+    private final Random rand = new Random(System.currentTimeMillis());
 
-    public Object onCall(MuleEventContext eventContext) throws Exception
+    public Object onCall(final MuleEventContext eventContext) throws Exception
     {
 
-        String cn = "hsaly-" + rand.nextInt(Integer.MAX_VALUE);
-        String sn = "sn-" + rand.nextInt(Integer.MAX_VALUE);
-        LDAPAttributeSet attr = new LDAPAttributeSet();
+        final String cn = "hsaly-" + rand.nextInt(Integer.MAX_VALUE);
+        final String sn = "sn-" + rand.nextInt(Integer.MAX_VALUE);
+        final LDAPAttributeSet attr = new LDAPAttributeSet();
         attr.add(new LDAPAttribute("cn", cn));
         attr.add(new LDAPAttribute("sn", sn));
         attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
 
-        LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas", attr);
+        final LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas", attr);
 
         return new LDAPAddRequest(entry, null);
 

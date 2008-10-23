@@ -21,7 +21,7 @@ public class SSLTest extends TestCase
 
         // Debug.setTraceStream(System.out);
 
-        File trustStore = new File("target/truststore_tmp.jks");
+        final File trustStore = new File("target/truststore_tmp.jks");
 
         assertTrue(trustStore.exists());
         assertTrue(trustStore.canRead());
@@ -29,7 +29,7 @@ public class SSLTest extends TestCase
         System.setProperty("javax.net.ssl.trustStore", trustStore
                 .getAbsolutePath());
 
-        Hashtable<String, String> env = new Hashtable<String, String>();
+        final Hashtable<String, String> env = new Hashtable<String, String>();
         env.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, "ldap://localhost:10636");
@@ -49,14 +49,14 @@ public class SSLTest extends TestCase
         // Request privacy protection
         // env.put( "javax.security.sasl.qop", "auth-conf" );
 
-        DirContext context = new InitialDirContext(env);
+        final DirContext context = new InitialDirContext(env);
 
         assertNotNull(context);
 
-        String[] attrIDs =
+        final String[] attrIDs =
         {"uid"};
 
-        Attributes attrs = context.getAttributes(
+        final Attributes attrs = context.getAttributes(
                 "uid=hsaly,ou=users,dc=example,dc=com", attrIDs);
 
         String uid = null;
@@ -69,6 +69,7 @@ public class SSLTest extends TestCase
         assertEquals(uid, "hsaly");
     }
 
+    @Override
     protected void setUp() throws Exception
     {
         // TODO Auto-generated method stub

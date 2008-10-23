@@ -43,16 +43,16 @@ public class LdapResponseCorrelationAggregator extends
     {
 
         @Override
-        public boolean shouldAggregateEvents(EventGroup events)
+        public boolean shouldAggregateEvents(final EventGroup events)
         {
 
             synchronized (events)
             {
 
-                Iterator it = events.iterator();
+                final Iterator it = events.iterator();
                 while (it.hasNext())
                 {
-                    MuleEvent event = (MuleEvent) it.next();
+                    final MuleEvent event = (MuleEvent) it.next();
 
                     try
                     {
@@ -68,7 +68,7 @@ public class LdapResponseCorrelationAggregator extends
                             return true;
                         }
                     }
-                    catch (TransformerException e)
+                    catch (final TransformerException e)
                     {
                         throw new RuntimeException(e);
                     }
@@ -79,7 +79,7 @@ public class LdapResponseCorrelationAggregator extends
         }
 
         @Override
-        public MuleMessage aggregateEvents(EventGroup events)
+        public MuleMessage aggregateEvents(final EventGroup events)
                 throws RoutingException
         {
 
@@ -87,11 +87,12 @@ public class LdapResponseCorrelationAggregator extends
 
             LDAPMessage msg = null;
             MuleEvent event = null;
-            List results = new ArrayList();
+            final List results = new ArrayList();
 
             try
             {
-                for (Iterator iterator = events.iterator(); iterator.hasNext();)
+                for (final Iterator iterator = events.iterator(); iterator
+                        .hasNext();)
                 {
                     event = (MuleEvent) iterator.next();
                     msg = (LDAPMessage) event.transformMessage();
@@ -100,7 +101,7 @@ public class LdapResponseCorrelationAggregator extends
 
                 }
             }
-            catch (TransformerException e)
+            catch (final TransformerException e)
             {
                 logger.error(e);
 

@@ -33,7 +33,7 @@ public class LdapMessageAdapter extends
     private LDAPMessage ldapMessage = null;
     private LDAPSearchResults searchResults = null;
 
-    public LdapMessageAdapter(Object message) throws MessagingException
+    public LdapMessageAdapter(final Object message) throws MessagingException
     {
         super();
 
@@ -41,11 +41,11 @@ public class LdapMessageAdapter extends
         {
             this.ldapMessage = (LDAPMessage) message;
 
-            int value = this.ldapMessage.getType();
+            final int value = this.ldapMessage.getType();
             setIntProperty("TYPE", value);
             setBooleanProperty("IS_ASYNC", true);
 
-            String id = this.ldapMessage.getTag();
+            final String id = this.ldapMessage.getTag();
 
             if (id != null)
             {
@@ -54,7 +54,7 @@ public class LdapMessageAdapter extends
 
             setBooleanProperty("IS_REQUEST", this.ldapMessage.isRequest());
 
-            String tag = this.ldapMessage.getTag();
+            final String tag = this.ldapMessage.getTag();
             if (tag != null)
             {
                 setStringProperty("TAG", tag);
@@ -77,6 +77,7 @@ public class LdapMessageAdapter extends
     }
 
     // @Override
+    @Override
     public String getCorrelationId()
     {
         return (String) (getProperty(CORRELATION_ID));
@@ -108,7 +109,7 @@ public class LdapMessageAdapter extends
 
     }
 
-    public String getPayloadAsString(String encoding) throws Exception
+    public String getPayloadAsString(final String encoding) throws Exception
     {
         if (ldapMessage != null)
         {
@@ -122,6 +123,7 @@ public class LdapMessageAdapter extends
     }
 
     // @Override
+    @Override
     public String getUniqueId()
     {
         if (ldapMessage != null)
@@ -144,7 +146,8 @@ public class LdapMessageAdapter extends
      */
 
     // @Override
-    public void setCorrelationId(String correlationId)
+    @Override
+    public void setCorrelationId(final String correlationId)
     {
         setProperty(CORRELATION_ID, (correlationId));
     }

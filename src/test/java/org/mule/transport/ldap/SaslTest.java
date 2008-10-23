@@ -16,7 +16,7 @@ public class SaslTest extends TestCase
 
     public void testSaslDigestMd5Bind() throws Exception
     {
-        Hashtable<String, String> env = new Hashtable<String, String>();
+        final Hashtable<String, String> env = new Hashtable<String, String>();
         env.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, "ldap://localhost:10389");
@@ -31,14 +31,14 @@ public class SaslTest extends TestCase
         // Request privacy protection
         env.put("javax.security.sasl.qop", "auth-conf");
 
-        DirContext context = new InitialDirContext(env);
+        final DirContext context = new InitialDirContext(env);
 
         assertNotNull(context);
 
-        String[] attrIDs =
+        final String[] attrIDs =
         {"uid"};
 
-        Attributes attrs = context.getAttributes(
+        final Attributes attrs = context.getAttributes(
                 "uid=hsaly,ou=users,dc=example,dc=com", attrIDs);
 
         String uid = null;
@@ -51,6 +51,44 @@ public class SaslTest extends TestCase
         assertEquals(uid, "hsaly");
     }
 
+    public void testSaslCramMd5Bind() throws Exception
+    {
+        final Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put(Context.INITIAL_CONTEXT_FACTORY,
+                "com.sun.jndi.ldap.LdapCtxFactory");
+        env.put(Context.PROVIDER_URL, "ldap://localhost:10389");
+
+        env.put(Context.SECURITY_AUTHENTICATION, "CRAM-MD5");
+        env.put(Context.SECURITY_PRINCIPAL, "hsaly");
+        env.put(Context.SECURITY_CREDENTIALS, "secret1");
+
+        // Specify realm
+        // env.put("java.naming.security.sasl.realm", "example.com");
+
+        // Request privacy protection
+        env.put("javax.security.sasl.qop", "auth-conf");
+
+        final DirContext context = new InitialDirContext(env);
+
+        assertNotNull(context);
+
+        final String[] attrIDs =
+        {"uid"};
+
+        final Attributes attrs = context.getAttributes(
+                "uid=hsaly,ou=users,dc=example,dc=com", attrIDs);
+
+        String uid = null;
+
+        if (attrs.get("uid") != null)
+        {
+            uid = (String) attrs.get("uid").get();
+        }
+
+        assertEquals(uid, "hsaly");
+    }
+
+    @Override
     protected void setUp() throws Exception
     {
         // TODO Auto-generated method stub

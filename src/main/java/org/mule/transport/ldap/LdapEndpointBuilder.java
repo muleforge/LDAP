@@ -15,13 +15,13 @@ import java.util.Properties;
 
 import org.mule.api.endpoint.MalformedEndpointException;
 import org.mule.endpoint.ResourceNameEndpointURIBuilder;
-import org.mule.util.StringUtils;
 
 public class LdapEndpointBuilder extends ResourceNameEndpointURIBuilder
 {
 
     // @Override
-    protected void setEndpoint(URI uri, Properties props)
+    @Override
+    protected void setEndpoint(final URI uri, final Properties props)
             throws MalformedEndpointException
     {
 
@@ -36,7 +36,7 @@ public class LdapEndpointBuilder extends ResourceNameEndpointURIBuilder
                             + " (only 'ldap[s]://ldap.in' or 'ldap[s]://ldap.out[/query]' supported.)");
         }
 
-        if (!StringUtils.isEmpty(this.userInfo))
+        if (!org.apache.commons.lang.StringUtils.isEmpty(this.userInfo))
         {
             throw new MalformedEndpointException(
                     this.address

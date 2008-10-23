@@ -1,12 +1,13 @@
 package org.mule.transport.ldap.functional;
 
+import java.util.Map;
+
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.transport.ldap.transformers.LDAPSearchResultToString;
 import org.mule.transport.ldap.util.DSManager;
 import org.mule.transport.ldap.util.TestHelper;
-import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPAddRequest;
 import com.novell.ldap.LDAPEntry;
@@ -18,6 +19,7 @@ public class LdapListenerSynchronTestCase extends
         AbstractLdapFunctionalTestCase
 {
 
+    @Override
     protected String getConfigResources()
     {
 
@@ -27,14 +29,14 @@ public class LdapListenerSynchronTestCase extends
     public void testSearch() throws Exception
     {
 
-        MuleClient client = new MuleClient();
-        MuleMessage msg = client.send("ldap://ldap.out/",
-                new DefaultMuleMessage("(objectclass=*)"));
+        final MuleClient client = new MuleClient();
+        final MuleMessage msg = client.send("ldap://ldap.out/",
+                new DefaultMuleMessage("(objectclass=*)", (Map) null));
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof LDAPSearchResults);
 
-        LDAPSearchResultToString trans = new LDAPSearchResultToString();
-        String s = (String) trans.transform(msg.getPayload());
+        final LDAPSearchResultToString trans = new LDAPSearchResultToString();
+        final String s = (String) trans.transform(msg.getPayload());
 
         assertTrue(s.indexOf("<batchResponse") > -1);
         assertTrue(s.indexOf("<searchResultEntry") > -1);
@@ -44,7 +46,7 @@ public class LdapListenerSynchronTestCase extends
         {
             DSManager.getInstance().stop();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
         }
@@ -54,11 +56,12 @@ public class LdapListenerSynchronTestCase extends
     public void testAsyncSearch() throws Exception
     {
 
-        MuleClient client = new MuleClient();
-        client.dispatch("ldap://ldap.out", new DefaultMuleMessage("(cn=*)"));
+        final MuleClient client = new MuleClient();
+        client.dispatch("ldap://ldap.out", new DefaultMuleMessage("(cn=*)",
+                (Map) null));
 
         // FIXME
-        MuleMessage msg = client.request("ldap://ldap.in", 15000);
+        final MuleMessage msg = client.request("ldap://ldap.in", 15000);
 
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof LDAPMessage);
@@ -67,7 +70,7 @@ public class LdapListenerSynchronTestCase extends
         {
             DSManager.getInstance().stop();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
         }
@@ -76,18 +79,20 @@ public class LdapListenerSynchronTestCase extends
 
     public void testAddSearch() throws Exception
     {
-        MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient();
 
         final int addCount = 4;
 
         for (int i = 0; i < addCount; i++)
+        {
             client.dispatch("ldap://ldap.out", TestHelper
                     .getRandomEntryAddRequest(), null);
+        }
 
         Thread.sleep(1000);
 
-        MuleMessage msg = client.send("vm://test_in_async",
-                new DefaultMuleMessage("(cn=*)"));
+        final MuleMessage msg = client.send("vm://test_in_async",
+                new DefaultMuleMessage("(cn=*)", (Map) null));
 
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof String);
@@ -98,13 +103,13 @@ public class LdapListenerSynchronTestCase extends
         assertTrue(msg.getPayloadAsString().indexOf(
                 "<searchResultEntry dn=\"cn=test-cn") > -1);
 
-        assertTrue(StringUtils.countMatches(msg.getPayloadAsString(),
-                "test-cn-") >= addCount);
+        assertTrue(org.apache.commons.lang.StringUtils.countMatches(msg
+                .getPayloadAsString(), "test-cn-") >= addCount);
         try
         {
             DSManager.getInstance().stop();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
         }
@@ -112,39 +117,46 @@ public class LdapListenerSynchronTestCase extends
 
     public void testJavaBeanModificationRequest() throws Exception
     {
-        MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient();
 
-        LDAPAddRequest add = TestHelper.getRandomEntryAddRequest();
+        final LDAPAddRequest add = TestHelper.getRandomEntryAddRequest();
 
         client.send("ldap://ldap.out", add, null);
 
-        Bean bean = new Bean();
+        final Bean bean = new Bean();
 
         bean.setDn(add.getEntry().getDN());
         bean.setMail("hsaly@mulesource.org");
         bean.setDescription("desc");
 
-        client.send("vm://test_in_bean", new DefaultMuleMessage(bean));
+        client.send("vm://test_in_bean", new DefaultMuleMessage(bean,
+                (Map) null));
 
-        MuleMessage msg = client.send("ldap://ldap.out",
-                new DefaultMuleMessage(new DN(add.getEntry().getDN())));
+        final MuleMessage msg = client.send("ldap://ldap.out",
+                new DefaultMuleMessage(new DN(add.getEntry().getDN()),
+                        (Map) null));
 
         assertNotNull(msg);
 
         assertTrue(msg.getPayload() instanceof LDAPEntry);
 
-        LDAPEntry res = (LDAPEntry) msg.getPayload();
+        final LDAPEntry res = (LDAPEntry) msg.getPayload();
 
         assertTrue(res.getDN().equals(add.getEntry().getDN()));
+
+        logger.debug("dn:: " + res.getDN());
+
+        assertNotNull(res.getAttribute("mail"));
         assertTrue(res.getAttribute("mail").getStringValue().equals(
                 bean.getMail()));
+        assertNotNull(res.getAttribute("description"));
         assertTrue(res.getAttribute("description").getStringValue().equals(
                 bean.getDescription()));
         try
         {
             DSManager.getInstance().stop();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
         }
@@ -162,7 +174,7 @@ public class LdapListenerSynchronTestCase extends
             return dn;
         }
 
-        public void setDn(String dn)
+        public void setDn(final String dn)
         {
             this.dn = dn;
         }
@@ -172,7 +184,7 @@ public class LdapListenerSynchronTestCase extends
             return description;
         }
 
-        public void setDescription(String description)
+        public void setDescription(final String description)
         {
             this.description = description;
         }
@@ -182,7 +194,7 @@ public class LdapListenerSynchronTestCase extends
             return mail;
         }
 
-        public void setMail(String mail)
+        public void setMail(final String mail)
         {
             this.mail = mail;
         }
@@ -200,7 +212,7 @@ public class LdapListenerSynchronTestCase extends
             return description;
         }
 
-        public void setDescription(String description)
+        public void setDescription(final String description)
         {
             this.description = description;
         }
@@ -210,7 +222,7 @@ public class LdapListenerSynchronTestCase extends
             return mail;
         }
 
-        public void setMail(String mail)
+        public void setMail(final String mail)
         {
             this.mail = mail;
         }

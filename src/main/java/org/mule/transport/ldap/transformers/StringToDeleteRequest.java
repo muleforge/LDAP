@@ -12,7 +12,6 @@ package org.mule.transport.ldap.transformers;
 
 import org.mule.api.transformer.TransformerException;
 import org.mule.transformer.AbstractTransformer;
-import org.mule.util.StringUtils;
 
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPException;
@@ -21,7 +20,8 @@ public class StringToDeleteRequest extends AbstractTransformer
 {
 
     // @Override
-    protected Object doTransform(Object src, String encoding)
+    @Override
+    protected Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -31,9 +31,9 @@ public class StringToDeleteRequest extends AbstractTransformer
                     "src must not be null"));
         }
 
-        String content = src.toString();
+        final String content = src.toString();
 
-        if (StringUtils.isEmpty(content))
+        if (org.apache.commons.lang.StringUtils.isEmpty(content))
         {
             throw new TransformerException(this, new IllegalArgumentException(
                     "srctoString() must not be null or empty"));
@@ -43,13 +43,14 @@ public class StringToDeleteRequest extends AbstractTransformer
         {
 
             // TODO LDAPCOntrols
-            LDAPDeleteRequest request = new LDAPDeleteRequest(content, null);
+            final LDAPDeleteRequest request = new LDAPDeleteRequest(content,
+                    null);
 
             // logger.debug("tranf: id: " + request.getMessageID());
 
             return request;
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new TransformerException(this, e);
         }

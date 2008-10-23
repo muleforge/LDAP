@@ -35,7 +35,8 @@ public class LDAPSearchResultToString extends AbstractTransformer
     // DSML(default), LDIF, toString
 
     // @Override
-    protected Object doTransform(Object src, String encoding)
+    @Override
+    protected Object doTransform(final Object src, final String encoding)
             throws TransformerException
     {
 
@@ -90,23 +91,24 @@ public class LDAPSearchResultToString extends AbstractTransformer
 
     }
 
-    private String getOut(boolean dsml, List list) throws TransformerException
+    private String getOut(final boolean dsml, final List list)
+            throws TransformerException
     {
-        StringBuffer sb = new StringBuffer();
-        for (Iterator iterator = list.iterator(); iterator.hasNext();)
+        final StringBuffer sb = new StringBuffer();
+        for (final Iterator iterator = list.iterator(); iterator.hasNext();)
         {
-            LDAPMessage msg = (LDAPMessage) iterator.next();
+            final LDAPMessage msg = (LDAPMessage) iterator.next();
 
             if (dsml
-                    || (msg.getType() != LDAPMessage.SEARCH_RESULT
-                            && msg.getType() != LDAPMessage.DEL_RESPONSE
-                            && msg.getType() != LDAPMessage.ADD_RESPONSE
-                            && msg.getType() != LDAPMessage.MODIFY_RESPONSE
-                            && msg.getType() != LDAPMessage.MODIFY_RDN_RESPONSE
-                            && msg.getType() != LDAPMessage.BIND_RESPONSE
-                            && msg.getType() != LDAPMessage.COMPARE_RESPONSE
-                            && msg.getType() != LDAPMessage.EXTENDED_RESPONSE && msg
-                            .getType() != LDAPMessage.INTERMEDIATE_RESPONSE))
+                    || ((msg.getType() != LDAPMessage.SEARCH_RESULT)
+                            && (msg.getType() != LDAPMessage.DEL_RESPONSE)
+                            && (msg.getType() != LDAPMessage.ADD_RESPONSE)
+                            && (msg.getType() != LDAPMessage.MODIFY_RESPONSE)
+                            && (msg.getType() != LDAPMessage.MODIFY_RDN_RESPONSE)
+                            && (msg.getType() != LDAPMessage.BIND_RESPONSE)
+                            && (msg.getType() != LDAPMessage.COMPARE_RESPONSE)
+                            && (msg.getType() != LDAPMessage.EXTENDED_RESPONSE) && (msg
+                            .getType() != LDAPMessage.INTERMEDIATE_RESPONSE)))
             {
                 sb.append(getOut(dsml, msg));
             }
@@ -122,39 +124,39 @@ public class LDAPSearchResultToString extends AbstractTransformer
         return sb.toString();
     }
 
-    private String getOut(boolean dsml, LDAPMessage msg)
+    private String getOut(final boolean dsml, final LDAPMessage msg)
             throws TransformerException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try
         {
-            LDAPWriter writer = dsml ? (LDAPWriter) new DSMLWriter(out)
+            final LDAPWriter writer = dsml ? (LDAPWriter) new DSMLWriter(out)
                     : (LDAPWriter) new LDIFWriter(out);
             writer.writeMessage(msg);
             writer.finish();
             out.close();
             return out.toString();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new TransformerException(this, e);
         }
 
     }
 
-    private String getOut(boolean dsml, LDAPSearchResults msg)
+    private String getOut(final boolean dsml, final LDAPSearchResults msg)
             throws TransformerException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try
         {
-            LDAPWriter writer = dsml ? (LDAPWriter) new DSMLWriter(out)
+            final LDAPWriter writer = dsml ? (LDAPWriter) new DSMLWriter(out)
                     : (LDAPWriter) new LDIFWriter(out);
 
             while (msg.hasMore())
@@ -166,11 +168,11 @@ public class LDAPSearchResultToString extends AbstractTransformer
             out.close();
             return out.toString();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new TransformerException(this, e);
         }
-        catch (LDAPException e)
+        catch (final LDAPException e)
         {
             throw new TransformerException(this, e);
         }
@@ -182,7 +184,7 @@ public class LDAPSearchResultToString extends AbstractTransformer
         return format;
     }
 
-    public void setFormat(String format)
+    public void setFormat(final String format)
     {
         this.format = format;
     }
