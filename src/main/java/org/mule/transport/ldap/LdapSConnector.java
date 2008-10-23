@@ -140,7 +140,6 @@ public class LdapSConnector extends LdapConnector
         return true;
     }
 
-    // @Override
     @Override
     protected void doInitialise() throws InitialisationException
     {
@@ -163,7 +162,6 @@ public class LdapSConnector extends LdapConnector
         this.trustAll = trustAll;
     }
 
-    // @Override
     @Override
     protected boolean isAnonymousBindSupported()
     {
@@ -171,7 +169,6 @@ public class LdapSConnector extends LdapConnector
         return false;
     }
 
-    // @Override
     @Override
     protected void setLDAPConnection()
     {

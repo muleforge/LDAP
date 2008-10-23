@@ -59,7 +59,6 @@ public class LdapSASLConnector extends LdapSConnector
 
     }
 
-    // @Override
     @Override
     protected void doInitialise() throws InitialisationException
     {
@@ -144,7 +143,6 @@ public class LdapSASLConnector extends LdapSConnector
         super.doInitialise();
     }
 
-    // @Override
     @Override
     protected void doBind() throws Exception
     {
@@ -165,7 +163,6 @@ public class LdapSASLConnector extends LdapSConnector
         return "ldap";
     }
 
-    // @Override
     @Override
     protected boolean isAnonymousBindSupported()
     {

@@ -22,7 +22,6 @@ import com.novell.ldap.LDAPSearchResult;
 public class LDAPEntryToAddRequest extends AbstractTransformer
 {
 
-    // @Override
     @Override
     protected Object doTransform(final Object src, final String encoding)
             throws TransformerException

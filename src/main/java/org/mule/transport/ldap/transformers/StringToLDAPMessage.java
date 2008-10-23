@@ -28,13 +28,12 @@ import com.novell.ldap.util.LDIFReader;
 public class StringToLDAPMessage extends AbstractTransformer
 {
 
-    public static final String PROPERTY_LDAP_HOST = "format";
+    // public static final String PROPERTY_LDAP_HOST = "format";
 
     private String format;
 
     // DSML(default), LDIF
 
-    // @Override
     @Override
     protected Object doTransform(final Object src, final String encoding)
             throws TransformerException

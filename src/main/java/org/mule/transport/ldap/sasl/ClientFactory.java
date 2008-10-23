@@ -1,5 +1,5 @@
 /*
- * $Id: LdapConnector.java 172 2008-10-17 11:12:59Z hsaly $
+ * $Id$
  * --------------------------------------------------------------------------------------
  * Copyright (c) MuleSource, Inc.  All rights reserved.  http://www.mulesource.com
  *

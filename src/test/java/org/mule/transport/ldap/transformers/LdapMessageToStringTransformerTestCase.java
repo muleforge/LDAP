@@ -86,7 +86,6 @@ public class LdapMessageToStringTransformerTestCase extends
 
     }
 
-    // @Override
     @Override
     public boolean compareResults(final Object expected, final Object result)
     {

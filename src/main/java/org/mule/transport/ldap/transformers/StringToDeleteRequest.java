@@ -19,7 +19,6 @@ import com.novell.ldap.LDAPException;
 public class StringToDeleteRequest extends AbstractTransformer
 {
 
-    // @Override
     @Override
     protected Object doTransform(final Object src, final String encoding)
             throws TransformerException

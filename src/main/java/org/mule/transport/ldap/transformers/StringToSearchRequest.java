@@ -21,7 +21,6 @@ import com.novell.ldap.LDAPSearchRequest;
 public class StringToSearchRequest extends AbstractTransformer
 {
 
-    // @Override
     @Override
     protected Object doTransform(final Object src, final String encoding)
             throws TransformerException

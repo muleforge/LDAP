@@ -19,7 +19,6 @@ import org.mule.endpoint.ResourceNameEndpointURIBuilder;
 public class LdapEndpointBuilder extends ResourceNameEndpointURIBuilder
 {
 
-    // @Override
     @Override
     protected void setEndpoint(final URI uri, final Properties props)
             throws MalformedEndpointException

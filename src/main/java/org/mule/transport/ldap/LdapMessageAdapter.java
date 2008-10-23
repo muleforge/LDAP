@@ -76,7 +76,6 @@ public class LdapMessageAdapter extends
 
     }
 
-    // @Override
     @Override
     public String getCorrelationId()
     {
@@ -122,7 +121,6 @@ public class LdapMessageAdapter extends
 
     }
 
-    // @Override
     @Override
     public String getUniqueId()
     {
@@ -145,7 +143,6 @@ public class LdapMessageAdapter extends
      * return null; }
      */
 
-    // @Override
     @Override
     public void setCorrelationId(final String correlationId)
     {

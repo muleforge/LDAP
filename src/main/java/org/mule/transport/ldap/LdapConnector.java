@@ -545,7 +545,6 @@ public class LdapConnector extends AbstractConnector
      * params[i] = value; } return params; }
      */
 
-    // @Override
     @Override
     protected void doDispose()
     {
