@@ -29,7 +29,7 @@ public class SSLTest extends TestCase
         System.setProperty("javax.net.ssl.trustStore", trustStore
                 .getAbsolutePath());
 
-        final Hashtable<String, String> env = new Hashtable<String, String>();
+        final Hashtable < String, String > env = new Hashtable < String, String >();
         env.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, "ldap://localhost:10636");

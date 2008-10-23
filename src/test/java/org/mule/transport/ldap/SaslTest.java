@@ -16,7 +16,7 @@ public class SaslTest extends TestCase
 
     public void testSaslDigestMd5Bind() throws Exception
     {
-        final Hashtable<String, String> env = new Hashtable<String, String>();
+        final Hashtable < String, String > env = new Hashtable < String, String >();
         env.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, "ldap://localhost:10389");
@@ -53,7 +53,7 @@ public class SaslTest extends TestCase
 
     public void testSaslCramMd5Bind() throws Exception
     {
-        final Hashtable<String, String> env = new Hashtable<String, String>();
+        final Hashtable < String, String > env = new Hashtable < String, String >();
         env.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, "ldap://localhost:10389");

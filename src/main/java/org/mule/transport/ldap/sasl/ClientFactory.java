@@ -75,7 +75,7 @@ public class ClientFactory implements
     private static final class SaslClient0 implements SaslClient
     {
         private final javax.security.sasl.SaslClient sc;
-        protected final Log logger = LogFactory.getLog(getClass());
+        private final Log logger = LogFactory.getLog(getClass());
 
         private SaslClient0(final javax.security.sasl.SaslClient sc)
         {

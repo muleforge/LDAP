@@ -347,7 +347,7 @@ public final class DSManager
 
     private void setupSaslMechanisms(final LdapService server)
     {
-        final Map<String, MechanismHandler> mechanismHandlerMap = new HashMap<String, MechanismHandler>();
+        final Map < String, MechanismHandler > mechanismHandlerMap = new HashMap < String, MechanismHandler >();
 
         mechanismHandlerMap.put(SupportedSaslMechanisms.PLAIN,
                 new PlainMechanismHandler());
@@ -486,10 +486,10 @@ public final class DSManager
         }
     }
 
-    protected void setContexts(final Hashtable<String, Object> env)
+    protected void setContexts(final Hashtable < String, Object > env)
             throws Exception
     {
-        final Hashtable<String, Object> envFinal = new Hashtable<String, Object>(
+        final Hashtable < String, Object > envFinal = new Hashtable < String, Object >(
                 env);
         // envFinal.put( Context.PROVIDER_URL, "dc=example,dc=com" );
         // exampleRoot = new InitialLdapContext( envFinal, null );
@@ -510,7 +510,7 @@ public final class DSManager
     protected void setContexts(final String user, final String passwd)
             throws Exception
     {
-        final Hashtable<String, Object> env = new Hashtable<String, Object>();
+        final Hashtable < String, Object > env = new Hashtable < String, Object >();
         env.put(DirectoryService.JNDI_KEY, directoryService);
         env.put(Context.SECURITY_PRINCIPAL, user);
         env.put(Context.SECURITY_CREDENTIALS, passwd);
@@ -612,7 +612,8 @@ public final class DSManager
 
         try
         {
-            final Iterator<LdifEntry> iterator = new LdifReader(in).iterator();
+            final Iterator < LdifEntry > iterator = new LdifReader(in)
+                    .iterator();
 
             while (iterator.hasNext())
             {
@@ -624,7 +625,7 @@ public final class DSManager
 
                 final Attributes attr = new BasicAttributes();
 
-                final Iterator<EntryAttribute> iea = entry.getEntry()
+                final Iterator < EntryAttribute > iea = entry.getEntry()
                         .iterator();
 
                 for (; iea.hasNext();)

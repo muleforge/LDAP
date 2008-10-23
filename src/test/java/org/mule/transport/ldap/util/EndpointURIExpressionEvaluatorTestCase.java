@@ -11,7 +11,6 @@ import org.mule.endpoint.DefaultOutboundEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
 import org.mule.retry.policies.NoRetryPolicyTemplate;
 import org.mule.tck.AbstractMuleTestCase;
-import org.mule.transport.ldap.util.EndpointURIExpressionEvaluator;
 import org.mule.util.expression.ExpressionEvaluatorManager;
 
 public class EndpointURIExpressionEvaluatorTestCase extends

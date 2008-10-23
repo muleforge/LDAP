@@ -58,7 +58,7 @@ public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
 
         Object tmp = null;
 
-        final Collection<ImmutableEndpoint> endpoints = MuleServer
+        final Collection < ImmutableEndpoint > endpoints = MuleServer
                 .getMuleContext().getRegistry().getEndpoints();
         for (final Iterator iterator = endpoints.iterator(); iterator.hasNext();)
         {

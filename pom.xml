@@ -1,12 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mule.transports</groupId>
 	<artifactId>mule-transport-ldap</artifactId>
-	<name>LDAP Transport</name>
+	<name>Mule LDAP Transport</name>
 	<description>
-		Provides support for connecting directory services via ldap
+		Provides support for connecting mule to directory services via
+		LDAP.
 	</description>
 	<packaging>jar</packaging>
 	<properties>
@@ -20,6 +23,36 @@
 		<mockobjectsVersion>0.09</mockobjectsVersion>
 	</properties>
 	<version>2.1.1.0-SNAPSHOT</version>
+
+	<organization>
+		<name>akquinet AG</name>
+		<url>http://www.akquinet.com</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>hsaly</id>
+			<name>Hendrik Saly</name>
+			<email>hendrik.saly@gmx.de</email>
+			<url>http://www.saly.de</url>
+			<organization>akquinet AG</organization>
+			<organizationUrl>http://www.akquinet.com</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
+	<url>http://www.mulesource.org/display/LDAP/Home</url>
+	<inceptionYear>2007</inceptionYear>
+	<licenses>
+		<license>
+			<name>CPAL v1.0</name>
+			<url>http://www.mulesource.com/CPAL</url>
+		</license>
+	</licenses>
+
 	<issueManagement>
 		<system>Jira</system>
 		<url>http://mule.mulesource.org/jira/browse/${shortId}</url>
@@ -34,14 +67,10 @@
 		<url>http://svn.mule-transport-ldap.muleforge.org/</url>
 	</scm>
 	<ciManagement>
-		<system>Bamboo</system>
+		<system>bamboo</system>
 		<url>http://bamboo.muleforge.org/browse/${shortId}</url>
 		<notifiers>
 			<notifier>
-				<sendOnError>true</sendOnError>
-				<sendOnFailure>true</sendOnFailure>
-				<sendOnWarning>true</sendOnWarning>
-				<sendOnSuccess>true</sendOnSuccess>
 				<type>mail</type>
 				<configuration>
 					<address>
@@ -188,6 +217,9 @@
 	</pluginRepositories>
 
 	<build>
+
+		<defaultGoal>install</defaultGoal>
+
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -202,6 +234,7 @@
 				<configuration>
 					<source>1.5</source>
 					<target>1.5</target>
+					<encoding>ISO-8859-1</encoding>
 				</configuration>
 			</plugin>
 
@@ -219,6 +252,11 @@
 								<requireJavaVersion>
 									<version>[1.5.0,1.6)</version>
 								</requireJavaVersion>
+								<requireMavenVersion>
+									<!-- minimum version is 2.0.8, higher versions allowed -->
+									<version>[2.0.8,)</version>
+								</requireMavenVersion>
+
 							</rules>
 						</configuration>
 					</execution>
@@ -362,20 +400,7 @@
 
 		</plugins>
 	</reporting>
-	<developers>
-		<developer>
-			<id>hsaly</id>
-			<name>Hendrik Saly</name>
-			<email>hendrik.saly@gmx.de</email>
-			<url>http://www.saly.de</url>
-			<organization>akquinet AG</organization>
-			<organizationUrl>http://www.akquinet.com</organizationUrl>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.novell.ldap</groupId>

@@ -51,13 +51,10 @@ public class LdapConnector extends AbstractConnector
      * 
      * while (true) { if (messageQueue != null) {
      * System.out.println(messageQueue.getMessageIDs().length + " outstanding
-     * async messages in queue");
-     * 
-     *  } else { System.out.println("MQ null"); }
+     * async messages in queue"); } else { System.out.println("MQ null"); }
      * 
      * try { Thread.sleep(50); } catch (InterruptedException e) { // TODO
-     * Auto-generated catch block e.printStackTrace(); } }
-     *  } }
+     * Auto-generated catch block e.printStackTrace(); } } } }
      */
 
     private static final int ldapVersion = LDAPConnection.LDAP_V3;
@@ -396,7 +393,7 @@ public class LdapConnector extends AbstractConnector
      * public void setPollingFrequency(long pollingFrequency) {
      * this.pollingFrequency = pollingFrequency; }
      */
-    
+
     /*
      * @Override
      * 
