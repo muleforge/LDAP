@@ -129,7 +129,7 @@ public class LdapConnector extends AbstractConnector
 
         if (ldapConnection != null)
         {
-            logger.debug(ldapConnection.isConnected());
+            logger.debug("connected?:" + ldapConnection.isConnected());
             // logger.debug(ldapConnection.isConnectionAlive());
         }
 
@@ -589,7 +589,7 @@ public class LdapConnector extends AbstractConnector
         }
         else
         {
-            logger.warn("message queue not initalised");
+            logger.debug("message queue not initalised yet");
         }
 
         return message;
@@ -692,7 +692,7 @@ public class LdapConnector extends AbstractConnector
             {
                 // MULE-3597
                 logger
-                        .error("invalid expression template #[payload]. It should be replaced with #[payload:] to conform with the correct expression syntax. Mule has replaced this for you, but may not in future versions.");
+                        .warn("invalid expression template #[payload]. It should be replaced with #[payload:] to conform with the correct expression syntax. Mule has replaced this for you, but may not in future versions.");
                 key = "#[payload:]";
             }
             params.add(key);

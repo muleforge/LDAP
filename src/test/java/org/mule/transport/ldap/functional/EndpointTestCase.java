@@ -100,7 +100,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
         try
         {
-            new MuleEndpointURI("ldap://ldap.out/(cn=$[payload])");
+            new MuleEndpointURI("ldap://ldap.out/(cn=$[payload:])");
             fail();
         }
         catch (final EndpointException e)
@@ -117,7 +117,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
         try
         {
             // FIXME
-            new MuleEndpointURI("ldap://ldap.out/(cn=#[payload])");
+            new MuleEndpointURI("ldap://ldap.out/(cn=#[payload:])");
 
         }
         catch (final EndpointException e)
@@ -244,7 +244,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
 
         final Map map = new HashMap();
         final Map inner = new HashMap();
-        inner.put("payload.cn", "(objectclass=#[payload])");
+        inner.put("payload.cn", "(objectclass=#[payload:])");
         map.put("queries", inner);
 
         final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(
@@ -318,7 +318,7 @@ public class EndpointTestCase extends AbstractMuleTestCase
         c.setSearchBase("o=sevenSeas");
 
         final Map map = new HashMap();
-        map.put("payload.cn", "(cn=#[payload])");
+        map.put("payload.cn", "(cn=#[payload:])");
 
         c.setQueries(map);
 

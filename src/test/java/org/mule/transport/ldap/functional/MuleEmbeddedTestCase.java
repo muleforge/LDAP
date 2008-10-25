@@ -664,8 +664,8 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
         c.setSearchBase("o=sevenseas");
         c.setStartUnsolicitedNotificationListener(true);
         final Map queries = new HashMap();
-        queries.put("oc.payload", "(o=#[payload])");
-        queries.put("cn.payload", "(cn=#[payload])");
+        queries.put("oc.payload", "(o=#[payload:])");
+        queries.put("cn.payload", "(cn=#[payload:])");
 
         c.setQueries(queries);
 

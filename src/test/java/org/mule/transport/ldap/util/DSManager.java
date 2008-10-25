@@ -221,7 +221,7 @@ public final class DSManager
 
         directoryService = new DefaultDirectoryService();
         directoryService.setShutdownHookEnabled(false);
-        directoryService.getChangeLog().setEnabled(true);
+        // directoryService.getChangeLog().setEnabled(true);
         directoryService.setAllowAnonymousAccess(allowAnon);
 
         socketAcceptor = new SocketAcceptor(null);
