@@ -146,6 +146,14 @@ public class LdapSASLConnector extends LdapSConnector
     @Override
     protected void doBind() throws Exception
     {
+
+        if (initSSL() && isStartTLS())
+        {
+
+            getLdapConnection().startTLS();
+
+        }
+
         logger.debug("bind with mechanism " + mechanism);
 
         final Map m = new HashMap();

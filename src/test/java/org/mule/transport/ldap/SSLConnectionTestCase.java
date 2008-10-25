@@ -48,6 +48,21 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
         c.dispose();
     }
 
+    public void testSSLStartTLS() throws Exception
+    {
+
+        DSManager.getInstance().start();
+
+        final LdapSConnector c = this.getConnector(true, null, "secret", 10389);
+        c.setStartTLS(true);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
+    }
+
     public void testSSLConnectToNonSSLPort() throws Exception
     {
 

@@ -65,6 +65,9 @@ public class LdapConnector extends AbstractConnector
 
     private volatile LDAPMessageQueue messageQueue = null;
 
+    // LDAPSearchQueue
+    // ldapresponseq
+
     private int ldapPort = LDAPConnection.DEFAULT_PORT;
 
     private int searchScope = LDAPConnection.SCOPE_SUB;

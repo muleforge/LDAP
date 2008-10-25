@@ -10,9 +10,8 @@
 
 package org.mule.transport.ldap;
 
-// import org.mule.impl.ThreadSafeAccess;
-// import org.mule.impl.ThreadSafeAccess;
 import org.mule.api.MessagingException;
+import org.mule.api.ThreadSafeAccess;
 import org.mule.api.config.MuleProperties;
 import org.mule.api.transport.MessageTypeNotSupportedException;
 
@@ -32,6 +31,13 @@ public class LdapMessageAdapter extends
 
     private LDAPMessage ldapMessage = null;
     private LDAPSearchResults searchResults = null;
+
+    protected LdapMessageAdapter(final LdapMessageAdapter template)
+    {
+        super(template);
+        ldapMessage = template.ldapMessage;
+        searchResults = template.searchResults;
+    }
 
     public LdapMessageAdapter(final Object message) throws MessagingException
     {
@@ -136,12 +142,13 @@ public class LdapMessageAdapter extends
 
     }
 
-    // TODO what is it?
-    /*
-     * public ThreadSafeAccess newThreadCopy() {
-     * 
-     * return null; }
-     */
+    @Override
+    public ThreadSafeAccess newThreadCopy()
+    {
+        // TODO test this
+        return new LdapMessageAdapter(this);
+
+    }
 
     @Override
     public void setCorrelationId(final String correlationId)

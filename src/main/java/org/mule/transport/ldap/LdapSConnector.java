@@ -20,7 +20,6 @@ import org.mule.api.lifecycle.InitialisationException;
 import org.mule.transport.ldap.util.TrustAllCertsManager;
 
 import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.LDAPJSSEStartTLSFactory;
 import com.novell.ldap.LDAPSocketFactory;
@@ -178,18 +177,6 @@ public class LdapSConnector extends LdapConnector
         {
             c = new LDAPConnection(ssf);
 
-            if (startTLS)
-            {
-                try
-                {
-                    c.startTLS();
-                }
-                catch (final LDAPException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
         }
         else
         {
@@ -197,6 +184,18 @@ public class LdapSConnector extends LdapConnector
         }
 
         setLdapConnection(c);
+    }
+
+    @Override
+    protected void doBind() throws Exception
+    {
+
+        if (initSSL() && startTLS)
+        {
+            getLdapConnection().startTLS();
+
+        }
+        super.doBind();
     }
 
     public boolean isStartTLS()

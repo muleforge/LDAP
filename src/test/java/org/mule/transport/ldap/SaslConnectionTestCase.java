@@ -56,6 +56,36 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
         c.dispose();
     }
 
+    public void testSASLDIGESTMD5ConnectViaSSL() throws Exception
+    {
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "DIGEST-MD5", 10636);
+
+        c.setUseSSL(true);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
+    }
+
+    public void testSASLDIGESTMD5ConnectViaStartTLS() throws Exception
+    {
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "DIGEST-MD5", 10389);
+
+        c.setStartTLS(true);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
+    }
+
     public void nottestSASLCRAMMD5Connect() throws Exception
     {
         final LdapSASLConnector c = getConnector("secret1", null, "CRAM-MD5",
@@ -65,6 +95,64 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
         c.ensureConnected();
         c.disconnect();
         // c.dispose();
+    }
+
+    public void testSASLBadSSL() throws Exception
+    {
+
+        try
+        {
+
+            final LdapSASLConnector c = getConnector("secret1", "example.com",
+                    "DIGEST-MD5", 10636);
+
+            c.setUseSSL(false);
+            c.connect();
+
+            assertTrue(c.isConnected());
+            assertTrue(c.isStarted());
+            // c.doAsyncRequest(null);
+            c.ensureConnected();
+            c.disconnect();
+            c.dispose();
+            fail();
+        }
+        catch (final Exception e)
+        {
+            // excpected
+            logger.debug(e.toString());
+
+        }
+
+    }
+
+    public void testSASLBadStartTLS() throws Exception
+    {
+
+        try
+        {
+
+            final LdapSASLConnector c = getConnector("secret1", "example.com",
+                    "DIGEST-MD5", 10389);
+
+            c.setStartTLS(true);
+            c.connect();
+
+            assertTrue(c.isConnected());
+            assertTrue(c.isStarted());
+            // c.doAsyncRequest(null);
+            c.ensureConnected();
+            c.disconnect();
+            c.dispose();
+            fail();
+        }
+        catch (final Exception e)
+        {
+            // excpected
+            logger.debug(e.toString());
+
+        }
+
     }
 
     public void testSASLBadPassword() throws Exception

@@ -20,12 +20,19 @@ import org.mule.api.transport.MessageAdapter;
 import org.mule.transport.AbstractMessageDispatcher;
 import org.mule.transport.ldap.util.LDAPUtils;
 
+import com.novell.ldap.LDAPAbandonRequest;
 import com.novell.ldap.LDAPAddRequest;
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPCompareRequest;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPExtendedRequest;
+import com.novell.ldap.LDAPExtendedResponse;
 import com.novell.ldap.LDAPMessage;
+import com.novell.ldap.LDAPModifyDNRequest;
 import com.novell.ldap.LDAPModifyRequest;
+import com.novell.ldap.LDAPSchema;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPSearchRequest;
 import com.novell.ldap.LDAPSearchResults;
@@ -63,6 +70,7 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
     @Override
     public void doDispatch(final MuleEvent event) throws Exception
     {
+        // async
 
         if (logger.isDebugEnabled())
         {
@@ -73,14 +81,14 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
         if (transformed instanceof LDAPMessage)
         {
-            final LDAPMessage tranformed = (LDAPMessage) transformed;
+            final LDAPMessage ldapMessage = (LDAPMessage) transformed;
 
             if (event.getMessage().getCorrelationId() != null)
             {
-                tranformed.setTag(event.getMessage().getCorrelationId());
+                ldapMessage.setTag(event.getMessage().getCorrelationId());
             }
 
-            connector.doAsyncRequest(tranformed);
+            connector.doAsyncRequest(ldapMessage);
 
         }
         else
@@ -118,6 +126,8 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
     protected MuleMessage doSend(final MuleEvent event) throws Exception
     {
 
+        // synchronous
+
         if (logger.isDebugEnabled())
         {
             logger.debug("entering doSend(MuleEvent event)");
@@ -128,30 +138,61 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
         if (transformed instanceof LDAPMessage)
         {
-            final LDAPMessage tranformed = (LDAPMessage) transformed;
+            final LDAPMessage ldapMessage = (LDAPMessage) transformed;
 
             if (event.getMessage().getCorrelationId() != null)
             {
-                tranformed.setTag(event.getMessage().getCorrelationId());
+                ldapMessage.setTag(event.getMessage().getCorrelationId());
             }
 
-            if (tranformed instanceof LDAPAddRequest)
+            if (ldapMessage instanceof LDAPAddRequest)
             {
-                lc.add(((LDAPAddRequest) tranformed).getEntry());
+                lc.add(((LDAPAddRequest) ldapMessage).getEntry());
             }
-            else if (tranformed instanceof LDAPDeleteRequest)
+            else if (ldapMessage instanceof LDAPDeleteRequest)
             {
-                lc.delete(((LDAPDeleteRequest) tranformed).getDN());
+                lc.delete(((LDAPDeleteRequest) ldapMessage).getDN());
             }
-            else if (tranformed instanceof LDAPModifyRequest)
+            else if (ldapMessage instanceof LDAPModifyRequest)
             {
-                lc.modify(((LDAPModifyRequest) tranformed).getDN(),
-                        ((LDAPModifyRequest) tranformed).getModifications());
+                lc.modify(((LDAPModifyRequest) ldapMessage).getDN(),
+                        ((LDAPModifyRequest) ldapMessage).getModifications());
             }
-            else if (tranformed instanceof LDAPSearchRequest)
+            else if (ldapMessage instanceof LDAPAbandonRequest)
+            {
+                lc.abandon(((LDAPAbandonRequest) ldapMessage).getMessageID());
+            }
+            else if (ldapMessage instanceof LDAPModifyDNRequest)
+            {
+                final LDAPModifyDNRequest lmdr = (LDAPModifyDNRequest) ldapMessage;
+                lc.rename(lmdr.getDN(), lmdr.getNewRDN(), lmdr
+                        .getDeleteOldRDN());
+            }
+
+            else if (ldapMessage instanceof LDAPCompareRequest)
+            {
+                final LDAPCompareRequest lcr = (LDAPCompareRequest) ldapMessage;
+                final LDAPAttribute attr = new LDAPAttribute(lcr
+                        .getAttributeDescription(), lcr.getAssertionValue());
+                final boolean success = lc.compare(lcr.getDN(), attr);
+
+                // final MessageAdapter adapter =
+                // connector.getMessageAdapter(res);
+                return new DefaultMuleMessage(new Boolean(success), (Map) null);
+
+            }
+            else if (ldapMessage instanceof LDAPExtendedRequest)
+            {
+                final LDAPExtendedRequest ler = (LDAPExtendedRequest) ldapMessage;
+                final LDAPExtendedResponse er = lc.extendedOperation(ler
+                        .getExtendedOperation());
+                final MessageAdapter adapter = connector.getMessageAdapter(er);
+                return new DefaultMuleMessage(adapter, (Map) null);
+            }
+            else if (ldapMessage instanceof LDAPSearchRequest)
             {
 
-                final LDAPSearchRequest sr = ((LDAPSearchRequest) tranformed);
+                final LDAPSearchRequest sr = ((LDAPSearchRequest) ldapMessage);
 
                 final LDAPSearchResults res = lc.search(sr.getDN(), sr
                         .getScope(), sr.getStringFilter(), sr.getAttributes(),
@@ -164,25 +205,27 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
             else
             {
                 throw new IllegalArgumentException("type "
-                        + tranformed.getClass() + " cannot be send");
+                        + ldapMessage.getClass()
+                        + " cannot be send synchronous");
             }
-
-            // return event.getMessage();
 
         }
         else if (transformed instanceof DN)
         {
-
             final DN dn = (DN) transformed;
             final LDAPEntry entry = lc.read(dn.toString());
-
-            // TODO
-            // UMOMessageAdapter adapter = connector.getMessageAdapter(entry);
-
             return new DefaultMuleMessage(entry, (Map) null);
         }
+
+        else if (transformed instanceof FetchSchemaAction)
+        {
+
+            final LDAPSchema schema = lc
+                    .fetchSchema(((FetchSchemaAction) transformed).getDn());
+            return new DefaultMuleMessage(schema, (Map) null);
+        }
         else
-        // not an instance of LDAPMessage
+        // not an known instance
         {
             final Object unknownMsg = event.transformMessage();
 
@@ -214,8 +257,17 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
         }
 
-        logger.warn("Returning just message itself!");
+        logger.debug("Returning just message itself!");
         return event.getMessage();
+
+        // TODO
+
+        /*
+         * async sort control
+         * http://developer.novell.com/documentation/samplecode/jldap_sample/controls/AsyncSortControl.java.html
+         * 
+         * 
+         */
     }
 
     /*

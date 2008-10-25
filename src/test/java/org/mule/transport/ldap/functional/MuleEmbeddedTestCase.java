@@ -21,16 +21,19 @@ import org.mule.api.MuleMessage;
 import org.mule.api.transport.DispatchException;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.AbstractMuleTestCase;
+import org.mule.transport.ldap.FetchSchemaAction;
 import org.mule.transport.ldap.LdapConnector;
 import org.mule.transport.ldap.util.DSManager;
 import org.mule.transport.ldap.util.LDAPUtils;
 import org.mule.transport.ldap.util.TestHelper;
 
 import com.novell.ldap.LDAPAddRequest;
+import com.novell.ldap.LDAPCompareRequest;
 import com.novell.ldap.LDAPDeleteRequest;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPResponse;
+import com.novell.ldap.LDAPSchema;
 import com.novell.ldap.LDAPSearchResult;
 import com.novell.ldap.LDAPSearchResults;
 
@@ -124,6 +127,87 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
         assertTrue(result.getPayload() instanceof LDAPSearchResults);
         assertTrue(((LDAPSearchResults) result.getPayload()).next().getDN()
                 .equals(addReq.getEntry().getDN()));
+        try
+        {
+            DSManager.getInstance().stop();
+        }
+        catch (final Exception e)
+        {
+
+        }
+    }
+
+    public void testSendLDAPCompareRequest() throws Exception
+    {
+        final MuleClient client = new MuleClient();
+
+        // we send a message on the endpoint we created, i.e. vm://Single
+
+        final LDAPCompareRequest addReq = new LDAPCompareRequest(
+                "uid=hsaly,ou=users,dc=example,dc=com", "uid", "hsaly"
+                        .getBytes(), null);
+
+        final MuleMessage result = client.send("ldap://ldap.out", addReq, null);
+        assertNotNull(result);
+        assertTrue(result.getPayload() instanceof Boolean);
+
+        logger.debug(result.getPayload());
+
+        assertTrue(((Boolean) result.getPayload()).booleanValue());
+
+        try
+        {
+            DSManager.getInstance().stop();
+        }
+        catch (final Exception e)
+        {
+
+        }
+    }
+
+    public void testSendBadLDAPCompareRequest() throws Exception
+    {
+        final MuleClient client = new MuleClient();
+
+        // we send a message on the endpoint we created, i.e. vm://Single
+
+        final LDAPCompareRequest addReq = new LDAPCompareRequest(
+                "uid=hsaly,ou=users,dc=example,dc=com", "uid", "hsaly123"
+                        .getBytes(), null);
+
+        final MuleMessage result = client.send("ldap://ldap.out", addReq, null);
+        assertNotNull(result);
+        assertTrue(result.getPayload() instanceof Boolean);
+
+        logger.debug(result.getPayload());
+
+        assertFalse(((Boolean) result.getPayload()).booleanValue());
+
+        try
+        {
+            DSManager.getInstance().stop();
+        }
+        catch (final Exception e)
+        {
+
+        }
+    }
+
+    public void testSendFetchSchemaAction() throws Exception
+    {
+        final MuleClient client = new MuleClient();
+
+        // we send a message on the endpoint we created, i.e. vm://Single
+
+        final FetchSchemaAction action = new FetchSchemaAction(
+                "uid=hsaly,ou=users,dc=example,dc=com");
+
+        final MuleMessage result = client.send("ldap://ldap.out", action, null);
+        assertNotNull(result);
+        assertNotNull(result.getPayload());
+
+        assertTrue(result.getPayload() instanceof LDAPSchema);
+
         try
         {
             DSManager.getInstance().stop();

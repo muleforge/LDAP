@@ -13,7 +13,9 @@ import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPMessageQueue;
 import com.novell.ldap.LDAPResponse;
+import com.novell.ldap.LDAPResponseQueue;
 import com.novell.ldap.LDAPSearchConstraints;
+import com.novell.ldap.LDAPSearchQueue;
 import com.novell.ldap.LDAPSearchRequest;
 import com.novell.ldap.LDAPSearchResult;
 
@@ -28,6 +30,56 @@ public class AsyncLdapQueueTestCase extends AbstractLdapDSTestCase
     public AsyncLdapQueueTestCase()
     {
         super(true);
+
+    }
+
+    public void testQueueInitOrderNonSearchFirst() throws Exception
+    {
+
+        final LDAPConnection lc = new LDAPConnection();
+        lc.connect("localhost", 10389);
+
+        final LDAPAddRequest msg = TestHelper.getRandomEntryAddRequest();
+
+        final LDAPMessageQueue queue = lc.sendRequest(msg, null);
+
+        assertTrue(queue instanceof LDAPResponseQueue);
+
+        final LDAPSearchRequest req = new LDAPSearchRequest("o=sevenseas", 2,
+                "(cn=*)", null, 0, 100, 0, false, null);
+
+        assertTrue(req.getType() == LDAPMessage.SEARCH_REQUEST);
+
+        lc.sendRequest(req, queue);
+
+        assertTrue(queue instanceof LDAPResponseQueue);
+
+        lc.sendRequest(TestHelper.getRandomEntryAddRequest(), queue);
+
+        assertTrue(queue.getMessageIDs().length == 3);
+
+    }
+
+    public void testQueueInitOrderSearchFirst() throws Exception
+    {
+
+        final LDAPConnection lc = new LDAPConnection();
+        lc.connect("localhost", 10389);
+
+        final LDAPSearchRequest req = new LDAPSearchRequest("o=sevenseas", 2,
+                "(cn=*)", null, 0, 100, 0, false, null);
+
+        assertTrue(req.getType() == LDAPMessage.SEARCH_REQUEST);
+
+        final LDAPMessageQueue queue = lc.sendRequest(req, null);
+
+        assertTrue(queue instanceof LDAPSearchQueue);
+
+        lc.sendRequest(TestHelper.getRandomEntryAddRequest(), queue);
+
+        assertTrue(queue instanceof LDAPSearchQueue);
+
+        assertTrue(queue.getMessageIDs().length == 2);
 
     }
 

@@ -250,6 +250,8 @@ public final class DSManager
         ldapSService.setIpPort(10636);
         ldapSService.setEnableLdaps(true);
 
+        setupSaslMechanisms(ldapSService);
+
         // ldapSService.setConfidentialityRequired(true);
         ldapSService.setConfidentialityRequired(true);
         // ldapService.setIpAddress("gkar.kerb.de");
@@ -376,8 +378,8 @@ public final class DSManager
         mechanismHandlerMap.put(SupportedSaslMechanisms.GSS_SPNEGO,
                 ntlmMechanismHandler);
 
-        ldapService.setSaslMechanismHandlers(mechanismHandlerMap);
-        ldapService.setSaslHost("localhost");
+        server.setSaslMechanismHandlers(mechanismHandlerMap);
+        server.setSaslHost("localhost");
 
         // List<String> realms = new ArrayList<String>();
         // realms.add("system");
