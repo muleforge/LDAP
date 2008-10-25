@@ -551,7 +551,8 @@ public class LdapConnector extends AbstractConnector
     @Override
     protected void doDispose()
     {
-
+        messageQueue = null;
+        ldapConnection = null;
     }
 
     final synchronized LDAPMessage pollQueue() throws LDAPException

@@ -23,6 +23,7 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.LDAPJSSEStartTLSFactory;
 import com.novell.ldap.LDAPSocketFactory;
+import com.novell.ldap.SaslLDAPConnection;
 
 public class LdapSConnector extends LdapConnector
 {
@@ -175,12 +176,12 @@ public class LdapSConnector extends LdapConnector
 
         if (initSSL())
         {
-            c = new LDAPConnection(ssf);
+            c = new SaslLDAPConnection(ssf);
 
         }
         else
         {
-            c = new LDAPConnection();
+            c = new SaslLDAPConnection();
         }
 
         setLdapConnection(c);

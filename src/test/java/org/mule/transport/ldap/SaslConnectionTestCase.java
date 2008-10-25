@@ -3,13 +3,14 @@ package org.mule.transport.ldap;
 import org.mule.tck.AbstractMuleTestCase;
 import org.mule.transport.ldap.util.DSManager;
 
+import com.novell.ldap.client.Debug;
+
 public class SaslConnectionTestCase extends AbstractMuleTestCase
 {
 
     public SaslConnectionTestCase()
     {
         super();
-        // this.setStartContext(true);
 
     }
 
@@ -86,15 +87,94 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
         c.dispose();
     }
 
-    public void nottestSASLCRAMMD5Connect() throws Exception
+    public void testSASLPLAINConnect() throws Exception
     {
-        final LdapSASLConnector c = getConnector("secret1", null, "CRAM-MD5",
-                10389);
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "PLAIN", 10389);
+
         c.initialise();
         c.connect();
         c.ensureConnected();
         c.disconnect();
-        // c.dispose();
+        c.dispose();
+    }
+
+    public void testSASLPLAINConnectViaSSL() throws Exception
+    {
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "PLAIN", 10636);
+
+        c.setUseSSL(true);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
+    }
+
+    public void testSASLPLAINConnectViaStartTLS() throws Exception
+    {
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "PLAIN", 10389);
+
+        c.setStartTLS(true);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
+    }
+
+    public void testSASLCRAMMD5Connect() throws Exception
+    {
+
+        Debug.setTrace(Debug.saslBind, true);
+        Debug.setTrace(Debug.bindSemaphore, true);
+        Debug.setTraceStream(System.err);
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "CRAM-MD5", 10389);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
+    }
+
+    public void testSASLCRAMMD5ConnectViaSSL() throws Exception
+    {
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "CRAM-MD5", 10636);
+
+        c.setUseSSL(true);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
+    }
+
+    public void testSASLCRAMMD5ConnectViaStartTLS() throws Exception
+    {
+
+        final LdapSASLConnector c = getConnector("secret1", "example.com",
+                "CRAM-MD5", 10389);
+
+        c.setStartTLS(true);
+
+        c.initialise();
+        c.connect();
+        c.ensureConnected();
+        c.disconnect();
+        c.dispose();
     }
 
     public void testSASLBadSSL() throws Exception
