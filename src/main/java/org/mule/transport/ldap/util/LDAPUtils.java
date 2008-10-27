@@ -27,6 +27,7 @@ import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPSearchRequest;
+import com.novell.ldap.controls.LDAPPersistSearchControl;
 
 public final class LDAPUtils
 {
@@ -309,6 +310,52 @@ public final class LDAPUtils
             return "Unknown";
         }
         return name + " (" + msg.getType() + ")";
+    }
+
+    public static String getChangeTypeString(final int changeType)
+    {
+
+        String changeTypeString;
+
+        switch (changeType)
+        {
+
+        case LDAPPersistSearchControl.ADD:
+
+            changeTypeString = "ADD";
+
+            break;
+
+        case LDAPPersistSearchControl.MODIFY:
+
+            changeTypeString = "MODIFY";
+
+            break;
+
+        case LDAPPersistSearchControl.MODDN:
+
+            changeTypeString = "MODDN";
+
+            break;
+
+        case LDAPPersistSearchControl.DELETE:
+
+            changeTypeString = "DELETE";
+
+            break;
+
+        default:
+
+            changeTypeString =
+
+            "Unknown change type: " + String.valueOf(changeType);
+
+            break;
+
+        }
+
+        return changeTypeString;
+
     }
 
 }

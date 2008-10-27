@@ -10,7 +10,9 @@
 
 package org.mule.transport.ldap;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,18 +27,27 @@ import org.mule.transport.ConnectException;
 import org.mule.transport.ldap.util.EndpointURIExpressionEvaluator;
 import org.mule.util.expression.ExpressionEvaluatorManager;
 
+import com.novell.ldap.LDAPAuthHandler;
+import com.novell.ldap.LDAPAuthProvider;
+import com.novell.ldap.LDAPBindHandler;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPMessageQueue;
+import com.novell.ldap.LDAPReferralException;
+import com.novell.ldap.LDAPReferralHandler;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPUnsolicitedNotificationListener;
+import com.novell.ldap.events.EventConstant;
+import com.novell.ldap.events.PSearchEventListener;
+import com.novell.ldap.events.PsearchEventSource;
 
 /**
  * <code>LdapConnector</code> TODO document
  */
-public class LdapConnector extends AbstractConnector
+public class LdapConnector extends AbstractConnector implements
+        LDAPReferralHandler, LDAPBindHandler, LDAPAuthHandler
 {
     /*
      * private static class DumpThread extends Thread {
@@ -84,13 +95,16 @@ public class LdapConnector extends AbstractConnector
 
     private List attributes = null; // attributes, default all
 
-    private int dereference = LDAPSearchConstraints.DEREF_NEVER; // dereference,
-    // default
-    // never
+    // Specifies when aliases should be dereferenced. Must be either one of the
+    // constants defined in LDAPConstraints, which are DEREF_NEVER,
+    // DEREF_FINDING, DEREF_SEARCHING, or DEREF_ALWAYS.
+    private int dereference = LDAPSearchConstraints.DEREF_NEVER; // dereference
+    // aliases
 
     private int maxResults = Integer.MAX_VALUE; // maxresults, default
     // Integer.MAX_VALUE
 
+    // server time limit
     private int timeLimit = 0; // Timelimit, default 0 (no time limit)
 
     private boolean typesOnly = false; // types only, default false;
@@ -98,6 +112,18 @@ public class LdapConnector extends AbstractConnector
     private LDAPConnection ldapConnection = null;
 
     private Map queries = null;
+
+    private LDAPSearchConstraints constraints = null;
+
+    // referrals
+    private boolean doReferrals = false;
+
+    // ps
+    private final PsearchEventSource source = new PsearchEventSource();
+    private boolean enablePersistentSearch = false;
+    private List < String > psFilters = null;
+    private boolean psChangeonly = true;
+    private int psEventchangetype = EventConstant.LDAP_PSEARCH_ANY;
 
     public LdapConnector()
     {
@@ -115,11 +141,26 @@ public class LdapConnector extends AbstractConnector
     @Override
     protected void doInitialise() throws InitialisationException
     {
-        // TODO Auto-generated method stub
 
+        /*
+         * msLimit - The maximum time in milliseconds to wait for results. The
+         * default is 0, which means that there is no maximum time limit. This
+         * limit is enforced for an operation by the API, not by the server. The
+         * operation will be abandoned and terminated by the API with an
+         * LDAPException.LDAP_TIMEOUT if the operation exceeds the time limit.
+         * 
+         * serverTimeLimit - The maximum time in seconds that the server should
+         * spend returning search results. This is a server-enforced limit. The
+         * default of 0 means no time limit. The operation will be terminated by
+         * the server with an LDAPException.TIME_LIMIT_EXCEEDED if the search
+         * operation exceeds the time limit.
+         */
+
+        // controls are not supported
+        // constraints.setControls(control)
     }
 
-    protected void ensureConnected() throws ConnectException
+    protected final void ensureConnected() throws ConnectException
     {
 
         if (this.isDisposing())
@@ -197,6 +238,17 @@ public class LdapConnector extends AbstractConnector
 
         ldapConnection.connect(ldapHost, ldapPort);
 
+        constraints = new LDAPSearchConstraints(this.timeLimit * 1000, // client
+                // timeout,
+                // ms
+                this.timeLimit, // serverTimeLimit sec
+                this.dereference, this.maxResults, doReferrals,// boolean
+                // doReferrals
+                1,// batchsize
+                this, 10); // int hop_limit
+
+        ldapConnection.setConstraints(constraints);
+
         logger.debug("connected to " + ldapHost + ":" + ldapPort);
 
         // lc.isBound()
@@ -224,7 +276,7 @@ public class LdapConnector extends AbstractConnector
 
     }
 
-    protected boolean isAnonBind()
+    protected final boolean isAnonBind()
     {
         try
         {
@@ -275,7 +327,7 @@ public class LdapConnector extends AbstractConnector
     }
 
     @Override
-    public void doDisconnect() throws Exception
+    public final void doDisconnect() throws Exception
     {
 
         if (ldapConnection != null)
@@ -481,7 +533,7 @@ public class LdapConnector extends AbstractConnector
         return sb.toString();
     }
 
-    public Object[] getParams(final ImmutableEndpoint endpoint,
+    public final Object[] getParams(final ImmutableEndpoint endpoint,
             final List paramNames, final Object message, final String query)
             throws Exception
     {
@@ -549,7 +601,7 @@ public class LdapConnector extends AbstractConnector
      */
 
     @Override
-    protected void doDispose()
+    protected final void doDispose()
     {
         messageQueue = null;
         ldapConnection = null;
@@ -707,23 +759,155 @@ public class LdapConnector extends AbstractConnector
         return ldapConnection;
     }
 
-    protected void setLdapConnection(final LDAPConnection ldapConnection)
+    protected final void setLdapConnection(final LDAPConnection ldapConnection)
     {
         this.ldapConnection = ldapConnection;
     }
 
     @Override
-    protected void doStart() throws MuleException
+    protected final void doStart() throws MuleException
     {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    protected void doStop() throws MuleException
+    protected final void doStop() throws MuleException
     {
         // TODO Auto-generated method stub
 
+    }
+
+    final void registerforEvent(final PSearchEventListener alistener)
+            throws LDAPException
+    {
+        if (!enablePersistentSearch)
+        {
+            logger.debug("ps not enabled");
+
+            return;
+        }
+
+        if ((psFilters == null) || (psFilters.size() == 0))
+        {
+            logger.debug("no ps filter");
+            return;
+        }
+
+        final List attrs = getAttributes();
+        String[] attributes = new String[0];
+
+        if (attrs != null)
+        {
+            attributes = (String[]) attrs.toArray(new String[attrs.size()]);
+        }
+
+        for (final Iterator < String > iterator = psFilters.iterator(); iterator
+                .hasNext();)
+        {
+            final String filter = iterator.next();
+
+            source.registerforEvent(this.ldapConnection, this.searchBase,
+                    this.searchScope, filter, attributes, this.typesOnly,
+                    this.constraints, this.psEventchangetype,
+                    this.psChangeonly, alistener);
+
+            logger.debug("register listener for ps: " + filter);
+
+        }
+
+    }
+
+    final void removeListener(final PSearchEventListener alistener)
+            throws LDAPException
+    {
+        source.removeListener(alistener);
+    }
+
+    public void setSleepTime(final long l)
+    {
+        source.setSleepTime(l);
+    }
+
+    public long getSleepTime()
+    {
+        return source.getSleepTime();
+    }
+
+    public boolean isEnablePersistentSearch()
+    {
+        return enablePersistentSearch;
+    }
+
+    public void setEnablePersistentSearch(final boolean enablePersistentSearch)
+    {
+        this.enablePersistentSearch = enablePersistentSearch;
+    }
+
+    public boolean isPsChangeonly()
+    {
+        return psChangeonly;
+    }
+
+    public void setPsChangeonly(final boolean psChangeonly)
+    {
+        this.psChangeonly = psChangeonly;
+    }
+
+    public int getPsEventchangetype()
+    {
+        return psEventchangetype;
+    }
+
+    public void setPsEventchangetype(final int psEventchangetype)
+    {
+        this.psEventchangetype = psEventchangetype;
+    }
+
+    public List < String > getPsFilters()
+    {
+        return psFilters;
+    }
+
+    public void setPsFilters(final List < String > psFilters)
+    {
+        this.psFilters = psFilters;
+    }
+
+    public LDAPSearchConstraints getConstraints()
+    {
+        return constraints;
+    }
+
+    // only for referrals
+    public LDAPConnection bind(final String[] ldapurl, final LDAPConnection conn)
+            throws LDAPReferralException
+    {
+        throw new LDAPReferralException("Not implemented yet");
+    }
+
+    // only for referrals
+    public LDAPAuthProvider getAuthProvider(final String host, final int port)
+    {
+        try
+        {
+            // TODO Auto-generated method stub
+            return new LDAPAuthProvider(this.loginDN, password.getBytes("UTF8"));
+        }
+        catch (final UnsupportedEncodingException e)
+        {
+            return null;
+        }
+    }
+
+    public boolean isDoReferrals()
+    {
+        return doReferrals;
+    }
+
+    public void setDoReferrals(final boolean doReferrals)
+    {
+        this.doReferrals = doReferrals;
     }
 
 }

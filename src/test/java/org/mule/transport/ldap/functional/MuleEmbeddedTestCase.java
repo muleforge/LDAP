@@ -10,7 +10,10 @@
 
 package org.mule.transport.ldap.functional;
 
+import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -127,6 +130,57 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
         assertTrue(result.getPayload() instanceof LDAPSearchResults);
         assertTrue(((LDAPSearchResults) result.getPayload()).next().getDN()
                 .equals(addReq.getEntry().getDN()));
+        try
+        {
+            DSManager.getInstance().stop();
+        }
+        catch (final Exception e)
+        {
+
+        }
+    }
+
+    public void testPersistentSearch() throws Exception
+    {
+        final LdapConnector c = new LdapConnector();
+        c.setMuleContext(muleContext);
+        c.setLdapHost("localhost");
+        c.setLdapPort(10389);
+        c.setName("LdapTestConnectorP");
+        c.setLoginDN("uid=admin,ou=system");
+        c.setPassword("secret");
+        c.setSearchBase("o=sevenseas");
+        c.setStartUnsolicitedNotificationListener(true);
+        c.setEnablePersistentSearch(true);
+        final List < String > list = new ArrayList < String >();
+        list.add("cn=*");
+        c.setPsFilters(list);
+
+        RegistryContext.getRegistry().registerConnector(c);
+
+        final MuleClient client = new MuleClient();
+
+        // start requester to collect messages
+        MuleMessage result = client.request(
+                "ldap://ldap.in?connector=LdapTestConnectorP", 500);
+        assertNull(result);
+        // we send a message on the endpoint we created, i.e. vm://Single
+
+        final LDAPAddRequest addReq = TestHelper.getRandomEntryAddRequest();
+
+        result = client.send("ldap://ldap.out?connector=LdapTestConnectorP",
+                addReq, null);
+        assertNotNull(result);
+        assertTrue(result.getPayload() == addReq);
+
+        Thread.sleep(500);
+
+        result = client.request("ldap://ldap.in?connector=LdapTestConnectorP",
+                5000);
+        logger.debug(result);
+        assertNotNull(result);
+        assertTrue(result.getPayload() instanceof EventObject);
+
         try
         {
             DSManager.getInstance().stop();

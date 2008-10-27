@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.1"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.mulesource.org/schema/mule/core/2.1 http://www.mulesource.org/schema/mule/core/2.1/mule.xsd">
+
+
+
+    <custom-connector name="ldapConnector-ps" class="org.mule.transport.ldap.LdapConnector">
+    
+    <spring:property name="ldapHost" value="localhost" />
+			<spring:property name="ldapPort" value="10389" />
+			<spring:property name="loginDN" value="uid=admin,ou=system" />
+			<spring:property name="password" value="secret" />
+			<spring:property name="searchBase" value="o=sevenseas" />
+			<spring:property name="searchScope" value="2" />
+			
+			<spring:property name="startUnsolicitedNotificationListener"
+				value="true" />
+
+	
+			<spring:property name="typesOnly" value="false" />
+			
+			<spring:property name="dereference" value="0" />
+			
+			<spring:property name="maxResults" value="0x7fffffff" />
+			
+			<spring:property name="timeLimit" value="0" />
+			
+			<spring:property name="enablePersistentSearch" value="true" />
+			
+			<spring:property name="psFilters" ><spring:list><spring:value>(cn=*)</spring:value></spring:list></spring:property>
+			
+    
+    
+    </custom-connector> 
+        
+        
+        
+        
+</mule>
