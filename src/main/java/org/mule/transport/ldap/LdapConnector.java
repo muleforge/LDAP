@@ -165,7 +165,8 @@ public class LdapConnector extends AbstractConnector implements
 
         if (this.isDisposing())
         {
-            return;
+            throw (new ConnectException(
+                    CoreMessages.connectorCausedError(this), this));
         }
 
         if (ldapConnection != null)

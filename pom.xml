@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mule.transports</groupId>
 	<artifactId>mule-transport-ldap</artifactId>
@@ -224,7 +224,7 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-webdav</artifactId>
-				<!-- <version>1.0-beta-2</version>  -->
+				 <version>1.0-beta-2</version>
 			</extension>
 		</extensions>
 		<plugins>
@@ -395,9 +395,6 @@
 				</artifactId>
 				<version>1.0</version>
 			</plugin>
-
-
-
 		</plugins>
 	</reporting>
 
@@ -407,38 +404,25 @@
 			<artifactId>jldap</artifactId>
 			<version>${jldapVersion}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-server-unit</artifactId>
 			<version>${apacheDsVersion}</version>
-			<exclusions>
-
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-core-unit</artifactId>
 			<version>${apacheDsVersion}</version>
-			<exclusions>
-
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-server-jndi</artifactId>
 			<version>${apacheDsVersion}</version>
-			<exclusions>
-
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-protocol-ldap</artifactId>
 			<version>${apacheDsVersion}</version>
-			<exclusions>
-
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.modules</groupId>
@@ -460,32 +444,26 @@
 			<artifactId>mule-tests-functional</artifactId>
 			<version>${muleVersion}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4jVersion}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${slf4jVersion}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4jVersion}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4jVersion}</version>
 		</dependency>
-
-
 		<dependency>
 			<groupId>mockobjects</groupId>
 			<artifactId>mockobjects-core</artifactId>

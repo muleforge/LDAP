@@ -47,7 +47,7 @@ public class LdapMessageRequester extends AbstractMessageRequester implements
         }
         catch (final LDAPException e)
         {
-            throw new RuntimeException(e);
+            handleException(e);
         }
 
         // TODO Auto-generated constructor stub
@@ -157,6 +157,7 @@ public class LdapMessageRequester extends AbstractMessageRequester implements
 
     public void ldapEventNotification(final LDAPEvent evt)
     {
+
         events.add(evt);
 
     }

@@ -50,11 +50,13 @@ public class PersistentSearchTestCase extends AbstractLdapFunctionalTestCase
                 logger.debug(msg.getPayload().getClass());
             }
         }
-        while (((msg != null) || (s <= 2)) && (s < 50));
+        while (((msg != null) || (s <= 15)) && (s < 150));
 
         logger.debug(l.size());
         logger.debug(l);
-        assertTrue(l.size() == (2 * addCount));
+        logger.debug(s); //9
+        assertTrue("was " + l.size() + " but expected " + (2 * addCount), l
+                .size() == (2 * addCount));
 
         try
         {
@@ -95,11 +97,12 @@ public class PersistentSearchTestCase extends AbstractLdapFunctionalTestCase
             }
 
         }
-        while ((msg != null) || ((s <= 2) && (s < 50)));
+        while ((msg != null) || ((s <= 15) && (s < 150)));
 
         logger.debug(l.size());
         logger.debug(l);
-        assertTrue(l.size() == addCount);
+        assertTrue("was " + l.size() + " but expected " + (addCount),
+                l.size() == addCount);
 
         try
         {

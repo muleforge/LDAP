@@ -154,7 +154,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
     }
 
     @Override
-    public void poll() throws Exception
+    public synchronized void poll() throws Exception
     {
         final LDAPMessage msg = ((LdapConnector) this.connector).pollQueue();
 
