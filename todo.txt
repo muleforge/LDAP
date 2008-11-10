@@ -1,0 +1,29 @@
+DOC
+- examples
+- doku (routers)
+
+STYLE
+- checkstyle
+- tag list @todo etc. ...
+
+BUGS
+-
+-
+
+New Features, TODO
+- namespace handler, spring and osgi stuff, xsd
+- sleeptime property
+
+TOTEST
+- Referals
+- ThreadSafeAccess newThreadCopy()
+
+FUTURE
+- simplify API , OO based access LDAP
+- Intermediate Response Messages (RFC 4511)
+- https://open-esb.dev.java.net/LDAPBC.html
+- Java CAPS 5.1.x LDAP eWay
+
+WILL NOT DO
+- controls
+- persistent search --> LDAPPersistSearchControl

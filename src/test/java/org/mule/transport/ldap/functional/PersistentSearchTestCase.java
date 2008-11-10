@@ -54,7 +54,7 @@ public class PersistentSearchTestCase extends AbstractLdapFunctionalTestCase
 
         logger.debug(l.size());
         logger.debug(l);
-        logger.debug(s); //9
+        logger.debug(s); // 9
         assertTrue("was " + l.size() + " but expected " + (2 * addCount), l
                 .size() == (2 * addCount));
 
