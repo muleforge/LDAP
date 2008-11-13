@@ -49,35 +49,13 @@ import com.novell.ldap.events.PsearchEventSource;
 public class LdapConnector extends AbstractConnector implements
         LDAPReferralHandler, LDAPBindHandler, LDAPAuthHandler
 {
-    /*
-     * private static class DumpThread extends Thread {
-     * 
-     * volatile LDAPMessageQueue messageQueue = null;
-     * 
-     * public DumpThread(LDAPMessageQueue messageQueue) { super();
-     * this.messageQueue = messageQueue; }
-     * 
-     * @Override public synchronized void run() { System.out.println("dt
-     * started");
-     * 
-     * while (true) { if (messageQueue != null) {
-     * System.out.println(messageQueue.getMessageIDs().length + " outstanding
-     * async messages in queue"); } else { System.out.println("MQ null"); }
-     * 
-     * try { Thread.sleep(50); } catch (InterruptedException e) { // TODO
-     * Auto-generated catch block e.printStackTrace(); } } } }
-     */
 
     private static final int ldapVersion = LDAPConnection.LDAP_V3;
-    // private static final int DEFAULT_STRINGBUFFER_SIZE = 200;
 
     private static final Pattern STATEMENT_ARGS = Pattern
             .compile("\\#\\[[^\\]]+\\]");
 
     private volatile LDAPMessageQueue messageQueue = null;
-
-    // LDAPSearchQueue
-    // ldapresponseq
 
     private int ldapPort = LDAPConnection.DEFAULT_PORT;
 
