@@ -19,13 +19,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.mule.api.MuleException;
+import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.ImmutableEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.transport.AbstractConnector;
 import org.mule.transport.ConnectException;
 import org.mule.transport.ldap.util.EndpointURIExpressionEvaluator;
-import org.mule.util.expression.ExpressionEvaluatorManager;
 
 import com.novell.ldap.LDAPAuthHandler;
 import com.novell.ldap.LDAPAuthProvider;
@@ -107,18 +107,20 @@ public class LdapConnector extends AbstractConnector implements
     {
         super();
 
-        if (!ExpressionEvaluatorManager
-                .isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME))
-        {
-            ExpressionEvaluatorManager
-                    .registerEvaluator(new EndpointURIExpressionEvaluator());
-        }
+        
 
     }
 
     @Override
     protected void doInitialise() throws InitialisationException
     {
+        
+        if (!muleContext.getExpressionManager().isEvaluatorRegistered(
+                EndpointURIExpressionEvaluator.NAME))
+        {
+            muleContext.getExpressionManager().registerEvaluator(
+                    new EndpointURIExpressionEvaluator());
+        }
 
         /*
          * msLimit - The maximum time in milliseconds to wait for results. The
@@ -141,11 +143,10 @@ public class LdapConnector extends AbstractConnector implements
     protected final void ensureConnected() throws ConnectException
     {
 
-        if (this.isDisposing())
-        {
-            throw (new ConnectException(
-                    CoreMessages.connectorCausedError(this), this));
-        }
+        /*
+         * if (this.isDisposing()) { throw (new ConnectException(
+         * CoreMessages.connectorCausedError(this), this)); }
+         */
 
         if (ldapConnection != null)
         {
@@ -162,18 +163,6 @@ public class LdapConnector extends AbstractConnector implements
         }
 
     }
-
-    /*
-     * private boolean isConnectionAlive() { if (this.ldapConnection == null ||
-     * isConnected() == false) return false;
-     * 
-     * try { LDAPEntry resp = ldapConnection.read(""); logger.debug(resp);
-     * 
-     * if (resp != null) return true; } catch (LDAPException e) { // TODO
-     * Auto-generated catch block e.printStackTrace(); }
-     * 
-     * return false; }
-     */
 
     protected void setLDAPConnection()
     {
@@ -513,7 +502,7 @@ public class LdapConnector extends AbstractConnector implements
     }
 
     public final Object[] getParams(final ImmutableEndpoint endpoint,
-            final List paramNames, final Object message, final String query)
+            final List paramNames, final MuleMessage message, final String query)
             throws Exception
     {
 
@@ -524,13 +513,14 @@ public class LdapConnector extends AbstractConnector implements
             Object value = null;
             // If we find a value and it happens to be null, thats acceptable
             boolean foundValue = false;
-            boolean validExpression = ExpressionEvaluatorManager
+            boolean validExpression = muleContext.getExpressionManager()
                     .isValidExpression(param);
             // There must be an expression namespace to use the
             // ExpresionEvaluator i.e. header:type
             if ((message != null) && validExpression)
             {
-                value = ExpressionEvaluatorManager.evaluate(param, message);
+                value = muleContext.getExpressionManager().evaluate(param,
+                        message);
                 foundValue = value != null;
             }
             if (!foundValue)

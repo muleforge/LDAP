@@ -1,17 +1,21 @@
 package org.mule.transport.ldap.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.mule.DefaultMuleMessage;
+import org.mule.api.MuleContext;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
-import org.mule.endpoint.DefaultOutboundEndpoint;
+import org.mule.api.retry.RetryPolicyTemplate;
+import org.mule.api.routing.filter.Filter;
+import org.mule.api.security.EndpointSecurityFilter;
+import org.mule.api.transaction.TransactionConfig;
+import org.mule.endpoint.DefaultInboundEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
-import org.mule.retry.policies.NoRetryPolicyTemplate;
 import org.mule.tck.AbstractMuleTestCase;
-import org.mule.util.expression.ExpressionEvaluatorManager;
 
 public class EndpointURIExpressionEvaluatorTestCase extends
         AbstractMuleTestCase
@@ -20,11 +24,11 @@ public class EndpointURIExpressionEvaluatorTestCase extends
     @Override
     protected void doSetUp() throws Exception
     {
-        if (!ExpressionEvaluatorManager
-                .isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME))
+        if (!muleContext.getExpressionManager().isEvaluatorRegistered(
+                EndpointURIExpressionEvaluator.NAME))
         {
-            ExpressionEvaluatorManager
-                    .registerEvaluator(new EndpointURIExpressionEvaluator());
+            muleContext.getExpressionManager().registerEvaluator(
+                    new EndpointURIExpressionEvaluator());
         }
         super.doSetUp();
     }
@@ -32,48 +36,48 @@ public class EndpointURIExpressionEvaluatorTestCase extends
     public void testValid()
     {
 
-        final boolean reg = ExpressionEvaluatorManager
+        final boolean reg = muleContext.getExpressionManager()
                 .isEvaluatorRegistered(EndpointURIExpressionEvaluator.NAME);
 
         assertTrue(reg);
 
-        boolean validExpression = ExpressionEvaluatorManager
+        boolean validExpression = muleContext.getExpressionManager()
                 .isValidExpression("#[endpointuri:test]");
 
         assertTrue(validExpression);
 
-        validExpression = ExpressionEvaluatorManager
-                .isValidExpression("#[endpointuri:]");
+        validExpression = muleContext.getExpressionManager().isValidExpression(
+                "#[endpointuri:]");
 
         assertTrue(validExpression);
 
-        validExpression = ExpressionEvaluatorManager
-                .isValidExpression("#[endpointuri:xxx.xxx:xxx]");
+        validExpression = muleContext.getExpressionManager().isValidExpression(
+                "#[endpointuri:xxx.xxx:xxx]");
 
         assertTrue(validExpression);
 
-        validExpression = ExpressionEvaluatorManager
-                .isValidExpression("#[endpointuri:xxx.xxx]");
+        validExpression = muleContext.getExpressionManager().isValidExpression(
+                "#[endpointuri:xxx.xxx]");
 
         assertTrue(validExpression);
     }
 
     public void testInValid()
     {
-        boolean validExpression = ExpressionEvaluatorManager
+        boolean validExpression = muleContext.getExpressionManager()
                 .isValidExpression("#[endpointurxxx121q]");
 
         assertFalse(validExpression);
 
-        validExpression = ExpressionEvaluatorManager
-                .isValidExpression("#[endpointuri]");
+        validExpression = muleContext.getExpressionManager().isValidExpression(
+                "#[endpointuri]");
 
         assertFalse(validExpression);
     }
 
     public void testNullEval() throws Exception
     {
-        final Object o = ExpressionEvaluatorManager.evaluate(
+        final Object o = muleContext.getExpressionManager().evaluate(
                 "#[endpointuri:xxx.yyy]",
                 new DefaultMuleMessage("", (Map) null));
         assertNull(o);
@@ -86,16 +90,18 @@ public class EndpointURIExpressionEvaluatorTestCase extends
                 "ldap://ldap.out/payload.cn");
         url.initialise();
 
-        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(null,
-                url, null, null, "testendpoint", new Properties(), null, null,
-                true, null, false, false, 0, null, null, null, muleContext,
-                new NoRetryPolicyTemplate());
+        final ImmutableEndpoint endpoint = new DefaultInboundEndpoint(null,
+                url, (List) null, (List) null, "testendpoint",
+                new Properties(), (TransactionConfig) null, (Filter) null,
+                false, (EndpointSecurityFilter) null, false, 0, (String) null,
+                (String) null, (String) null, (MuleContext) null,
+                (RetryPolicyTemplate) null);
 
         muleContext.getRegistry().registerEndpoint(endpoint);
 
-        final Object o = ExpressionEvaluatorManager.evaluate(
-                "#[endpointuri:testendpoint.host]", new DefaultMuleMessage("",
-                        (Map) null));
+        final Object o = muleContext.getExpressionManager().evaluate(
+                "#[endpointuri:testendpoint.host]",
+                new DefaultMuleMessage("", (Map) null));
         assertNotNull(o);
         assertTrue(o instanceof String);
         assertTrue(o.toString().equals("ldap.out"));
@@ -109,16 +115,18 @@ public class EndpointURIExpressionEvaluatorTestCase extends
 
         final Map map = new HashMap();
 
-        final ImmutableEndpoint endpoint = new DefaultOutboundEndpoint(null,
-                url, null, null, "testendpoint", map, null, null, true, null,
-                false, false, 0, null, null, null, muleContext,
-                new NoRetryPolicyTemplate());
+        final ImmutableEndpoint endpoint = new DefaultInboundEndpoint(null,
+                url, (List) null, (List) null, "testendpoint", map,
+                (TransactionConfig) null, (Filter) null, false,
+                (EndpointSecurityFilter) null, false, 0, (String) null,
+                (String) null, (String) null, (MuleContext) null,
+                (RetryPolicyTemplate) null);
 
         muleContext.getRegistry().registerEndpoint(endpoint);
 
-        final Object o = ExpressionEvaluatorManager.evaluate(
-                "#[endpointuri:testendpoint.params:a]", new DefaultMuleMessage(
-                        "", (Map) null));
+        final Object o = muleContext.getExpressionManager().evaluate(
+                "#[endpointuri:testendpoint.params:a]",
+                new DefaultMuleMessage("", (Map) null));
         assertNotNull(o);
         logger.debug(o);
         assertTrue(o instanceof String);

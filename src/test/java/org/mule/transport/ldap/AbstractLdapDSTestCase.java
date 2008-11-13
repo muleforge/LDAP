@@ -7,6 +7,12 @@ import org.mule.transport.ldap.util.DSManager;
 public class AbstractLdapDSTestCase extends TestCase
 {
 
+    public AbstractLdapDSTestCase()
+    {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
     protected boolean allowAnonymousBind;
 
     protected AbstractLdapDSTestCase(final boolean allowAnonymousBind)

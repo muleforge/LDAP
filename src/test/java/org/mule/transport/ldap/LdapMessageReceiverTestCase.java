@@ -1,11 +1,17 @@
 package org.mule.transport.ldap;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.mule.api.MuleContext;
 import org.mule.api.endpoint.InboundEndpoint;
+import org.mule.api.retry.RetryPolicyTemplate;
+import org.mule.api.routing.filter.Filter;
+import org.mule.api.security.EndpointSecurityFilter;
 import org.mule.api.service.Service;
+import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transport.Connector;
 import org.mule.api.transport.MessageReceiver;
 import org.mule.endpoint.DefaultInboundEndpoint;
@@ -24,9 +30,11 @@ public class LdapMessageReceiverTestCase extends
     {
         final MuleEndpointURI url = new MuleEndpointURI("ldap://ldap.in");
         final Connector con = getConnector();
-        return new DefaultInboundEndpoint(con, url, null, null, "testendpoint",
-                new Properties(), null, null, true, null, false, false, 0,
-                null, null, null, null, null);
+        return new DefaultInboundEndpoint(con, url, (List) null, (List) null,
+                "testendpoint", new Properties(), (TransactionConfig) null,
+                (Filter) null, false, (EndpointSecurityFilter) null, false, 0,
+                (String) null, (String) null, (String) null,
+                (MuleContext) null, (RetryPolicyTemplate) null);
     }
 
     @Override

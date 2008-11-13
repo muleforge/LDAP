@@ -1,11 +1,17 @@
 package org.mule.transport.ldap.transformers;
 
+import java.util.List;
 import java.util.Properties;
 
+import org.mule.api.MuleContext;
 import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.retry.RetryPolicyTemplate;
+import org.mule.api.routing.filter.Filter;
+import org.mule.api.security.EndpointSecurityFilter;
+import org.mule.api.transaction.TransactionConfig;
 import org.mule.api.transformer.Transformer;
 import org.mule.api.transport.Connector;
-import org.mule.endpoint.DefaultOutboundEndpoint;
+import org.mule.endpoint.DefaultInboundEndpoint;
 import org.mule.endpoint.MuleEndpointURI;
 import org.mule.retry.policies.NoRetryPolicyTemplate;
 import org.mule.transport.ldap.LdapConnector;
@@ -81,10 +87,12 @@ public class JavaBeanToModifiyRequestTransformerUniqueFieldTestCase extends
         //
         final Connector connector = getConnector();
         final MuleEndpointURI url = new MuleEndpointURI("ldap://ldap.out");
-        final ImmutableEndpoint ep = new DefaultOutboundEndpoint(connector,
-                url, null, null, "testendpoint", new Properties(), null, null,
-                true, null, false, false, 0, null, null, null, null,
-                new NoRetryPolicyTemplate());
+        final ImmutableEndpoint ep = new DefaultInboundEndpoint(connector, url,
+                (List) null, (List) null, "testendpoint", new Properties(),
+                (TransactionConfig) null, (Filter) null, false,
+                (EndpointSecurityFilter) null, false, 0, (String) null,
+                (String) null, (String) null, (MuleContext) null,
+                (RetryPolicyTemplate) null);
 
         final LDAPAttributeSet attr = new LDAPAttributeSet();
         attr.add(new LDAPAttribute("cn", "test-cn-javabean"));

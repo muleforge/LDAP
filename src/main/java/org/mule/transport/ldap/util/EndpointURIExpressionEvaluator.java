@@ -18,11 +18,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mule.MuleServer;
 import org.mule.RegistryContext;
+import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.expression.ExpressionEvaluator;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.endpoint.AbstractEndpointBuilder;
-import org.mule.util.expression.ExpressionEvaluator;
 
 public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
 {
@@ -33,7 +34,7 @@ public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
      */
     protected final Log logger = LogFactory.getLog(getClass());
 
-    public Object evaluate(final String expression, final Object message)
+    public Object evaluate(final String expression, final MuleMessage message)
     {
         logger.debug(expression + " on " + message);
 
