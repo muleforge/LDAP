@@ -1,51 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:spring="http://www.springframework.org/schema/beans"
-       xmlns:jee="http://www.springframework.org/schema/jee"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:ldap="http://www.mulesource.org/schema/mule/ldap/2.2"
-       xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:spring="http://www.springframework.org/schema/beans"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:ldap="http://www.mulesource.org/schema/mule/ldap/2.2"
+	xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
        http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
        http://www.mulesource.org/schema/mule/ldap/2.2 http://www.mulesource.org/schema/mule/ldap/2.2/mule-ldap.xsd">
 
-    <ldap:connector name="ldapConnector1" dataSource-ref="testDS1"/>
+	<ldap:connector name="ldapConnector1" ldapHost="localhost"
+		ldapPort="10389" loginDN="uid=admin,ou=system" password="secret"
+		searchBase="ou=system"
+		 
+		 attributes="sn,dn"
+		psFilters="cn=*,sn=*"
+		
+		>
 
-    <ldap:connector name="ldapConnector2" dataSource-ref="testDS2"/>
+		
 
-    <ldap:connector name="ldapConnector3" dataSource-ref="testDS1">
-        <ldap:query key="getTest"
-                    value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
-        <ldap:query key="getTest2"
-                    value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
-        <ldap:query key="getTest.ack"
-                    value="UPDATE TEST SET ACK = #[function:NOW]WHERE ID = #[id] AND TYPE = #[type] AND DATA = #[data]" />
-    </ldap:connector>
+		<ldap:query key="getTest"
+			value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
+		<ldap:query key="getTest2"
+			value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
 
-    <ldap:endpoint name="testldapEndpoint" address="ldap://getTest?type=1" connector-ref="ldapConnector3">
-        <ldap:query key="getTest2" value="OVERRIDDEN VALUE" />
-        <ldap:query key="getTest3" value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
-    </ldap:endpoint>
+		
 
-    <ldap:endpoint name="endpointWithTransaction" address="ldap://getTest?type=1" connector-ref="ldapConnector3">
-        <ldap:transaction action="NONE"/>
-    </ldap:endpoint>
-    
-    <ldap:endpoint name="endpointWithXaTransaction" address="ldap://getTest?type=1" connector-ref="ldapConnector3">
-        <xa-transaction action="ALWAYS_BEGIN"/>
-    </ldap:endpoint>
-    
-    <spring:bean id="testDS1" class="org.mule.transport.ldap.test.TestDataSource" />
 
-    <spring:beans>
-        <jee:jndi-lookup id="testDS2" jndi-name="ldap/testDS" environment-ref="jndiEnv" />
-        
-        <util:map id="jndiEnv">
-            <spring:entry key="java.naming.factory.initial" value="org.mule.transport.ldap.test.ldapTestContextFactory" />
-        </util:map>
-    </spring:beans>
+	</ldap:connector>
 
+	<ldap:endpoint name="testldapEndpointin" address="ldap://ldap.in"
+		connector-ref="ldapConnector1">
+		<ldap:query key="getTest2" value="OVERRIDDEN VALUE" />
+		<ldap:query key="getTest3"
+			value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
+	</ldap:endpoint>
+
+	<ldap:endpoint name="testldapEndpointout"
+		address="ldap://ldap.out/(cn=*)" connector-ref="ldapConnector1">
+
+	</ldap:endpoint>
+
+	<!-- 
+		<ldap:connector name="ldapConnector2" dataSource-ref="testDS2"/>
+		
+		<ldap:connector name="ldapConnector3" dataSource-ref="testDS1">
+		<ldap:query key="getTest" 
+		value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
+		<ldap:query key="getTest2"
+		value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
+		<ldap:query key="getTest.ack"
+		value="UPDATE TEST SET ACK = #[function:NOW]WHERE ID = #[id] AND TYPE = #[type] AND DATA = #[data]" />
+		</ldap:connector>
+		
+		<ldap:endpoint name="testldapEndpoint" address="ldap://getTest?type=1" connector-ref="ldapConnector3">
+		<ldap:query key="getTest2" value="OVERRIDDEN VALUE" />
+		<ldap:query key="getTest3" value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
+		</ldap:endpoint>
+		
+		<ldap:endpoint name="endpointWithTransaction" address="ldap://getTest?type=1" connector-ref="ldapConnector3">
+		<ldap:transaction action="NONE"/>
+		</ldap:endpoint>
+		
+		<ldap:endpoint name="endpointWithXaTransaction" address="ldap://getTest?type=1" connector-ref="ldapConnector3">
+		<xa-transaction action="ALWAYS_BEGIN"/>
+		</ldap:endpoint>
+		
+		<spring:bean id="testDS1" class="org.mule.transport.ldap.test.TestDataSource" />
+		
+		<spring:beans>
+		<jee:jndi-lookup id="testDS2" jndi-name="ldap/testDS" environment-ref="jndiEnv" />
+		
+		<util:map id="jndiEnv">
+		<spring:entry key="java.naming.factory.initial" value="org.mule.transport.ldap.test.ldapTestContextFactory" />
+		</util:map>
+		</spring:beans>
+	-->
 </mule>

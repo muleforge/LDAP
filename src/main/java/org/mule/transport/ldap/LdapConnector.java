@@ -11,6 +11,7 @@
 package org.mule.transport.ldap;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -71,7 +72,7 @@ public class LdapConnector extends AbstractConnector implements
 
     private boolean startUnsolicitedNotificationListener = false;
 
-    private List attributes = null; // attributes, default all
+    private final List < String > attributes = new ArrayList < String >();
 
     // Specifies when aliases should be dereferenced. Must be either one of the
     // constants defined in LDAPConstraints, which are DEREF_NEVER,
@@ -89,7 +90,7 @@ public class LdapConnector extends AbstractConnector implements
 
     private LDAPConnection ldapConnection = null;
 
-    private Map queries = null;
+    private Map < String, String > queries = null;
 
     private LDAPSearchConstraints constraints = null;
 
@@ -99,7 +100,7 @@ public class LdapConnector extends AbstractConnector implements
     // ps
     private final PsearchEventSource source = new PsearchEventSource();
     private boolean enablePersistentSearch = false;
-    private List < String > psFilters = null;
+    private final List < String > psFilters = new ArrayList < String >();
     private boolean psChangeonly = true;
     private int psEventchangetype = EventConstant.LDAP_PSEARCH_ANY;
 
@@ -107,14 +108,12 @@ public class LdapConnector extends AbstractConnector implements
     {
         super();
 
-        
-
     }
 
     @Override
     protected void doInitialise() throws InitialisationException
     {
-        
+
         if (!muleContext.getExpressionManager().isEvaluatorRegistered(
                 EndpointURIExpressionEvaluator.NAME))
         {
@@ -639,14 +638,28 @@ public class LdapConnector extends AbstractConnector implements
         this.queries = queries;
     }
 
-    public List getAttributes()
+    public void setAttributes(final String attributes)
     {
-        return attributes;
+
+        this.attributes.addAll(Arrays.asList(attributes.split(",")));
+
     }
 
-    public void setAttributes(final List attributes)
+    public String getAttributes()
     {
-        this.attributes = attributes;
+        return attributes.toString();
+    }
+
+    public String[] getAttributesAsArray()
+    {
+
+        return attributes.toArray(new String[attributes.size()]);
+    }
+
+    public String[] getpsFiltersAsArray()
+    {
+
+        return psFilters.toArray(new String[psFilters.size()]);
     }
 
     public int getDereference()
@@ -763,22 +776,14 @@ public class LdapConnector extends AbstractConnector implements
             return;
         }
 
-        final List attrs = getAttributes();
-        String[] attributes = new String[0];
-
-        if (attrs != null)
-        {
-            attributes = (String[]) attrs.toArray(new String[attrs.size()]);
-        }
-
         for (final Iterator < String > iterator = psFilters.iterator(); iterator
                 .hasNext();)
         {
             final String filter = iterator.next();
 
             source.registerforEvent(this.ldapConnection, this.searchBase,
-                    this.searchScope, filter, attributes, this.typesOnly,
-                    this.constraints, this.psEventchangetype,
+                    this.searchScope, filter, getAttributesAsArray(),
+                    this.typesOnly, this.constraints, this.psEventchangetype,
                     this.psChangeonly, alistener);
 
             logger.debug("register listener for ps: " + filter);
@@ -833,14 +838,14 @@ public class LdapConnector extends AbstractConnector implements
         this.psEventchangetype = psEventchangetype;
     }
 
-    public List < String > getPsFilters()
+    public String getPsFilters()
     {
-        return psFilters;
+        return psFilters.toString();
     }
 
-    public void setPsFilters(final List < String > psFilters)
+    public void setPsFilters(final String psFilters)
     {
-        this.psFilters = psFilters;
+        this.psFilters.addAll(Arrays.asList(psFilters.split(",")));
     }
 
     public LDAPSearchConstraints getConstraints()

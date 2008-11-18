@@ -6,9 +6,9 @@ import org.mule.config.spring.parsers.collection.ChildSingletonMapDefinitionPars
 import org.mule.config.spring.parsers.delegate.ParentContextDefinitionParser;
 import org.mule.config.spring.parsers.specific.properties.NestedMapDefinitionParser;
 import org.mule.endpoint.URIBuilder;
-import org.mule.transport.ldap.LdapConnector;
+import org.mule.transport.ldap.LdapSASLConnector;
 
-public class LdapNamespaceHandler extends AbstractMuleNamespaceHandler
+public class LdapSASLNamespaceHandler extends AbstractMuleNamespaceHandler
 {
 
     public static final String QUERY_KEY = "queryKey";
@@ -17,14 +17,15 @@ public class LdapNamespaceHandler extends AbstractMuleNamespaceHandler
 
     public void init()
     {
-        registerStandardTransportEndpoints("ldap", ADDRESS_ATTRIBUTES)
+        registerStandardTransportEndpoints("ldapsasl", ADDRESS_ATTRIBUTES)
                 .addAlias(QUERY_KEY, URIBuilder.PATH);
 
-        registerConnectorDefinitionParser(LdapConnector.class);
+        registerConnectorDefinitionParser(LdapSASLConnector.class);
 
         // children
         final MuleDefinitionParser connectorQuery = new ChildSingletonMapDefinitionParser(
                 "query");
+
         //
         final MuleDefinitionParser endpointQuery = new NestedMapDefinitionParser(
                 "properties", "queries");

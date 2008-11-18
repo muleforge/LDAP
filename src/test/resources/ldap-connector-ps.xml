@@ -31,7 +31,8 @@
 			
 			<spring:property name="enablePersistentSearch" value="true" />
 			
-			<spring:property name="psFilters" ><spring:list><spring:value>(cn=*)</spring:value></spring:list></spring:property>
+    		<spring:property name="psFilters" value="(cn=*)" />
+			
 			
     
     

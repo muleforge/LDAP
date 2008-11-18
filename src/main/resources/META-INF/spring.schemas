@@ -1,1 +1,3 @@
 http\://www.mulesource.org/schema/mule/ldap/2.2/mule-ldap.xsd=META-INF/mule-ldap.xsd
+http\://www.mulesource.org/schema/mule/ldaps/2.2/mule-ldaps.xsd=META-INF/mule-ldaps.xsd
+http\://www.mulesource.org/schema/mule/ldapsasl/2.2/mule-ldapsasl.xsd=META-INF/mule-ldapsasl.xsd

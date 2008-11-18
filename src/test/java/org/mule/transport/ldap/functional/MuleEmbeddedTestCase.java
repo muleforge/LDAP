@@ -10,10 +10,8 @@
 
 package org.mule.transport.ldap.functional;
 
-import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -152,9 +150,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
         c.setSearchBase("o=sevenseas");
         c.setStartUnsolicitedNotificationListener(true);
         c.setEnablePersistentSearch(true);
-        final List < String > list = new ArrayList < String >();
-        list.add("cn=*");
-        c.setPsFilters(list);
+        c.setPsFilters("cn=*");
 
         RegistryContext.getRegistry().registerConnector(c);
 

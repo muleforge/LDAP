@@ -47,7 +47,7 @@ public class LdapSASLConnectorTestCase extends AbstractConnectorTestCase
     public String getTestEndpointURI()
     {
 
-        return "ldap://ldap.in";
+        return "ldapsasl://ldap.in";
     }
 
     @Override

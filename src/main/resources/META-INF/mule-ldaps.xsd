@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.mulesource.org/schema/mule/ldaps/2.2"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:mule="http://www.mulesource.org/schema/mule/core/2.2"
+    xmlns:ldap="http://www.mulesource.org/schema/mule/ldap/2.2"
+    xmlns:schemadoc="http://www.mulesource.org/schema/mule/schemadoc/2.2"
+    targetNamespace="http://www.mulesource.org/schema/mule/ldaps/2.2" 
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+    
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.mulesource.org/schema/mule/core/2.2"
+    schemaLocation="http://www.mulesource.org/schema/mule/core/2.2/mule.xsd"/>
+    
+    <xsd:import namespace="http://www.mulesource.org/schema/mule/ldap/2.2"
+        schemaLocation="http://www.mulesource.org/schema/mule/ldap/2.2/mule-ldap.xsd"/>
+    
+    <xsd:import namespace="http://www.mulesource.org/schema/mule/schemadoc/2.2"
+        schemaLocation="http://www.mulesource.org/schema/mule/schemadoc/2.2/mule-schemadoc.xsd"/>
+
+
+    <xsd:element name="connector" type="ldapsConnectorType"
+        substitutionGroup="mule:abstract-connector"/>
+
+    <xsd:complexType name="ldapsConnectorType">
+        <xsd:complexContent>
+            <xsd:extension base="ldap:ldapConnectorType">
+                <xsd:attribute name="trustAll" type="xsd:boolean"></xsd:attribute>
+                <xsd:attribute name="startTLS" type="xsd:boolean"></xsd:attribute>
+                <xsd:attribute name="trustStore" type="xsd:string"></xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+</xsd:schema>

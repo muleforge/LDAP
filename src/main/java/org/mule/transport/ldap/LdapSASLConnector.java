@@ -67,7 +67,7 @@ public class LdapSASLConnector extends LdapSConnector
 
         if (isForceJDK14())
         {
-            logger.debug("Forcing JDK 1.4 SASL mode, not using JDK 1.5 SASL");
+            logger.debug("Forcing JDK 1.4 SASL mode, not using JDK >=1.5 SASL");
 
             if (alternativeSaslProvider == null)
             {
@@ -168,7 +168,7 @@ public class LdapSASLConnector extends LdapSConnector
     @Override
     public String getProtocol()
     {
-        return "ldap";
+        return "ldapsasl";
     }
 
     @Override

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:spring="http://www.springframework.org/schema/beans"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:ldap="http://www.mulesource.org/schema/mule/ldap/2.2"
+	xmlns:ldapsasl="http://www.mulesource.org/schema/mule/ldapsasl/2.2"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+       http://www.mulesource.org/schema/mule/ldap/2.2 http://www.mulesource.org/schema/mule/ldap/2.2/mule-ldap.xsd
+       http://www.mulesource.org/schema/mule/ldapsasl/2.2 http://www.mulesource.org/schema/mule/ldapsasl/2.2/mule-ldapsasl.xsd">
+
+	<ldapsasl:connector name="ldapConnector1" ldapHost="localhost"
+		ldapPort="10389" loginDN="hsaly" password="secret1"
+		searchBase="dc=example,dc=com"
+		 
+		attributes="sn,dn"
+		psFilters="cn=*,sn=*"
+		realm="example.com"
+		mechanism="DIGEST-MD5">
+		
+
+		
+		<ldap:query key="getTest"
+			value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL"/>
+		<ldap:query key="getTest2"
+			value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL"/>
+		
+
+
+	</ldapsasl:connector>
+
+	<ldap:endpoint name="testldapEndpointin" address="ldap://ldap.in"
+		connector-ref="ldapConnector1">
+		<ldap:query key="getTest2" value="OVERRIDDEN VALUE" />
+		<ldap:query key="getTest3"
+			value="SELECT ID, TYPE, DATA, ACK, RESULT FROM TEST WHERE TYPE = #[type] AND ACK IS NULL" />
+	</ldap:endpoint>
+	
+	<ldap:endpoint name="testldapEndpointout"
+		address="ldap://ldap.out/(cn=*)" connector-ref="ldapConnector1">
+		
+	</ldap:endpoint>
+	
+	
+</mule>

@@ -44,13 +44,7 @@ public final class LDAPUtils
             throws LDAPException
     {
 
-        final List attrs = ldapConnector.getAttributes();
-        String[] attributes = null;
-
-        if (attrs != null)
-        {
-            attributes = (String[]) attrs.toArray(new String[attrs.size()]);
-        }
+        final String[] attributes = ldapConnector.getAttributesAsArray();
 
         // TODO LDAPCOntrols
         return new LDAPSearchRequest(ldapConnector.getSearchBase(), // base

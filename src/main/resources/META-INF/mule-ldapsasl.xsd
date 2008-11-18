@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.mulesource.org/schema/mule/ldapsasl/2.2"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:mule="http://www.mulesource.org/schema/mule/core/2.2"
+    xmlns:ldaps="http://www.mulesource.org/schema/mule/ldaps/2.2"
+        xmlns:schemadoc="http://www.mulesource.org/schema/mule/schemadoc/2.2"
+    targetNamespace="http://www.mulesource.org/schema/mule/ldapsasl/2.2"
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.mulesource.org/schema/mule/core/2.2"
+        schemaLocation="http://www.mulesource.org/schema/mule/core/2.2/mule.xsd"/>
+    
+    <xsd:import namespace="http://www.mulesource.org/schema/mule/ldaps/2.2"
+        schemaLocation="http://www.mulesource.org/schema/mule/ldaps/2.2/mule-ldaps.xsd"/>
+    
+    <xsd:import namespace="http://www.mulesource.org/schema/mule/schemadoc/2.2"
+        schemaLocation="http://www.mulesource.org/schema/mule/schemadoc/2.2/mule-schemadoc.xsd"/>
+    
+    
+
+
+    <xsd:element name="connector" type="ldapsaslConnectorType" substitutionGroup="mule:abstract-connector"/>
+    
+    <xsd:complexType name="ldapsaslConnectorType">
+        <xsd:complexContent>
+            <xsd:extension base="ldaps:ldapsConnectorType">
+                <xsd:attribute name="useSSL" type="xsd:boolean"/>
+                <xsd:attribute name="forceJDK14" type="xsd:boolean"/>
+                <xsd:attribute name="alternativeSaslProvider" type="xsd:string"/>
+                <xsd:attribute name="realm" type="xsd:string"/>
+                <xsd:attribute name="mechanism" type="xsd:string"/>
+                
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+</xsd:schema>
