@@ -68,7 +68,7 @@ public class PersistentSearchTestCase extends AbstractLdapFunctionalTestCase
         }
     }
 
-    public void failtestSyncPSearch() throws Exception
+    public void testSyncPSearch() throws Exception
     {
         final MuleClient client = new MuleClient();
         // TODO FIXME fails

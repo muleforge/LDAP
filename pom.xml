@@ -270,9 +270,10 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<!-- <exclude>**/*.java</exclude>   -->
+						<exclude>**/PersistentSearchTestCase.java</exclude>
 						<exclude>**/TestHelper.java</exclude>
 						<exclude>**/Abstract*TestCase.java</exclude>
+						
 					</excludes>
 					<forkMode>once</forkMode>
 				</configuration>

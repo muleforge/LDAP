@@ -192,9 +192,36 @@
     </xsd:attributeGroup>
 
 
+    <!--  org.mule.transport.ldap.transformers.LDAPEntryToAddRequest
+        
+        org.mule.transport.ldap.transformers.LDAPMessageToString 	String means: DSML or LDIF
+        org.mule.transport.ldap.transformers.LDAPSearchResultToString 	String means: DSML or LDIF
+        org.mule.transport.ldap.transformers.StringToDeleteRequest 	String means: dn
+        org.mule.transport.ldap.transformers.StringToLDAPMessage 	String means: DSML or LDIF
+        org.mule.transport.ldap.transformers.StringToSearchRequest 	String means: filter query
+        org.mule.transport.ldap.transformers.JavaBeanToModiffyRequest  -->
 
 
+    <xsd:element name="ldapentry-to-ldapaddrequest-transformer" type="mule:abstractTransformerType" substitutionGroup="mule:abstract-transformer"/>
+    <xsd:element name="ldapmessage-to-string-transformer" type="formatTransformerType" substitutionGroup="mule:abstract-transformer"/>
+  
+    <xsd:complexType name="formatTransformerType">
+    
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractTransformerType">
+                <xsd:attribute name="format">
+                	<xsd:simpleType>
+                		<xsd:restriction base="xsd:string">
+                			<xsd:enumeration value="LDIF"></xsd:enumeration>
+                			<xsd:enumeration value="DSML"></xsd:enumeration>
+                		</xsd:restriction>
+                	</xsd:simpleType>
+                </xsd:attribute>
 
+
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
 
 
