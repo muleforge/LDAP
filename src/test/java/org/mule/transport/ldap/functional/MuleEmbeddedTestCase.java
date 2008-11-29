@@ -13,6 +13,7 @@ package org.mule.transport.ldap.functional;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +23,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.transport.DispatchException;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.AbstractMuleTestCase;
+import org.mule.tck.TestCaseWatchdog;
 import org.mule.transport.ldap.FetchSchemaAction;
 import org.mule.transport.ldap.LdapConnector;
 import org.mule.transport.ldap.util.DSManager;
@@ -741,5 +743,12 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
         ;
         DSManager.getInstance().stop();
 
+    }
+
+    @Override
+    protected TestCaseWatchdog createWatchdog()
+    {
+        // TODO Auto-generated method stub
+        return new TestCaseWatchdog(10, edu.emory.mathcs.backport.java.util.concurrent.TimeUnit.MINUTES, this);
     }
 }
