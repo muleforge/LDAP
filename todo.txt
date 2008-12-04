@@ -11,7 +11,8 @@ BUGS
 -
 
 New Features, TODO
-- namespace handler, spring and osgi stuff, xsd
+- namespace handler, spring 
+- OSGI stuff
 - sleeptime property
 
 TOTEST

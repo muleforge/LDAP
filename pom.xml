@@ -1,4 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mule.transports</groupId>
@@ -217,7 +220,7 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-webdav</artifactId>
-				 <version>1.0-beta-2</version>
+				<version>1.0-beta-2</version>
 			</extension>
 		</extensions>
 		<plugins>
@@ -270,10 +273,12 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>**/PersistentSearchTestCase.java</exclude>
+						<exclude>
+							**/PersistentSearchTestCase.java
+						</exclude>
 						<exclude>**/TestHelper.java</exclude>
 						<exclude>**/Abstract*TestCase.java</exclude>
-						
+
 					</excludes>
 					<forkMode>once</forkMode>
 				</configuration>
@@ -420,6 +425,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-ognl</artifactId>
+			<version>${muleVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-module-client</artifactId>
 			<version>${muleVersion}</version>
 		</dependency>
@@ -431,6 +441,16 @@
 		<dependency>
 			<groupId>org.mule.transports</groupId>
 			<artifactId>mule-transport-file</artifactId>
+			<version>${muleVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-jdbc</artifactId>
+			<version>${muleVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-xmpp</artifactId>
 			<version>${muleVersion}</version>
 		</dependency>
 		<dependency>
@@ -463,18 +483,10 @@
 			<artifactId>mockobjects-core</artifactId>
 			<version>${mockobjectsVersion}</version>
 		</dependency>
-
-		<!-- <dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.3.1</version>
-			</dependency>
-			<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.0.2</version>
-			</dependency>  -->
-
-
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.4.2.0</version>
+		</dependency>
 	</dependencies>
 </project>

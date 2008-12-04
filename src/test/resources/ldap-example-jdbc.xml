@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mule
+	xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:spring="http://www.springframework.org/schema/beans"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:ldap="http://www.mulesource.org/schema/mule/ldap/2.2"
+	xmlns:jdbc="http://www.mulesource.org/schema/mule/jdbc/2.2"
+	xmlns:xmpp="http://www.mulesource.org/schema/mule/xmpp/2.2"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+    http://www.mulesource.org/schema/mule/core/2.2 http://svn.codehaus.org/mule/branches/mule-2.x/modules/spring-config/src/main/resources/META-INF/mule.xsd
+    http://www.mulesource.org/schema/mule/ldap/2.2 http://svn.muleforge.org/mule-transport-ldap/trunk/src/main/resources/META-INF/mule-ldap.xsd
+    http://www.mulesource.org/schema/mule/jdbc/2.2 http://svn.codehaus.org/mule/branches/mule-2.x/transports/jdbc/src/main/resources/META-INF/mule-jdbc.xsd
+    http://www.mulesource.org/schema/mule/xmpp/2.2 http://svn.codehaus.org/mule/branches/mule-2.x/transports/xmpp/src/main/resources/META-INF/mule-xmpp.xsd">
+
+
+	<ldap:connector
+		name="ldapConnector"
+		ldapHost="localhost"
+		ldapPort="10389"
+		loginDN="uid=admin,ou=system"
+		password="secret"
+		searchBase="ou=system"
+		enablePersistentSearch="true"
+		startUnsolicitedNotificationListener="true"
+		psChangeonly="true"
+		psFilters="cn=*"/>
+
+	<spring:bean
+		id="jdbcDataSource"
+		class="org.enhydra.jdbc.standard.StandardDataSource"
+		destroy-method="shutdown">
+		<spring:property
+			name="driverName"
+			value="org.apache.derby.jdbc.EmbeddedDriver"/>
+		<spring:property
+			name="url"
+			value="jdbc:derby:muleEmbeddedDB;create=true"/>
+	</spring:bean>
+
+	<jdbc:connector
+		name="jdbcConnector"
+		pollingFrequency="1000"
+		dataSource-ref="jdbcDataSource">
+
+		<jdbc:query
+			key="writeDn"
+			value="INSERT INTO TEST(TYPE, DATA) VALUES(1, #[bean:getEntry.getDN])"/>
+
+		<jdbc:query
+			key="writeCnOGNL"
+			value="INSERT INTO TEST(TYPE, DATA) VALUES(1, #[ognl:entry.getAttribute('cn').stringValue])"/>
+
+
+	</jdbc:connector>
+
+
+	<model
+		name="Test">
+		<service
+			name="Ldap2Jdbc">
+
+			<inbound>
+				<ldap:inbound-endpoint
+					name="testldapEndpointIn"
+					address="ldap://ldap.in"
+					connector-ref="ldapConnector"/>
+			</inbound>
+			<echo-component/>
+			<outbound>
+
+
+				<filtering-router>
+
+					<jdbc:outbound-endpoint
+						queryKey="writeCnOGNL"/>
+					<!--  
+					<jdbc:outbound-endpoint
+					queryKey="writeDn"/>-->
+
+					<payload-type-filter
+						expectedType="com.novell.ldap.events.SearchResultEvent"/>
+
+				</filtering-router>
+				<logging-catch-all-strategy/>
+
+			</outbound>
+
+		</service>
+
+	</model>
+
+
+
+</mule>

@@ -280,7 +280,7 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
         }
         catch (final LDAPException e)
         {
-            throw new DefaultMuleException(e);
+            // ignore;throw new DefaultMuleException(e);
         }
     }
 

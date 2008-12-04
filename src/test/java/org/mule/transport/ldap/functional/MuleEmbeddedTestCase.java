@@ -13,7 +13,6 @@ package org.mule.transport.ldap.functional;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -749,6 +748,9 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
     protected TestCaseWatchdog createWatchdog()
     {
         // TODO Auto-generated method stub
-        return new TestCaseWatchdog(10, edu.emory.mathcs.backport.java.util.concurrent.TimeUnit.MINUTES, this);
+        return new TestCaseWatchdog(
+                10,
+                edu.emory.mathcs.backport.java.util.concurrent.TimeUnit.MINUTES,
+                this);
     }
 }
