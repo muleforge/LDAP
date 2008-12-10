@@ -5,6 +5,8 @@ import java.sql.SQLException;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.mule.DefaultMuleMessage;
+import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.TestCaseWatchdog;
 import org.mule.transport.jdbc.JdbcConnector;
@@ -23,7 +25,14 @@ public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
 
     public void testAdd() throws Exception
     {
-        createTable();
+        try
+        {
+            createTable();
+        }
+        catch (final Exception e)
+        {
+            logger.debug(e.toString());
+        }
 
         final MuleClient client = new MuleClient();
 
@@ -31,11 +40,11 @@ public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
 
         for (int i = 0; i < addCount; i++)
         {
-            client.send("ldap://ldap.out", TestHelper
-                    .getRandomEntryAddRequest(), null);
+            client.send("ldap://ldap.out?connector=ldapConnector", TestHelper
+                    .getRandomEntrySysAddRequest(), null);
         }
 
-        Thread.sleep(5000);
+        Thread.sleep(7000);
 
         final MyResultSetHandler h = new MyResultSetHandler();
 
@@ -45,7 +54,57 @@ public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
         qr.query(jdbcConnector.getConnection(), "SELECT COUNT(*) FROM TEST", h);
 
         assertTrue("expected: " + addCount + ",was: " + h.getSqlcount(), h
-                .getSqlcount() > 1);
+                .getSqlcount() == addCount);
+
+    }
+
+    public void testProcess() throws Exception
+    {
+
+        try
+        {
+            createTable();
+        }
+        catch (final Exception e)
+        {
+            logger.debug(e.toString());
+        }
+
+        final MuleClient client = new MuleClient();
+
+        final int addCount = 4;
+
+        for (int i = 0; i < addCount; i++)
+        {
+            client.send("ldap://ldap.out?connector=ldapConnector2", TestHelper
+                    .getRandomEntrySysAddRequest(), null);
+        }
+
+        // Thread.sleep(5000);
+
+        final MuleMessage msg = client.send("vm://vmprocess",
+                new DefaultMuleMessage("dummy"));
+        assertNotNull(msg);
+        assertNotNull(msg.getPayload());
+
+        // System.out.println(msg.getPayload().getClass());
+
+        assertTrue(msg.getPayload() instanceof String);
+        assertEquals("system administrator", msg.getPayload());
+
+        /*
+         * LDAPSearchResults res = (LDAPSearchResults) msg.getPayload();
+         * 
+         * 
+         * 
+         * int i=0; //res.getCount() is buggy ??
+         * 
+         * while(res.hasMore()) { i++; res.next(); }
+         * 
+         * //System.out.println("i: "+i);
+         * 
+         * assertTrue(i==addCount+2);
+         */
 
     }
 

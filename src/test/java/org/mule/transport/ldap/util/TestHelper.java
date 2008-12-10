@@ -19,6 +19,14 @@ public class TestHelper
 
     }
 
+    public static LDAPAddRequest getRandomEntrySysAddRequest()
+            throws LDAPException
+    {
+
+        return new LDAPAddRequest(getRandomEntrySys(), null);
+
+    }
+
     public static LDAPEntry getRandomEntry()
     {
 
@@ -30,6 +38,24 @@ public class TestHelper
         attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
 
         final LDAPEntry entry = new LDAPEntry("cn=" + cn + ",o=sevenseas", attr);
+
+        return entry;
+
+    }
+
+    public static LDAPEntry getRandomEntrySys()
+    {
+
+        final String cn = "test-cn-" + (inc++);
+        final String sn = "test-sn-" + (inc++);
+        final String uid = "test-uid-" + (inc++);
+        final LDAPAttributeSet attr = new LDAPAttributeSet();
+        attr.add(new LDAPAttribute("cn", cn));
+        attr.add(new LDAPAttribute("sn", sn));
+        attr.add(new LDAPAttribute("uid", uid));
+        attr.add(new LDAPAttribute("objectClass", "inetOrgPerson"));
+
+        final LDAPEntry entry = new LDAPEntry("uid=" + cn + ",ou=system", attr);
 
         return entry;
 

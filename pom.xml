@@ -423,6 +423,11 @@
 			<artifactId>apacheds-protocol-ldap</artifactId>
 			<version>${apacheDsVersion}</version>
 		</dependency>
+			<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-scripting</artifactId>
+			<version>${muleVersion}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-module-ognl</artifactId>
@@ -441,6 +446,11 @@
 		<dependency>
 			<groupId>org.mule.transports</groupId>
 			<artifactId>mule-transport-file</artifactId>
+			<version>${muleVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.transports</groupId>
+			<artifactId>mule-transport-stdio</artifactId>
 			<version>${muleVersion}</version>
 		</dependency>
 		<dependency>
