@@ -11,13 +11,13 @@ BUGS
 -
 
 New Features, TODO
-- namespace handler, spring 
-- OSGI stuff
-- sleeptime property
+- document sleeptime property, xsd
 
 TOTEST
 - Referals
 - ThreadSafeAccess newThreadCopy()
+- namespace handler, spring 
+- OSGI stuff
 
 FUTURE
 - simplify API , OO based access LDAP
