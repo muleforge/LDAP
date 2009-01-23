@@ -9,8 +9,8 @@ import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.TestCaseWatchdog;
+import org.mule.tck.util.MuleDerbyTestUtils;
 import org.mule.transport.jdbc.JdbcConnector;
-import org.mule.transport.jdbc.util.MuleDerbyUtils;
 import org.mule.transport.ldap.util.TestHelper;
 
 public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
@@ -123,7 +123,7 @@ public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
     @Override
     protected void suitePreSetUp() throws Exception
     {
-        MuleDerbyUtils.defaultDerbyCleanAndInit("derby.properties",
+        MuleDerbyTestUtils.defaultDerbyCleanAndInit("derby.properties",
                 "database.name");
         super.suitePreSetUp();
     }
