@@ -38,7 +38,7 @@ public class LDAPSearchResultsToList extends AbstractTransformer
         {
             throw new TransformerException(this, new IllegalArgumentException(
                     "wrong type " + src.getClass()
-                            + ", LDAPSearchResults excpeted"));
+                            + ", LDAPSearchResults expected"));
         }
 
         try
