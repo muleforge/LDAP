@@ -7,7 +7,7 @@ STYLE
 - tag list @todo etc. ...
 
 BUGS
--
+- svn schema location links
 -
 
 New Features, TODO

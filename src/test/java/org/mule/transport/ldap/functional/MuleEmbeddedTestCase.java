@@ -12,6 +12,7 @@ package org.mule.transport.ldap.functional;
 
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -25,6 +26,7 @@ import org.mule.tck.AbstractMuleTestCase;
 import org.mule.tck.TestCaseWatchdog;
 import org.mule.transport.ldap.FetchSchemaAction;
 import org.mule.transport.ldap.LdapConnector;
+import org.mule.transport.ldap.transformers.LDAPSearchResultsToJavaBean;
 import org.mule.transport.ldap.util.DSManager;
 import org.mule.transport.ldap.util.LDAPUtils;
 import org.mule.transport.ldap.util.TestHelper;
@@ -95,6 +97,40 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
         assertTrue(result.getPayload() instanceof LDAPSearchResults);
         assertEquals(((LDAPSearchResults) result.getPayload()).next().getDN(),
                 "o=sevenseas");
+        try
+        {
+            DSManager.getInstance().stop();
+        }
+        catch (final Exception e)
+        {
+
+        }
+    }
+    
+    public void testBeanTransform() throws Exception
+    {
+        
+       
+        
+        final MuleClient client = new MuleClient();
+
+        // we send a message on the endpoint we created, i.e. vm://Single
+        final MuleMessage result = client.send("ldap://ldap.out/oc.payload",
+                "sevenseas", null);
+        assertNotNull(result);
+        assertTrue(result.getPayload() instanceof LDAPSearchResults);
+        //assertEquals(((LDAPSearchResults) result.getPayload()).next().getDN(),
+        //        "o=sevenseas");
+        
+        LDAPSearchResultsToJavaBean t = new  LDAPSearchResultsToJavaBean();
+        t.setBeanclass("org.mule.transport.ldap.functional.TestBean");
+       
+        List l = (List) t.transform(result.getPayload());
+        
+        assertNotNull(l);
+        assertTrue(l.size() > 0);
+        //System.out.println(l);
+        
         try
         {
             DSManager.getInstance().stop();
@@ -753,4 +789,6 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
                 edu.emory.mathcs.backport.java.util.concurrent.TimeUnit.MINUTES,
                 this);
     }
+    
+    
 }
