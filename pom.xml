@@ -12,7 +12,7 @@
 	<properties>
 		<shortId>LDAP</shortId>
 		<domainName>mule-transport-ldap</domainName>
-		<muleVersion>2.2.0</muleVersion>
+		<muleVersion>2.2.1</muleVersion>
 		<jldapVersion>4.3</jldapVersion>
 		<apacheDsVersion>1.5.4</apacheDsVersion>
 		<log4jVersion>1.2.14</log4jVersion>
