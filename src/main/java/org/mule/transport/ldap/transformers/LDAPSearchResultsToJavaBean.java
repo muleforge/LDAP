@@ -60,8 +60,9 @@ public class LDAPSearchResultsToJavaBean extends AbstractTransformer
 
     }
 
-	/* Code contributed by Tomas Blohm, tomas.blohm@pulsen.se 
-	*/
+    /*
+     * Code contributed by Tomas Blohm, tomas.blohm@pulsen.se
+     */
     private static class LDAPResultsHandler
     {
         protected Class beanClass;
