@@ -136,21 +136,17 @@ public class LdapConnector extends AbstractConnector implements
          */
 
         // controls are not supported
-        // constraints.setControls(control)
+       
     }
 
     protected final void ensureConnected() throws ConnectException
     {
 
-        /*
-         * if (this.isDisposing()) { throw (new ConnectException(
-         * CoreMessages.connectorCausedError(this), this)); }
-         */
 
         if (ldapConnection != null)
         {
             logger.debug("connected?:" + ldapConnection.isConnected());
-            // logger.debug(ldapConnection.isConnectionAlive());
+            
         }
 
         if ((ldapConnection == null) || !ldapConnection.isConnected()
@@ -183,13 +179,7 @@ public class LdapConnector extends AbstractConnector implements
     public final void doConnect() throws Exception
     {
 
-        // if (dynamicNotification)
-
-        // this.setDynamicNotification(dynamic);
-
-        // this.updateCachedNotificationHandler();
-
-        logger.debug("try connect to " + ldapHost + ":" + ldapPort + " ...");
+        logger.debug("try connect to " + ldapHost + ":" + ldapPort + " with retry policy template "+getRetryPolicyTemplate());
 
         if (org.apache.commons.lang.StringUtils.isEmpty(ldapHost))
         {
@@ -269,7 +259,7 @@ public class LdapConnector extends AbstractConnector implements
                 return false;
             }
 
-            // e.printStackTrace();
+       
 
             return false;
 
@@ -333,7 +323,7 @@ public class LdapConnector extends AbstractConnector implements
         {
             messageQueue = ldapConnection.sendRequest(request, null);
             logger.debug("first async message, message queue initialised!");
-            // new DumpThread(this.messageQueue).start();
+            
         }
         else
         {
@@ -409,36 +399,7 @@ public class LdapConnector extends AbstractConnector implements
         this.searchBase = searchBase;
     }
 
-    /*
-     * public long getPollingFrequency() { return pollingFrequency; }
-     * 
-     * public void setPollingFrequency(long pollingFrequency) {
-     * this.pollingFrequency = pollingFrequency; }
-     */
-
-    /*
-     * @Override
-     * 
-     * @Deprecated public MessageReceiver createReceiver(final Service service,
-     *             final InboundEndpoint endpoint) throws Exception {
-     * 
-     * 
-     * long polling = pollingFrequency; Map props = endpoint.getProperties(); if
-     * (props != null) { // Override properties on the endpoint for the specific
-     * endpoint String tempPolling = (String)
-     * props.get(PROPERTY_POLLING_FREQUENCY); if (tempPolling != null) { polling =
-     * Long.parseLong(tempPolling); } } if (polling <= 0) { polling =
-     * DEFAULT_POLLING_FREQUENCY; } logger.debug("set polling frequency to " +
-     * polling);
-     * 
-     * try {
-     * 
-     * return getServiceDescriptor().createMessageReceiver(this, service,
-     * endpoint); } catch (final Exception e) { // TODO getServiceDescriptor()
-     * maybe not correct throw new InitialisationException(CoreMessages
-     * .failedToCreateObjectWith("Message Receiver", getServiceDescriptor()), e,
-     * this); } }
-     */
+    
     public boolean isStartUnsolicitedNotificationListener()
     {
         return startUnsolicitedNotificationListener;
@@ -548,25 +509,6 @@ public class LdapConnector extends AbstractConnector implements
         return params;
     }
 
-    /*
-     * @Deprecated public Object[] getParams(ImmutableEndpoint endpoint, List
-     *             paramNames, Object message, String query) throws Exception {
-     * 
-     * Object[] params = new Object[paramNames.size()]; for (int i = 0; i <
-     * paramNames.size(); i++) { String param = (String)paramNames.get(i);
-     * String name = param.substring(2, param.length() - 1); Object value =
-     * null; // If we find a value and it happens to be null, thats acceptable
-     * boolean foundValue = false; //There must be an expression namespace to
-     * use the ExpresionEvaluator i.e. header:type if (message != null &&
-     * ExpressionEvaluatorManager.isValidExpression(name)) { value =
-     * ExpressionEvaluatorManager.evaluate(name, message); foundValue =
-     * value!=null; } if (!foundValue) { value = endpoint.getProperty(name); } //
-     * Allow null values which may be acceptable to the user // Why shouldn't
-     * nulls be allowed? Otherwise every null parameter has to // be defined //
-     * if (value == null && !foundValue) // { // throw new
-     * IllegalArgumentException("Can not retrieve argument " + // name); // }
-     * params[i] = value; } return params; }
-     */
 
     @Override
     protected final void doDispose()
@@ -702,14 +644,6 @@ public class LdapConnector extends AbstractConnector implements
         this.typesOnly = typesOnly;
     }
 
-    /*
-     * public String parseStatement(String stmt, List params) { if (stmt ==
-     * null) { return stmt; } Matcher m = STATEMENT_ARGS.matcher(stmt);
-     * StringBuffer sb = new StringBuffer(200); while (m.find()) { String key =
-     * m.group(); m.appendReplacement(sb, "?"); params.add(key); }
-     * m.appendTail(sb); return sb.toString(); }
-     */
-
     public String parseStatement(final String stmt, final List params)
     {
         if (stmt == null)
@@ -749,14 +683,14 @@ public class LdapConnector extends AbstractConnector implements
     @Override
     protected final void doStart() throws MuleException
     {
-        // TODO Auto-generated method stub
+        // empty
 
     }
 
     @Override
     protected final void doStop() throws MuleException
     {
-        // TODO Auto-generated method stub
+     // empty
 
     }
 
@@ -865,7 +799,6 @@ public class LdapConnector extends AbstractConnector implements
     {
         try
         {
-            // TODO Auto-generated method stub
             return new LDAPAuthProvider(this.loginDN, password.getBytes("UTF8"));
         }
         catch (final UnsupportedEncodingException e)
