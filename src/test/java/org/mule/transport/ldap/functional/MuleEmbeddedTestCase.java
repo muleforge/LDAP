@@ -106,12 +106,10 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
         }
     }
-    
+
     public void testBeanTransform() throws Exception
     {
-        
-       
-        
+
         final MuleClient client = new MuleClient();
 
         // we send a message on the endpoint we created, i.e. vm://Single
@@ -119,18 +117,19 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
                 "sevenseas", null);
         assertNotNull(result);
         assertTrue(result.getPayload() instanceof LDAPSearchResults);
-        //assertEquals(((LDAPSearchResults) result.getPayload()).next().getDN(),
-        //        "o=sevenseas");
-        
-        LDAPSearchResultsToJavaBean t = new  LDAPSearchResultsToJavaBean();
+        // assertEquals(((LDAPSearchResults)
+        // result.getPayload()).next().getDN(),
+        // "o=sevenseas");
+
+        final LDAPSearchResultsToJavaBean t = new LDAPSearchResultsToJavaBean();
         t.setBeanclass("org.mule.transport.ldap.functional.TestBean");
-       
-        List l = (List) t.transform(result.getPayload());
-        
+
+        final List l = (List) t.transform(result.getPayload());
+
         assertNotNull(l);
         assertTrue(l.size() > 0);
-        //System.out.println(l);
-        
+        // System.out.println(l);
+
         try
         {
             DSManager.getInstance().stop();
@@ -789,6 +788,5 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
                 edu.emory.mathcs.backport.java.util.concurrent.TimeUnit.MINUTES,
                 this);
     }
-    
-    
+
 }

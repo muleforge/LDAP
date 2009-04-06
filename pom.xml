@@ -275,6 +275,7 @@
 						</exclude>
 						<exclude>**/TestHelper.java</exclude>
 						<exclude>**/Abstract*TestCase.java</exclude>
+						<!-- ><exclude>**/JDBCExampleTestCase.java</exclude>  -->
 
 					</excludes>
 					<forkMode>once</forkMode>

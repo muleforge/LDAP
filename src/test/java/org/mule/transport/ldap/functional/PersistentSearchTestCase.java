@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.mule.api.MuleMessage;
 import org.mule.module.client.MuleClient;
+import org.mule.tck.TestCaseWatchdog;
 import org.mule.transport.ldap.util.DSManager;
 import org.mule.transport.ldap.util.TestHelper;
 
@@ -112,5 +113,15 @@ public class PersistentSearchTestCase extends AbstractLdapFunctionalTestCase
         {
 
         }
+    }
+    
+    @Override
+    protected TestCaseWatchdog createWatchdog()
+    {
+        // TODO Auto-generated method stub
+        return new TestCaseWatchdog(
+                10,
+                edu.emory.mathcs.backport.java.util.concurrent.TimeUnit.MINUTES,
+                this);
     }
 }
