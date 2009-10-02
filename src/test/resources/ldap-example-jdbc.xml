@@ -12,13 +12,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
-    http://www.mulesource.org/schema/mule/core/2.2 http://svn.codehaus.org/mule/branches/mule-2.x/modules/spring-config/src/main/resources/META-INF/mule.xsd
-    http://www.mulesource.org/schema/mule/ldap/2.2 http://svn.muleforge.org/mule-transport-ldap/trunk/src/main/resources/META-INF/mule-ldap.xsd
-    http://www.mulesource.org/schema/mule/jdbc/2.2 http://svn.codehaus.org/mule/branches/mule-2.x/transports/jdbc/src/main/resources/META-INF/mule-jdbc.xsd
-    http://www.mulesource.org/schema/mule/vm/2.2 http://svn.codehaus.org/mule/branches/mule-2.x/transports/vm/src/main/resources/META-INF/mule-vm.xsd
-    http://www.mulesource.org/schema/mule/stdio/2.2 http://svn.codehaus.org/mule/branches/mule-2.x/transports/stdio/src/main/resources/META-INF/mule-stdio.xsd">
+    http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
+    http://www.mulesource.org/schema/mule/ldap/2.2 http://www.mulesource.org/schema/mule/ldap/2.2/mule-ldap.xsd
+    http://www.mulesource.org/schema/mule/jdbc/2.2 http://www.mulesource.org/schema/mule/jdbc/2.2/mule-jdbc.xsd
+    http://www.mulesource.org/schema/mule/vm/2.2  http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
+    http://www.mulesource.org/schema/mule/stdio/2.2  http://www.mulesource.org/schema/mule/stdio/2.2/mule-stdio.xsd">
 
-	<ldap:connector 
+	<ldap:connector
 		name="ldapConnector"
 		ldapHost="localhost"
 		ldapPort="10389"
@@ -28,7 +28,7 @@
 		enablePersistentSearch="true"
 		startUnsolicitedNotificationListener="true"
 		psChangeonly="true"
-		psFilters="cn=*"/>
+		psFilters="cn=*" />
 
 	<ldap:connector
 		name="ldapConnector2"
@@ -36,7 +36,7 @@
 		ldapPort="10389"
 		loginDN="uid=admin,ou=system"
 		password="secret"
-		searchBase="ou=system"/>
+		searchBase="ou=system" />
 
 	<spring:bean
 		id="jdbcDataSource"
@@ -44,10 +44,10 @@
 		destroy-method="shutdown">
 		<spring:property
 			name="driverName"
-			value="org.apache.derby.jdbc.EmbeddedDriver"/>
+			value="org.apache.derby.jdbc.EmbeddedDriver" />
 		<spring:property
 			name="url"
-			value="jdbc:derby:muleEmbeddedDB;create=true"/>
+			value="jdbc:derby:muleEmbeddedDB;create=true" />
 	</spring:bean>
 
 	<jdbc:connector
@@ -57,40 +57,39 @@
 
 		<jdbc:query
 			key="writeCn"
-			value="INSERT INTO TEST(TYPE, DATA) VALUES(1,#[groovy:payload.entry.getAttribute('sn').stringValue])"/>
+			value="INSERT INTO TEST(TYPE, DATA) VALUES(1,#[groovy:payload.entry.getAttribute('sn').stringValue])" />
 
 	</jdbc:connector>
 
 
 	<endpoint
-		name="fetch"		
-		address="ldap://ldap.out/(cn=*)"/>
-	
+		name="fetch"
+		address="ldap://ldap.out/(cn=*)" />
+
 	<expression-transformer name="expTrans">
-		<return-argument evaluator="groovy" expression="payload.next().getAttribute('cn').stringValue"/>
+		<return-argument
+			evaluator="groovy"
+			expression="payload.next().getAttribute('cn').stringValue" />
 	</expression-transformer>
-	
-	<byte-array-to-string-transformer name="ObjectArrayToString"/>
-		
-	
-	
-	<model 
-		name="Test">
-	
+
+	<byte-array-to-string-transformer name="ObjectArrayToString" />
+
+
+
+	<model name="Test">
+
 
 		<default-service-exception-strategy>
-			<outbound-endpoint
-				address="stdio://System.out"/>
+			<outbound-endpoint address="stdio://System.out" />
 		</default-service-exception-strategy>
 
-		<service
-			name="Ldap2Jdbc">
+		<service name="Ldap2Jdbc">
 
 			<inbound>
 				<ldap:inbound-endpoint
 					name="testldapEndpointIn"
 					address="ldap://ldap.in"
-					connector-ref="ldapConnector"/>
+					connector-ref="ldapConnector" />
 			</inbound>
 
 			<outbound>
@@ -98,29 +97,27 @@
 
 				<filtering-router>
 
-					<jdbc:outbound-endpoint
-						queryKey="writeCn"/>
+					<jdbc:outbound-endpoint queryKey="writeCn" />
 
 					<payload-type-filter
-						expectedType="com.novell.ldap.events.SearchResultEvent"/>
+						expectedType="com.novell.ldap.events.SearchResultEvent" />
 
 				</filtering-router>
-				<logging-catch-all-strategy/>
+				<logging-catch-all-strategy />
 
 			</outbound>
 
 		</service>
 
 
-		<service
-			name="VM2Ldap">
+		<service name="VM2Ldap">
 
 			<inbound>
 				<inbound-endpoint
 					address="vm://vmldapsearch"
-					synchronous="true"/>
+					synchronous="true" />
 			</inbound>
-<echo-component></echo-component>
+			<echo-component></echo-component>
 			<outbound>
 
 				<pass-through-router>
@@ -128,46 +125,45 @@
 					<outbound-endpoint
 						synchronous="true"
 						ref="fetch"
-						connector-ref="ldapConnector2"/>
+						connector-ref="ldapConnector2" />
 				</pass-through-router>
 
 			</outbound>
 
 		</service>
 
-		<service
-			name="VM2Sysout">
-			
-			
-	
+		<service name="VM2Sysout">
+
+
+
 
 			<inbound>
 				<inbound-endpoint
 					address="vm://vmsys"
-					synchronous="true"/>
+					synchronous="true" />
 			</inbound>
 			<echo-component></echo-component>
 			<outbound>
-				
-		
+
+
 				<pass-through-router>
-			
-					<outbound-endpoint  transformer-refs="expTrans ObjectArrayToString" 
-						synchronous="true" 
-						address="stdio://System.out"/>
+
+					<outbound-endpoint
+						transformer-refs="expTrans ObjectArrayToString"
+						synchronous="true"
+						address="stdio://System.out" />
 				</pass-through-router>
 
 			</outbound>
 
 		</service>
 
-		<service
-			name="process">
+		<service name="process">
 
 			<inbound>
 				<inbound-endpoint
 					synchronous="true"
-					address="vm://vmprocess"/>
+					address="vm://vmprocess" />
 			</inbound>
 			<echo-component></echo-component>
 			<outbound>
@@ -175,10 +171,10 @@
 
 					<outbound-endpoint
 						synchronous="true"
-						address="vm://vmldapsearch"/>
+						address="vm://vmldapsearch" />
 					<outbound-endpoint
 						synchronous="true"
-						address="vm://vmsys"/>
+						address="vm://vmsys" />
 
 				</chaining-router>
 
