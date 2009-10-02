@@ -45,7 +45,7 @@ public class SaslLDAPConnection extends LDAPConnection
         catch (final RuntimeException e)
         {
             logger
-                    .warn("Due to a bug of Novell JLDAP 4.3 while doing SASL bind this message is caused by a hot fix. You can safely ignore it if your SASL bind works fine. Underlying message is: "
+                    .warn("Due to a bug of Novell JLDAP 4.3 while doing SASL bind this message is caused by a hot fix. You can safely ignore it if your SASL bind works fine. Have a look here for more info: http://www.openldap.org/its/index.cgi?findid=6051 Underlying message is: "
                             + e.toString());
         }
 
