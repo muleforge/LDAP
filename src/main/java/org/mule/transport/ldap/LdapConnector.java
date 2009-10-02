@@ -152,9 +152,20 @@ public class LdapConnector extends AbstractConnector implements
         if ((ldapConnection == null) || !ldapConnection.isConnected()
                 || !ldapConnection.isConnectionAlive())
         {
-            logger.warn("ensureConnected() failed");
-            throw (new ConnectException(
-                    CoreMessages.connectorCausedError(this), this));
+            logger.warn("ensureConnected() failed, try to reconnect");
+            
+            try
+            {
+                this.doConnect();
+            }
+            catch (Exception e)
+            {
+                throw (new ConnectException(
+                        CoreMessages.connectorCausedError(this), e, this));
+            }
+            
+            
+            
         }
 
     }
@@ -178,7 +189,7 @@ public class LdapConnector extends AbstractConnector implements
     @Override
     public final void doConnect() throws Exception
     {
-
+        
         logger.debug("try connect to " + ldapHost + ":" + ldapPort + " with retry policy template "+getRetryPolicyTemplate());
 
         if (org.apache.commons.lang.StringUtils.isEmpty(ldapHost))
