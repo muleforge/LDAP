@@ -11,6 +11,7 @@
 package org.mule.transport.ldap;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPReferralHandler;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.novell.ldap.LDAPUnsolicitedNotificationListener;
+import com.novell.ldap.LDAPUrl;
 import com.novell.ldap.events.EventConstant;
 import com.novell.ldap.events.PSearchEventListener;
 import com.novell.ldap.events.PsearchEventSource;
@@ -170,15 +172,15 @@ public class LdapConnector extends AbstractConnector implements
 
     }
 
-    protected void setLDAPConnection()
+    protected LDAPConnection createLDAPConnection()
     {
-        ldapConnection = new LDAPConnection();
+        return new LDAPConnection();
     }
 
-    protected void doBind() throws Exception
+    protected void doBind(LDAPConnection lc) throws Exception
     {
 
-        ldapConnection.bind(ldapVersion, loginDN, password.getBytes("UTF8"));
+        lc.bind(ldapVersion, loginDN, password.getBytes("UTF8"));
     }
 
     protected boolean isAnonymousBindSupported()
@@ -202,7 +204,7 @@ public class LdapConnector extends AbstractConnector implements
             password = "";
         }
 
-        setLDAPConnection();
+        ldapConnection = createLDAPConnection();
 
         ldapConnection.connect(ldapHost, ldapPort);
 
@@ -231,7 +233,7 @@ public class LdapConnector extends AbstractConnector implements
         }
         else if (!org.apache.commons.lang.StringUtils.isEmpty(loginDN))
         {
-            doBind();
+            doBind(ldapConnection);
             logger.debug("non-anonymous bind of " + loginDN + " successful");
         }
         else
@@ -802,12 +804,102 @@ public class LdapConnector extends AbstractConnector implements
     public LDAPConnection bind(final String[] ldapurl, final LDAPConnection conn)
             throws LDAPReferralException
     {
-        throw new LDAPReferralException("Not implemented yet");
-    }
+        
+        if(ldapurl == null || ldapurl.length == 0)
+        {        
+            throw new LDAPReferralException("Not referral URLs given ("+ldapurl+")");
+        }
+        
+        if(conn != this.ldapConnection)
+        {        
+            throw new LDAPReferralException("LDAPConnection mismatch");
+        }
+        
+        //FIXME iterate
+        String urlS = ldapurl[0];
+        
+        logger.debug("referral bind requested, try to connect and bind to "+urlS);
+        
+        
+        LDAPConnection referralCon = createLDAPConnection();
+        
+        LDAPUrl url = null;
+        try
+        {
+            url = new LDAPUrl(urlS);
+        }
+        catch (MalformedURLException e)
+        {
+            throw new LDAPReferralException("Invalid LDAP Url "+urlS,e);            
+        }
+        
+        try
+        {
+            referralCon.connect(url.getHost(), url.getPort());
+            logger.debug("connect to " + url.getHost() + " successful (as referral)");
+        }
+        catch (LDAPException e)
+        {
+            throw new LDAPReferralException("Unable to connect ldap server "+urlS,e);   
+        }
+
+        constraints = new LDAPSearchConstraints(this.timeLimit * 1000, // client
+                // timeout,
+                // ms
+                this.timeLimit, // serverTimeLimit sec
+                this.dereference, this.maxResults, doReferrals,// boolean
+                // doReferrals
+                1,// batchsize
+                this, 10); // int hop_limit
+
+        referralCon.setConstraints(constraints);
+
+        logger.debug("connected to " + ldapHost + ":" + ldapPort+" as referral");
+
+        // lc.isBound()
+        // note: an anonymous bind returns false - not bound
+        // but do not work correct
+
+        if (isAnonymousBindSupported()
+                && org.apache.commons.lang.StringUtils.isEmpty(loginDN)
+                && isAnonBind())
+        {
+            logger.debug("anonymous bind to " + urlS + " successful");
+        }
+        else if (!org.apache.commons.lang.StringUtils.isEmpty(loginDN))
+        {
+            try
+            {
+                referralCon.bind(ldapVersion, loginDN, password.getBytes("UTF8"));
+                logger.debug("non-anonymous bind of " + loginDN + " successful (as referral)");
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                //ignore
+            }
+            catch (LDAPException e)
+            {
+                throw new LDAPReferralException("Unable to bind as '"+loginDN+"' to ldap server "+urlS,e);   
+            }
+            
+            
+        }
+        else
+        {
+            throw new LDAPReferralException(
+                    "Unable to bind anonymous (either failed or not supported (SSL/SASL)");
+        }
+
+        return referralCon;
+        
+     }
 
     // only for referrals
     public LDAPAuthProvider getAuthProvider(final String host, final int port)
     {
+        
+        logger.debug("referral authentication requested for ldap server "+host+":"+port);
+        
         try
         {
             return new LDAPAuthProvider(this.loginDN, password.getBytes("UTF8"));

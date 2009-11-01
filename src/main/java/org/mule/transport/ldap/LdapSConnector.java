@@ -170,33 +170,34 @@ public class LdapSConnector extends LdapConnector
     }
 
     @Override
-    protected void setLDAPConnection()
+    protected LDAPConnection createLDAPConnection()
     {
-        LDAPConnection c = null;
+        
 
         if (initSSL())
         {
-            c = new SaslLDAPConnection(ssf);
+            return new SaslLDAPConnection(ssf);
 
         }
         else
         {
-            c = new SaslLDAPConnection();
+            return new SaslLDAPConnection();
         }
 
-        setLdapConnection(c);
+        //FIXME
+        //setLdapConnection(c);
     }
 
     @Override
-    protected void doBind() throws Exception
+    protected void doBind(LDAPConnection lc) throws Exception
     {
 
         if (initSSL() && startTLS)
         {
-            getLdapConnection().startTLS();
+            lc.startTLS();
 
         }
-        super.doBind();
+        super.doBind(lc);
     }
 
     public boolean isStartTLS()

@@ -144,13 +144,13 @@ public class LdapSASLConnector extends LdapSConnector
     }
 
     @Override
-    protected void doBind() throws Exception
+    protected void doBind(LDAPConnection lc) throws Exception
     {
 
         if (initSSL() && isStartTLS())
         {
 
-            getLdapConnection().startTLS();
+            lc.startTLS();
 
         }
 
@@ -160,7 +160,7 @@ public class LdapSASLConnector extends LdapSConnector
         m.put("com.novell.security.sasl.client.pkgs",
                 "org.mule.transport.ldap.sasl");
 
-        getLdapConnection().bind(getLoginDN(), getLoginDN(), new String[]
+        lc.bind(getLoginDN(), getLoginDN(), new String[]
         {mechanism}, m, new BindCallbackHandler(getPassword()));
 
     }
