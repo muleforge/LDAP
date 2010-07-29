@@ -46,7 +46,7 @@ public class AnonymousBindTestCase extends AbstractMuleTestCase
         // DSHelper.startDS(allow);
         DSManager.getInstance().start(allow);
 
-        final LdapConnector c = new LdapConnector();
+        final LdapConnector c = new LdapConnector(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
         c.setName("ldapTestConnector");
@@ -56,7 +56,7 @@ public class AnonymousBindTestCase extends AbstractMuleTestCase
         try
         {
 
-            c.setMuleContext(muleContext);
+            //c.setMuleContext(muleContext);
             muleContext.getRegistry().registerConnector(c);
 
             // instead of

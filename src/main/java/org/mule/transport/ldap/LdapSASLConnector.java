@@ -22,6 +22,7 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
+import org.mule.api.MuleContext;
 import org.mule.api.lifecycle.InitialisationException;
 
 import com.novell.ldap.LDAPConnection;
@@ -36,14 +37,15 @@ public class LdapSASLConnector extends LdapSConnector
     private String alternativeSaslProvider = null;
     private String realm = null;
     private boolean jdkSaslSupported = false;
+    private String authorizationID = null;
 
     private String mechanism = "DIGEST-MD5";
 
     // private LDAPJSSESecureSocketFactory ssf;
 
-    public LdapSASLConnector()
+    public LdapSASLConnector(MuleContext context)
     {
-        super();
+        super(context);
 
         logger.debug("instantiated");
 
@@ -159,8 +161,8 @@ public class LdapSASLConnector extends LdapSConnector
         final Map m = new HashMap();
         m.put("com.novell.security.sasl.client.pkgs",
                 "org.mule.transport.ldap.sasl");
-
-        lc.bind(getLoginDN(), getLoginDN(), new String[]
+               
+        lc.bind(getLoginDN(), authorizationID, new String[]
         {mechanism}, m, new BindCallbackHandler(getPassword()));
 
     }
@@ -337,6 +339,16 @@ public class LdapSASLConnector extends LdapSConnector
     {
         // TODO Auto-generated method stub
         return useSSL;
+    }
+
+    public String getAuthorizationID()
+    {
+        return authorizationID;
+    }
+
+    public void setAuthorizationID(String authorizationID)
+    {
+        this.authorizationID = authorizationID;
     }
 
 }

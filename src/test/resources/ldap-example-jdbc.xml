@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mule
-	xmlns="http://www.mulesource.org/schema/mule/core/2.2"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:spring="http://www.springframework.org/schema/beans"
 	xmlns:jee="http://www.springframework.org/schema/jee"
 	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:ldap="http://www.mulesource.org/schema/mule/ldap/2.2"
-	xmlns:jdbc="http://www.mulesource.org/schema/mule/jdbc/2.2"
-	xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.2"
-	xmlns:stdio="http://www.mulesource.org/schema/mule/stdio/2.2"
+	xmlns:ldap="http://www.mulesoft.org/schema/mule/ldap"
+	xmlns:jdbc="http://www.mulesoft.org/schema/mule/jdbc"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
-    http://www.mulesource.org/schema/mule/core/2.2 http://www.mulesource.org/schema/mule/core/2.2/mule.xsd
-    http://www.mulesource.org/schema/mule/ldap/2.2 http://www.mulesource.org/schema/mule/ldap/2.2/mule-ldap.xsd
-    http://www.mulesource.org/schema/mule/jdbc/2.2 http://www.mulesource.org/schema/mule/jdbc/2.2/mule-jdbc.xsd
-    http://www.mulesource.org/schema/mule/vm/2.2  http://www.mulesource.org/schema/mule/vm/2.2/mule-vm.xsd
-    http://www.mulesource.org/schema/mule/stdio/2.2  http://www.mulesource.org/schema/mule/stdio/2.2/mule-stdio.xsd">
+    http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.0/mule.xsd
+    http://www.mulesoft.org/schema/mule/ldap file:///home/hsaly/devel/projects/mule-transport-ldap/trunk/src/main/resources/META-INF/mule-ldap.xsd
+    http://www.mulesoft.org/schema/mule/jdbc http://www.mulesoft.org/schema/mule/jdbc/3.0/mule-jdbc.xsd
+    http://www.mulesoft.org/schema/mule/vm  http://www.mulesoft.org/schema/mule/vm/3.0/mule-vm.xsd
+    http://www.mulesoft.org/schema/mule/stdio  http://www.mulesoft.org/schema/mule/stdio/3.0/mule-stdio.xsd">
 
 	<ldap:connector
 		name="ldapConnector"

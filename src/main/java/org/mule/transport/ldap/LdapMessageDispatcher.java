@@ -10,13 +10,9 @@
 
 package org.mule.transport.ldap;
 
-import java.util.Map;
-
-import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.OutboundEndpoint;
-import org.mule.api.transport.MessageAdapter;
 import org.mule.transport.AbstractMessageDispatcher;
 import org.mule.transport.ldap.util.LDAPUtils;
 
@@ -178,7 +174,8 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
                 // final MessageAdapter adapter =
                 // connector.getMessageAdapter(res);
-                return new DefaultMuleMessage(new Boolean(success), (Map) null);
+                return createMuleMessage(new Boolean(success));
+                //new DefaultMuleMessage(new Boolean(success), (Map) null);
 
             }
             else if (ldapMessage instanceof LDAPExtendedRequest)
@@ -186,8 +183,8 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
                 final LDAPExtendedRequest ler = (LDAPExtendedRequest) ldapMessage;
                 final LDAPExtendedResponse er = lc.extendedOperation(ler
                         .getExtendedOperation());
-                final MessageAdapter adapter = connector.getMessageAdapter(er);
-                return new DefaultMuleMessage(adapter, (Map) null);
+                //final MessageAdapter adapter = connector.getMessageAdapter(er);
+                return createMuleMessage(er);
             }
             else if (ldapMessage instanceof LDAPSearchRequest)
             {
@@ -198,9 +195,9 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
                         .getScope(), sr.getStringFilter(), sr.getAttributes(),
                         sr.isTypesOnly(), (LDAPSearchConstraints) null);
 
-                final MessageAdapter adapter = connector.getMessageAdapter(res);
+                //final MessageAdapter adapter = connector.getMessageAdapter(res);
 
-                return new DefaultMuleMessage(adapter, (Map) null);
+                return createMuleMessage(res);
             }
             else
             {
@@ -213,8 +210,9 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
         else if (transformed instanceof DN)
         {
             final DN dn = (DN) transformed;
-            final LDAPEntry entry = lc.read(dn.toString());
-            return new DefaultMuleMessage(entry, (Map) null);
+            final LDAPEntry entry = lc.read(dn.toString()); 
+           // return new DefaultMuleMessage(entry, (Map) null, this.);
+            return createMuleMessage(entry);
         }
 
         else if (transformed instanceof FetchSchemaAction)
@@ -222,7 +220,7 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
 
             final LDAPSchema schema = lc
                     .fetchSchema(((FetchSchemaAction) transformed).getDn());
-            return new DefaultMuleMessage(schema, (Map) null);
+            return createMuleMessage(schema);//, (Map) null);
         }
         else
         // not an known instance
@@ -251,9 +249,9 @@ public class LdapMessageDispatcher extends AbstractMessageDispatcher
                     sr.getStringFilter(), sr.getAttributes(), sr.isTypesOnly(),
                     (LDAPSearchConstraints) null);
 
-            final MessageAdapter adapter = connector.getMessageAdapter(res);
+           // final MessageAdapter adapter = connector.getMessageAdapter(res);
 
-            return new DefaultMuleMessage(adapter, (Map) null);
+            return createMuleMessage(res);
 
         }
 

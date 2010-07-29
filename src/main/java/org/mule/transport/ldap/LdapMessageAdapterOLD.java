@@ -21,8 +21,7 @@ import com.novell.ldap.LDAPSearchResults;
 /**
  * <code>LdapMessageAdapter</code> TODO document
  */
-public class LdapMessageAdapter extends
-        org.mule.transport.AbstractMessageAdapter
+public class LdapMessageAdapterOLD {/*extends MuleMessageAdapter
 {
 
     private static final String CORRELATION_ID = MuleProperties.MULE_CORRELATION_ID_PROPERTY;
@@ -32,14 +31,14 @@ public class LdapMessageAdapter extends
     private LDAPMessage ldapMessage = null;
     private LDAPSearchResults searchResults = null;
 
-    protected LdapMessageAdapter(final LdapMessageAdapter template)
+    protected LdapMessageAdapterOLD(final LdapMessageAdapter template)
     {
         super(template);
         ldapMessage = template.ldapMessage;
         searchResults = template.searchResults;
     }
 
-    public LdapMessageAdapter(final Object message) throws MessagingException
+    public LdapMessageAdapterOLD(final Object message) throws MessagingException
     {
         super();
 
@@ -155,5 +154,5 @@ public class LdapMessageAdapter extends
     {
         setProperty(CORRELATION_ID, (correlationId));
     }
-
+*/
 }

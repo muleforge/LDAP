@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.RegistryContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.transport.DispatchException;
@@ -40,6 +39,7 @@ import com.novell.ldap.LDAPResponse;
 import com.novell.ldap.LDAPSchema;
 import com.novell.ldap.LDAPSearchResult;
 import com.novell.ldap.LDAPSearchResults;
+import com.sun.jndi.rmi.registry.RegistryContext;
 
 public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 // EventCallback,
@@ -88,7 +88,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testSendReceiveSearch() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
         final MuleMessage result = client.send("ldap://ldap.out/oc.payload",
@@ -110,7 +110,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
     public void testBeanTransform() throws Exception
     {
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
         final MuleMessage result = client.send("ldap://ldap.out/oc.payload",
@@ -142,7 +142,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testSendAdd() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
 
@@ -176,8 +176,8 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testPersistentSearch() throws Exception
     {
-        final LdapConnector c = new LdapConnector();
-        c.setMuleContext(muleContext);
+        final LdapConnector c = new LdapConnector(muleContext);
+        //c.setMuleContext(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
         c.setName("LdapTestConnectorP");
@@ -188,9 +188,9 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
         c.setEnablePersistentSearch(true);
         c.setPsFilters("cn=*");
 
-        RegistryContext.getRegistry().registerConnector(c);
+        muleContext.getRegistry().registerConnector(c);
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // start requester to collect messages
         MuleMessage result = client.request(
@@ -225,7 +225,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testSendLDAPCompareRequest() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
 
@@ -253,7 +253,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testSendBadLDAPCompareRequest() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
 
@@ -281,7 +281,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testSendFetchSchemaAction() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
 
@@ -306,7 +306,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testSendAddDupl() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
 
@@ -351,7 +351,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testDispatchReceiveSearch() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out/oc.payload", "sevenseas", null);
@@ -374,7 +374,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testDispatchReceiveSearchMultiple() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
 
@@ -430,7 +430,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
     public synchronized void testDispatchReceiveSearchMultipleWithDelete()
             throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
         LDAPAddRequest last = null;
@@ -538,7 +538,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
     public synchronized void testDispatchReceiveSearchDeleted()
             throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
         LDAPAddRequest last = null;
@@ -622,7 +622,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
     public void testReceiveTimeout() throws Exception
     {
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final MuleMessage result = client.request("ldap://ldap.in", 15000);
 
@@ -641,7 +641,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testDispatchReceiveAdd() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         // we send a message on the endpoint we created, i.e. vm://Single
         client.dispatch("ldap://ldap.out", TestHelper
@@ -668,7 +668,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
     public void testDispatchReceiveAddStress() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int count = 500;
 
@@ -740,8 +740,8 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
         // MuleClient client = new MuleClient();
 
-        final LdapConnector c = new LdapConnector();
-        c.setMuleContext(muleContext);
+        final LdapConnector c = new LdapConnector(muleContext);
+        //c.setMuleContext(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
         c.setName("innerLdapTestConnector");
@@ -755,7 +755,7 @@ public class MuleEmbeddedTestCase extends AbstractMuleTestCase // implements
 
         c.setQueries(queries);
 
-        RegistryContext.getRegistry().registerConnector(c);
+        muleContext.getRegistry().registerConnector(c);
 
         return c;
     }

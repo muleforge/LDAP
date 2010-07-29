@@ -19,9 +19,9 @@ public class SaslConnectionTestCase extends AbstractMuleTestCase
             throws Exception
     {
 
-        final LdapSASLConnector c = new LdapSASLConnector();
+        final LdapSASLConnector c = new LdapSASLConnector(muleContext);
 
-        c.setMuleContext(muleContext);
+        //c.setMuleContext(muleContext);
 
         c.setLdapHost("localhost");
         c.setLdapPort(port);

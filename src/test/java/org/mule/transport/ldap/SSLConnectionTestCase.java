@@ -18,8 +18,8 @@ public class SSLConnectionTestCase extends AbstractMuleTestCase
             throws Exception
     {
 
-        final LdapSConnector c = new LdapSConnector();
-        c.setMuleContext(muleContext);
+        final LdapSConnector c = new LdapSConnector(muleContext);
+        //c.setMuleContext(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(port);
         c.setName("ldapSTestConnector1");

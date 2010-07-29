@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.mule.api.MuleContext;
+import org.mule.api.endpoint.EndpointMessageProcessorChainFactory;
 import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.processor.MessageProcessor;
 import org.mule.api.retry.RetryPolicyTemplate;
 import org.mule.api.routing.filter.Filter;
 import org.mule.api.security.EndpointSecurityFilter;
@@ -86,13 +88,13 @@ public class JavaBeanToModifiyRequestTransformerUniqueFieldTestCase extends
 
         //
         final Connector connector = getConnector();
-        final MuleEndpointURI url = new MuleEndpointURI("ldap://ldap.out");
+        final MuleEndpointURI url = new MuleEndpointURI("ldap://ldap.out",muleContext);
         final ImmutableEndpoint ep = new DefaultInboundEndpoint(connector, url,
                 (List) null, (List) null, "testendpoint", new Properties(),
                 (TransactionConfig) null, (Filter) null, false,
                 (EndpointSecurityFilter) null, false, 0, (String) null,
                 (String) null, (String) null, (MuleContext) null,
-                (RetryPolicyTemplate) null);
+                (RetryPolicyTemplate) null, (EndpointMessageProcessorChainFactory) null,(List<MessageProcessor>) null,(List<MessageProcessor>) null);
 
         final LDAPAttributeSet attr = new LDAPAttributeSet();
         attr.add(new LDAPAttribute("cn", "test-cn-javabean"));
@@ -120,9 +122,9 @@ public class JavaBeanToModifiyRequestTransformerUniqueFieldTestCase extends
     public Connector getConnector() throws Exception
     {
 
-        final LdapConnector c = new LdapConnector();
+        final LdapConnector c = new LdapConnector(muleContext);
         c.setRetryPolicyTemplate(new NoRetryPolicyTemplate());
-        c.setMuleContext(muleContext);
+        //c.setMuleContext(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
         c.setName("ldapTestConnector");

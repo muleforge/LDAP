@@ -22,7 +22,7 @@ public class PersistentSearchTestCase extends AbstractLdapFunctionalTestCase
 
     public void testAsyncPSearch() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
 
@@ -71,7 +71,7 @@ public class PersistentSearchTestCase extends AbstractLdapFunctionalTestCase
 
     public void testSyncPSearch() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
         // TODO FIXME fails
         final int addCount = 4;
 

@@ -119,7 +119,7 @@ public final class LDAPUtils
         // TODO "" query not ok
         final Object[] paramValues = ldapConnector.getParams(endpoint,
                 paramNames, new DefaultMuleMessage(transformedMessage,
-                        (Map) null), "");
+                        endpoint.getMuleContext()), ""); 
 
         logger.debug("paramValues: "
                 + java.util.Arrays.asList(paramValues).toString());

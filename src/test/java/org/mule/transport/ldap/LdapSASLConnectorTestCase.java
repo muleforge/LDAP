@@ -27,7 +27,7 @@ public class LdapSASLConnectorTestCase extends AbstractConnectorTestCase
 
         logger.debug("defineConnector (" + password + "||" + mechanism + ")");
 
-        final LdapSASLConnector c = new LdapSASLConnector();
+        final LdapSASLConnector c = new LdapSASLConnector(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(port);
         c.setName("ldapSASLTestConnector");

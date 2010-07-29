@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.SSLContext;
 
+import org.mule.api.MuleContext;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.transport.ldap.util.TrustAllCertsManager;
 
@@ -44,9 +45,9 @@ public class LdapSConnector extends LdapConnector
         this.trustStore = trustStore;
     }
 
-    public LdapSConnector()
+    public LdapSConnector(MuleContext context)
     {
-        super();
+        super(context);
         setLdapPort(LDAPConnection.DEFAULT_SSL_PORT);
 
     }

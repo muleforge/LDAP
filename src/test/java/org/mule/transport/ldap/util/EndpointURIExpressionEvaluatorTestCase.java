@@ -7,8 +7,10 @@ import java.util.Properties;
 
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleContext;
+import org.mule.api.endpoint.EndpointMessageProcessorChainFactory;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
+import org.mule.api.processor.MessageProcessor;
 import org.mule.api.retry.RetryPolicyTemplate;
 import org.mule.api.routing.filter.Filter;
 import org.mule.api.security.EndpointSecurityFilter;
@@ -79,7 +81,7 @@ public class EndpointURIExpressionEvaluatorTestCase extends
     {
         final Object o = muleContext.getExpressionManager().evaluate(
                 "#[endpointuri:xxx.yyy]",
-                new DefaultMuleMessage("", (Map) null));
+                new DefaultMuleMessage("", muleContext));
         assertNull(o);
 
     }
@@ -87,7 +89,7 @@ public class EndpointURIExpressionEvaluatorTestCase extends
     public void testEval() throws Exception
     {
         final EndpointURI url = new MuleEndpointURI(
-                "ldap://ldap.out/payload.cn");
+                "ldap://ldap.out/payload.cn",muleContext);
         url.initialise();
 
         final ImmutableEndpoint endpoint = new DefaultInboundEndpoint(null,
@@ -95,13 +97,13 @@ public class EndpointURIExpressionEvaluatorTestCase extends
                 new Properties(), (TransactionConfig) null, (Filter) null,
                 false, (EndpointSecurityFilter) null, false, 0, (String) null,
                 (String) null, (String) null, (MuleContext) null,
-                (RetryPolicyTemplate) null);
+                (RetryPolicyTemplate) null, (EndpointMessageProcessorChainFactory) null,(List<MessageProcessor>) null,(List<MessageProcessor>) null);
 
         muleContext.getRegistry().registerEndpoint(endpoint);
 
         final Object o = muleContext.getExpressionManager().evaluate(
                 "#[endpointuri:testendpoint.host]",
-                new DefaultMuleMessage("", (Map) null));
+                new DefaultMuleMessage("", muleContext));
         assertNotNull(o);
         assertTrue(o instanceof String);
         assertTrue(o.toString().equals("ldap.out"));
@@ -110,7 +112,7 @@ public class EndpointURIExpressionEvaluatorTestCase extends
 
     public void testEval2() throws Exception
     {
-        final EndpointURI url = new MuleEndpointURI("ldap://ldap.out/?a=b");
+        final EndpointURI url = new MuleEndpointURI("ldap://ldap.out/?a=b",muleContext);
         url.initialise();
 
         final Map map = new HashMap();
@@ -120,13 +122,13 @@ public class EndpointURIExpressionEvaluatorTestCase extends
                 (TransactionConfig) null, (Filter) null, false,
                 (EndpointSecurityFilter) null, false, 0, (String) null,
                 (String) null, (String) null, (MuleContext) null,
-                (RetryPolicyTemplate) null);
+                (RetryPolicyTemplate) null, (EndpointMessageProcessorChainFactory) null,(List<MessageProcessor>) null,(List<MessageProcessor>) null);
 
         muleContext.getRegistry().registerEndpoint(endpoint);
 
         final Object o = muleContext.getExpressionManager().evaluate(
                 "#[endpointuri:testendpoint.params:a]",
-                new DefaultMuleMessage("", (Map) null));
+                new DefaultMuleMessage("", muleContext));
         assertNotNull(o);
         logger.debug(o);
         assertTrue(o instanceof String);

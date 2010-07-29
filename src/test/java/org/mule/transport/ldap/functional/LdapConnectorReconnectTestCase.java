@@ -50,9 +50,9 @@ public class LdapConnectorReconnectTestCase extends
     private void doSearchInternal() throws Exception
     {
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
         final MuleMessage msg = client.send("ldap://ldap.out/",
-                new DefaultMuleMessage("(objectclass=*)", (Map) null));
+                new DefaultMuleMessage("(objectclass=*)", muleContext));
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof LDAPSearchResults);
 

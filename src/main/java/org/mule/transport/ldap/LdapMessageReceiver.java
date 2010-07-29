@@ -14,9 +14,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
-import java.util.Map;
 
-import org.mule.DefaultMuleMessage;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleException;
 import org.mule.api.endpoint.InboundEndpoint;
@@ -25,12 +23,10 @@ import org.mule.api.service.Service;
 import org.mule.api.transaction.Transaction;
 import org.mule.api.transaction.TransactionException;
 import org.mule.api.transport.Connector;
-import org.mule.api.transport.MessageAdapter;
 import org.mule.transport.AbstractMessageReceiver;
 import org.mule.transport.AbstractPollingMessageReceiver;
 import org.mule.transport.AbstractReceiverWorker;
 import org.mule.transport.ConnectException;
-import org.mule.transport.DefaultMessageAdapter;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPExtendedResponse;
@@ -163,8 +159,10 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
             return;
         }
 
-        final MessageAdapter adapter = connector.getMessageAdapter(msg);
-        routeMessage(new DefaultMuleMessage(adapter, (Map) null), endpoint
+       // final MessageAdapter adapter = connector.getMessageAdapter(msg);
+        //createMuleMessage(msg)
+        
+        routeMessage(createMuleMessage(msg), endpoint
                 .isSynchronous());
     }
 
@@ -241,7 +239,8 @@ public class LdapMessageReceiver extends AbstractPollingMessageReceiver
                 final AbstractMessageReceiver receiver)
         {
             super(new ArrayList(1), receiver);
-            messages.add(new DefaultMessageAdapter(message));
+            //messages.add(new DefaultMessageAdapter(message));
+            messages.add(message);
         }
 
         public LdapWorker(final List messages,

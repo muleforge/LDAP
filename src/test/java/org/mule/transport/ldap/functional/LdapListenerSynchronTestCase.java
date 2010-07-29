@@ -29,9 +29,9 @@ public class LdapListenerSynchronTestCase extends
     public void testSearch() throws Exception
     {
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
         final MuleMessage msg = client.send("ldap://ldap.out/",
-                new DefaultMuleMessage("(objectclass=*)", (Map) null));
+                new DefaultMuleMessage("(objectclass=*)", muleContext));
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof LDAPSearchResults);
 
@@ -56,9 +56,9 @@ public class LdapListenerSynchronTestCase extends
     public void testAsyncSearch() throws Exception
     {
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
         client.dispatch("ldap://ldap.out", new DefaultMuleMessage("(cn=*)",
-                (Map) null));
+                muleContext));
 
         // FIXME
         final MuleMessage msg = client.request("ldap://ldap.in", 15000);
@@ -79,7 +79,7 @@ public class LdapListenerSynchronTestCase extends
 
     public void testAddSearch() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
 
@@ -92,7 +92,7 @@ public class LdapListenerSynchronTestCase extends
         Thread.sleep(1000);
 
         final MuleMessage msg = client.send("vm://test_in_async",
-                new DefaultMuleMessage("(cn=*)", (Map) null));
+                new DefaultMuleMessage("(cn=*)", muleContext));
 
         assertNotNull(msg);
         assertTrue(msg.getPayload() instanceof String);
@@ -117,7 +117,7 @@ public class LdapListenerSynchronTestCase extends
 
     public void testJavaBeanModificationRequest() throws Exception
     {
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final LDAPAddRequest add = TestHelper.getRandomEntryAddRequest();
 
@@ -129,12 +129,10 @@ public class LdapListenerSynchronTestCase extends
         bean.setMail("hsaly@mulesource.org");
         bean.setDescription("desc");
 
-        client.send("vm://test_in_bean", new DefaultMuleMessage(bean,
-                (Map) null));
+        client.send("vm://test_in_bean", new DefaultMuleMessage(bean,muleContext));
 
         final MuleMessage msg = client.send("ldap://ldap.out",
-                new DefaultMuleMessage(new DN(add.getEntry().getDN()),
-                        (Map) null));
+                new DefaultMuleMessage(new DN(add.getEntry().getDN()),muleContext));
 
         assertNotNull(msg);
 

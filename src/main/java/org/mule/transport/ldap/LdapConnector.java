@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.mule.api.MuleContext;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.ImmutableEndpoint;
@@ -106,10 +107,9 @@ public class LdapConnector extends AbstractConnector implements
     private boolean psChangeonly = true;
     private int psEventchangetype = EventConstant.LDAP_PSEARCH_ANY;
 
-    public LdapConnector()
+    public LdapConnector (MuleContext context)
     {
-        super();
-
+        super(context);
     }
 
     @Override
@@ -870,14 +870,10 @@ public class LdapConnector extends AbstractConnector implements
         {
             try
             {
-                referralCon.bind(ldapVersion, loginDN, password.getBytes("UTF8"));
+                doBind(referralCon);
                 logger.debug("non-anonymous bind of " + loginDN + " successful (as referral)");
             }
-            catch (UnsupportedEncodingException e)
-            {
-                //ignore
-            }
-            catch (LDAPException e)
+            catch (Exception e)
             {
                 throw new LDAPReferralException("Unable to bind as '"+loginDN+"' to ldap server "+urlS,e);   
             }

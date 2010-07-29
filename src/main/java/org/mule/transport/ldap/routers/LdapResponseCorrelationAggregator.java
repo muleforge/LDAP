@@ -17,6 +17,7 @@ import java.util.List;
 import org.mule.DefaultMuleMessage;
 import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
+import org.mule.api.context.MuleContextAware;
 import org.mule.api.routing.RoutingException;
 import org.mule.api.transformer.TransformerException;
 import org.mule.routing.EventCorrelatorCallback;
@@ -28,7 +29,7 @@ import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPResponse;
 
 public class LdapResponseCorrelationAggregator extends
-        ResponseCorrelationAggregator
+        ResponseCorrelationAggregator implements MuleContextAware
 {
 
     @Override
@@ -119,7 +120,10 @@ public class LdapResponseCorrelationAggregator extends
 
                 logger.debug(">--- aggregator leave  aggregateEvents with "
                         + results.size() + " msgs ---> ");
-                return new DefaultMuleMessage(results, event.getMessage());
+                
+                
+                return new DefaultMuleMessage(results, event.getMessage(),getMuleContext());
+                
             }
 
             throw new RuntimeException("event is null");

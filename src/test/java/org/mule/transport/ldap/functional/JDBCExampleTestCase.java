@@ -34,7 +34,7 @@ public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
             logger.debug(e.toString());
         }
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
 
@@ -73,7 +73,7 @@ public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
             logger.debug(e.toString());
         }
 
-        final MuleClient client = new MuleClient();
+        final MuleClient client = new MuleClient(muleContext);
 
         final int addCount = 4;
 
@@ -86,7 +86,7 @@ public class JDBCExampleTestCase extends AbstractLdapFunctionalTestCase
         // Thread.sleep(5000);
 
         final MuleMessage msg = client.send("vm://vmprocess",
-                new DefaultMuleMessage("dummy"));
+                new DefaultMuleMessage("dummy",muleContext));
         assertNotNull(msg);
         assertNotNull(msg.getPayload());
 

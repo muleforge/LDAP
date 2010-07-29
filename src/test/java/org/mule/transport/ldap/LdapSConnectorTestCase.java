@@ -15,7 +15,7 @@ public class LdapSConnectorTestCase extends AbstractConnectorTestCase
             final String trustStore) throws Exception
     {
 
-        final LdapSConnector c = new LdapSConnector();
+        final LdapSConnector c = new LdapSConnector(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(10636);
         c.setName("ldapSTestConnector");

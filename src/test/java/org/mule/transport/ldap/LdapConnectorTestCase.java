@@ -14,7 +14,7 @@ public class LdapConnectorTestCase extends AbstractConnectorTestCase
     @Override
     public Connector createConnector() throws Exception
     {
-        final LdapConnector c = new LdapConnector();
+        final LdapConnector c = new LdapConnector(muleContext);
         c.setLdapHost("localhost");
         c.setLdapPort(10389);
         c.setName("ldapTestConnector");

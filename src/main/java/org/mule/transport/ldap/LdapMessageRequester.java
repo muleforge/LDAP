@@ -14,14 +14,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
-import java.util.Map;
 
-import org.mule.DefaultMuleMessage;
 import org.mule.api.DefaultMuleException;
 import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.InboundEndpoint;
-import org.mule.api.transport.MessageAdapter;
 import org.mule.transport.AbstractMessageRequester;
 
 import com.novell.ldap.LDAPException;
@@ -124,12 +121,13 @@ public class LdapMessageRequester extends AbstractMessageRequester implements
 
         if (msg instanceof LDAPMessage)
         {
-            final MessageAdapter adapter = connector.getMessageAdapter(msg);
-            return new DefaultMuleMessage(adapter, (Map) null);
+            //final MessageAdapter adapter = connector.getMessageAdapter(msg);
+            return createMuleMessage(msg);
         }
         else
         {
-            return new DefaultMuleMessage(msg, (Map) null);
+           // return new DefaultMuleMessage(msg, (Map) null);
+            return createMuleMessage(msg);
         }
     }
 

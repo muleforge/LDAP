@@ -47,7 +47,7 @@ public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase
         Thread.sleep(5 * 1000);
 
         final MuleMessage msg = client.send("vm://test_in",
-                new DefaultMuleMessage("dummy_for_static_search", (Map) null));
+                new DefaultMuleMessage("dummy_for_static_search", muleContext));
 
         assertNotNull(msg);
 
@@ -64,7 +64,7 @@ public class ResponseAggregatorTestCase extends AbstractLdapFunctionalTestCase
 
         // Thread.sleep(5 * 1000);
 
-        MuleServer.getMuleContext().stop();
+        muleContext.stop();
         // client.dispose();
 
         try

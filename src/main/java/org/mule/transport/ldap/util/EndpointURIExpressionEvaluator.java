@@ -16,8 +16,6 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.MuleServer;
-import org.mule.RegistryContext;
 import org.mule.api.MuleMessage;
 import org.mule.api.endpoint.EndpointURI;
 import org.mule.api.endpoint.ImmutableEndpoint;
@@ -58,9 +56,10 @@ public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
         // EndpointBuilder
 
         Object tmp = null;
+        
+       
 
-        final Collection < ImmutableEndpoint > endpoints = MuleServer
-                .getMuleContext().getRegistry().getEndpoints();
+        final Collection < ImmutableEndpoint > endpoints = message.getMuleContext().getRegistry().getEndpoints();
         for (final Iterator iterator = endpoints.iterator(); iterator.hasNext();)
         {
 
@@ -78,7 +77,7 @@ public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
 
         if (tmp == null)
         {
-            tmp = MuleServer.getMuleContext().getRegistry().lookupObject(
+            tmp = message.getMuleContext().getRegistry().lookupObject(
                     endpointName);
         }
 
@@ -94,7 +93,7 @@ public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
             final ImmutableEndpoint ep = (ImmutableEndpoint) tmp;
             uri = ep.getEndpointURI();
         }
-        else if (((tmp = RegistryContext.getRegistry().lookupObject(
+        else if (((tmp = message.getMuleContext().getRegistry().lookupObject(
                 endpointName)) != null)
                 && (tmp instanceof ImmutableEndpoint))
         {
@@ -106,12 +105,10 @@ public class EndpointURIExpressionEvaluator implements ExpressionEvaluator
             logger.warn("There is no endpoint registered with name: "
                     + endpointName + " Will look for an global one ...");
 
-            final AbstractEndpointBuilder eb = (AbstractEndpointBuilder) MuleServer
-                    .getMuleContext().getRegistry().lookupEndpointBuilder(
+            final AbstractEndpointBuilder eb = (AbstractEndpointBuilder) message.getMuleContext().getRegistry().lookupEndpointBuilder(
                             endpointName);
 
-            final AbstractEndpointBuilder eb2 = (AbstractEndpointBuilder) RegistryContext
-                    .getRegistry().lookupEndpointBuilder(endpointName);
+            final AbstractEndpointBuilder eb2 = (AbstractEndpointBuilder) message.getMuleContext().getRegistry().lookupEndpointBuilder(endpointName);
 
             if (eb != null)
             {
